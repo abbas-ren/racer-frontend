@@ -39,6 +39,7 @@ import { useHeartbeatManager } from 'hooks/useHeartbeatManager';
 import { useDeviceInterfaceSocket } from 'hooks/useDeviceInterfaceSocket';
 import { useAuth } from 'hooks/useAuth';
 import { useSocketIoEvent } from 'hooks/useSocketIoEvent';
+import { FARM_CONTROLLER_HOST } from 'constants/config';
 import {
   FCIcon,
   TreeBusyIcon,
@@ -58,8 +59,7 @@ import {
 const MIN_K = 0.25;
 const MAX_K = 3;
 const ZOOM_STEP = 0.1;
-const FARM_CONTROLLER_STATIC_IP =
-  import.meta.env.VITE_WS_HOST || window.location.hostname || 'localhost';
+const FARM_CONTROLLER_STATIC_IP = FARM_CONTROLLER_HOST;
 type DeviceTerminalMode = 'ssh' | 'rtos';
 
 const mapDeviceStateToGraphStatus = (state?: string): string => {

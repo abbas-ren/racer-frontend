@@ -4,6 +4,7 @@ import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import './webcli.css';
 import { getAuth, getUsername } from '../../utils/auth';
+import { buildWebSocketUrl } from 'constants/config';
 import { InputPromptWidget } from './InputPromptWidget';
 import { PromptRequest } from './types';
 
@@ -253,12 +254,8 @@ export default function WebCLIModal({
 
     console.log('Connecting CLI WebSocket for user:', userId);
 
-    const wsHost =
-      import.meta.env.VITE_WS_HOST || window.location.hostname || 'localhost';
-    const wsPort = import.meta.env.VITE_WS_PORT || '5002';
-
     const ws = new WebSocket(
-      `ws://${wsHost}:${wsPort}/ws?client=cli&userId=${encodeURIComponent(userId)}&userName=${encodeURIComponent(userName)}`,
+      buildWebSocketUrl({ client: 'cli', userId, userName }),
     );
 
     const handleTestUpdate = (

@@ -1,18 +1,11 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { buildWebSocketUrl } from 'constants/config';
 
 interface SshOutputMessage {
   type: 'ssh';
   stream: 'stdout' | 'stderr';
   chunk: string;
 }
-
-const getWebSocketUrl = () => {
-  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const host = import.meta.env.VITE_WS_HOST || 'localhost';
-  const port = import.meta.env.VITE_WS_PORT || '5002';
-  const path = `/ws?client=frontend`;
-  return `${protocol}://${host}:${port}${path}`;
-};
 
 export function useRtosSocket(
   deviceId: string,
@@ -22,7 +15,7 @@ export function useRtosSocket(
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket(getWebSocketUrl());
+    const ws = new WebSocket(buildWebSocketUrl({ client: 'frontend' }));
     socketRef.current = ws;
 
     ws.onopen = () => {

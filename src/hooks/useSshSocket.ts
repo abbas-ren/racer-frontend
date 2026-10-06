@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { buildWebSocketUrl } from 'constants/config';
 
 interface SshOutputMessage {
   type: 'ssh';
@@ -16,14 +17,6 @@ interface SshOutputMessage {
 //   chunk: string;
 // }
 
-const getWebSocketUrl = (target: string) => {
-  const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  const host = import.meta.env.VITE_WS_HOST || 'localhost';
-  const port = import.meta.env.VITE_WS_PORT || '5002';
-  const path = `/ws?client=frontend&target=${encodeURIComponent(target)}`;
-  return `${protocol}://${host}:${port}${path}`;
-};
-
 export function useSshSocket(
   target: string,
   onOutput: (chunk: string) => void,
@@ -31,7 +24,7 @@ export function useSshSocket(
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket(getWebSocketUrl(target));
+    const ws = new WebSocket(buildWebSocketUrl({ client: 'frontend', target }));
     socketRef.current = ws;
 
     ws.onopen = () => {
