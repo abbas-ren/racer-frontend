@@ -15,7 +15,7 @@ import type {
 } from 'types/deviceController';
 
 const BASE_URL_DEVICE = 'device/';
-const BASE_URL_CONTROLLER = `${BASE_URL_DEVICE}controller/`;
+const BASE_URL_CONTROLLER = `${BASE_URL_DEVICE}controller`;
 const BASE_URL_RELAY = `${BASE_URL_DEVICE}relay/`;
 
 export const fetchAllDeviceControllers = async (
@@ -36,7 +36,7 @@ export const updateDeviceController = async (
   payload: UpdateDeviceControllerPayload,
 ): Promise<UpdateDeviceControllerResponse> => {
   const response = await axiosInstance.put<UpdateDeviceControllerResponse>(
-    `${BASE_URL_CONTROLLER}${encodeURIComponent(controllerId)}`,
+    `${BASE_URL_CONTROLLER}/${encodeURIComponent(controllerId)}`,
     payload,
   );
 
