@@ -1,0 +1,23 @@
+.floatingButton {
+  position: fixed !important;
+  z-index: 50 !important;
+  background-color: #3835d1 !important;
+  color: white !important;
+  border-radius: 50% !important;
+  padding: 10px !important;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+  transition: background-color 200ms ease !important;
+  width: 48px !important;
+  height: 48px !important;
+
+  &:hover {
+    background-color: #2f2ab8 !important;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}

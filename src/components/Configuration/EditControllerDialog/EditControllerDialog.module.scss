@@ -1,0 +1,118 @@
+.dialogPaper {
+  border-radius: 10px;
+  box-shadow: 0 20px 44px rgba(15, 23, 42, 0.24);
+  overflow: hidden;
+}
+
+.dialogBackdrop {
+  background-color: rgba(17, 24, 39, 0.35);
+  backdrop-filter: blur(2px);
+}
+
+.dialogContent {
+  padding: 0;
+}
+
+.header {
+  padding: 16px;
+  border-bottom: 1px solid var(--mui-palette-divider);
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.title {
+  font-weight: 700;
+  margin-bottom: 3px;
+  font-size: 22px;
+  font-family: var(--mui-font-family);
+}
+
+.subtitle {
+  font-size: 12px;
+}
+
+.formBody {
+  padding: 16px;
+}
+
+.formStack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fieldLabel {
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.chipRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.infoChip {
+  font-size: 11px;
+  height: 24px;
+  border-radius: 6px;
+}
+
+.radioLabelWithRightMargin {
+  margin-right: 12px;
+}
+
+.gen5Warning {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background-color: color-mix(
+    in srgb,
+    var(--mui-palette-warning-light) 22%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--mui-palette-warning-main) 40%, white);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.warningIcon {
+  font-size: 14px;
+  color: var(--mui-palette-warning-main);
+  margin-top: 1px;
+}
+
+.warningText {
+  font-size: 11.5px;
+  color: var(--mui-palette-warning-dark);
+  line-height: 1.35;
+}
+
+.errorText {
+  margin-top: 4px;
+  font-size: 11.5px;
+  display: block;
+}
+
+.footer {
+  padding: 14px;
+  border-top: 1px solid var(--mui-palette-divider);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.footerButton {
+  border-radius: 8px;
+  text-transform: none;
+  height: 30px;
+  padding: 0 13px;
+  font-size: 11px;
+}

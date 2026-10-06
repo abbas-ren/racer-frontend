@@ -1,0 +1,390 @@
+.tableContainer {
+  border-radius: 12px;
+  overflow-x: auto;
+  overflow-y: auto;
+  height: 70vh;
+  min-height: 70vh;
+  max-height: 70vh;
+  transition: max-height 0.2s ease;
+  background-color: var(--mui-palette-background-paper);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--mui-palette-divider);
+}
+
+.tableExpanded {
+  height: 70vh;
+  max-height: 70vh;
+}
+
+.tableCollapsed {
+  height: 70vh;
+  max-height: 70vh;
+}
+
+.table {
+  min-width: 900px;
+  table-layout: fixed;
+
+  @media (min-width: 900px) {
+    min-width: 100%;
+  }
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 44px;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 20%;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 23%;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 17%;
+  }
+
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 12%;
+  }
+
+  th:nth-child(6),
+  td:nth-child(6) {
+    width: 13%;
+  }
+
+  th:nth-child(7),
+  td:nth-child(7) {
+    width: 120px;
+  }
+}
+
+.headerCell {
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: 0.35px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  background-color: transparent;
+  border-bottom: 1px solid var(--mui-palette-background-mist);
+}
+
+.expandCell {
+  width: 36px;
+  padding-left: 10px;
+}
+
+.expandIconButton {
+  padding: 3px;
+}
+
+.rowCell {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.idRow {
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  align-items: center;
+}
+
+.mainText {
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--mui-font-family);
+}
+
+.controllerNameText {
+  font-size: 13px;
+  font-weight: 400;
+  font-family: var(--mui-font-family);
+}
+
+.subText {
+  font-size: 12px;
+  font-weight: 400;
+  color: #374151;
+  font-family: var(--mui-font-family);
+}
+
+.serialText {
+  font-size: 12px;
+  font-weight: 400;
+  font-family: var(--mui-font-family);
+}
+
+.ipText {
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 400;
+  color: #111827;
+}
+
+.generationChip {
+  height: 20px;
+  border-radius: 999px;
+}
+
+.relayCountChip {
+  height: 24px;
+  border-radius: 999px;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px;
+  height: 28px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.relayStatusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px;
+  height: 24px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.relayStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.actionsCell {
+  width: 108px;
+}
+
+.actionsRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+}
+
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--mui-palette-text-secondary) 10%,
+      transparent
+    );
+    transform: scale(1.1);
+  }
+}
+
+.deleteButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--mui-palette-error-main) 8%,
+      transparent
+    );
+    transform: scale(1.1);
+  }
+}
+
+.configureButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--mui-palette-primary-main) 8%,
+      transparent
+    );
+    transform: scale(1.1);
+  }
+}
+
+.relayRow {
+  background-color: var(--relay-row-bg);
+}
+
+.relayBranch {
+  width: 14px;
+  height: 1px;
+  background-color: color-mix(
+    in srgb,
+    var(--mui-palette-text-secondary) 35%,
+    transparent
+  );
+}
+
+.gen5InfoRow {
+  background-color: var(--relay-row-bg);
+}
+
+.gen5Info {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.gen5Icon {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.gen5Text {
+  font-size: 11.5px;
+  color: #6b7280;
+}
+
+.emptyState {
+  min-height: calc(70vh - 120px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.emptyCenterCell {
+  vertical-align: middle;
+}
+
+.emptyIconCircle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background-color: color-mix(
+    in srgb,
+    var(--mui-palette-text-secondary) 12%,
+    transparent
+  );
+}
+
+.emptyTitle {
+  font-size: 16px;
+}
+
+.emptySubTitle {
+  font-size: 13px;
+}
+
+.clearAllButton {
+  margin-top: 4px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  background-color: var(--mui-palette-primary-500);
+  color: #fff;
+  text-transform: none;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background-color: var(--mui-palette-primary-600);
+    transform: scale(1.05);
+  }
+}
+
+.paginationRoot {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-direction: column;
+
+  @media (min-width: 600px) {
+    align-items: center;
+    flex-direction: row;
+  }
+}
+
+.paginationText {
+  font-size: 12px;
+}
+
+.paginationControls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+.paginationNavButton {
+  min-width: 0;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+.pageButton {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.pageButtonActive {
+  color: #fff;
+  background-color: var(--mui-palette-primary-main);
+
+  &:hover {
+    background-color: var(--mui-palette-primary-main);
+  }
+}
+
+.pageButtonInactive {
+  color: #374151;
+  background-color: transparent;
+}

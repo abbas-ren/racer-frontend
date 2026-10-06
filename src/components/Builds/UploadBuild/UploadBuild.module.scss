@@ -1,0 +1,288 @@
+/* Overlay and modal */
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 16px;
+  background-color: var(--mui-palette-background-paper);
+  border: 1px solid var(--mui-palette-border-lite);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px var(--mui-palette-shadow-subtle);
+  overflow: hidden;
+}
+
+.header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--mui-palette-border-lite);
+}
+
+.iconWrapPrimary {
+  padding: 8px;
+  border-radius: 12px;
+  background-color: color-mix(
+    in oklab,
+    var(--mui-palette-blue-500) 10%,
+    transparent
+  );
+}
+
+.title {
+  color: var(--mui-palette-text-strong);
+}
+
+.subtitle {
+  color: var(--mui-palette-text-muted);
+}
+
+.body {
+  padding: 20px 24px;
+}
+
+.label {
+  font-size: 300 !important;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.dropZone {
+  min-height: 150px;
+  position: relative;
+  border: 2px dashed var(--mui-palette-border-main);
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--mui-palette-grey-50);
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+  cursor: pointer;
+}
+.dropZone:hover {
+  border-color: var(--mui-palette-border-strong);
+}
+
+.fileInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.iconWrapWhite {
+  border-radius: 12px;
+  background-color: var(--mui-palette-background-paper);
+}
+
+.dropZoneText {
+  color: var(--mui-palette-text-primary);
+  font-weight: 500;
+  text-align: center;
+}
+
+.dropZoneSubtext {
+  color: var(--mui-palette-text-muted);
+  text-align: center;
+}
+
+.filesCount {
+  text-align: center;
+}
+.filesSize {
+  color: var(--mui-palette-text-muted);
+  text-align: center;
+}
+
+.errorText {
+  margin-top: 8px;
+  color: var(--mui-palette-error-main);
+}
+
+.instructionsCard {
+  margin-top: 12px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--mui-palette-border-lite);
+  background-color: var(--mui-palette-background-cool);
+}
+
+.instructionsTitle {
+  color: var(--mui-palette-text-strong);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.instructionsList {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  list-style-position: inside;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--mui-palette-text-primary);
+}
+
+.instructionsList li {
+  padding-left: 0;
+}
+
+.instructionsSubList {
+  margin: 2px 0 0;
+  padding-left: 12px;
+  list-style: none;
+  list-style-position: inside;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.instructionsSubList li {
+  padding-left: 0;
+  text-indent: 0;
+}
+
+.instructionsText {
+  font-size: 11px;
+  line-height: 1.25;
+}
+
+.instructionsText code {
+  font-size: 11px;
+}
+
+.filesList {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fileRow {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background-color: var(--mui-palette-background-cool);
+}
+.fileRow:hover {
+  background-color: var(--mui-palette-background-mist);
+}
+
+.fileName {
+  color: var(--mui-palette-text-primary);
+}
+
+.tagInput {
+  width: 192px;
+}
+
+.removeBtn {
+  height: 44.5px !important;
+  width: 44.5px !important;
+  padding: 8px;
+  border-radius: 10px;
+}
+.removeBtn:hover {
+  background-color: var(--mui-palette-red-100);
+}
+
+.footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--mui-palette-border-lite);
+  background-color: var(--mui-palette-background-lite);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btnCancel {
+  padding: 8px 16px;
+  border-radius: 10px;
+  background-color: var(--mui-palette-background-paper);
+  color: var(--mui-palette-text-primary);
+  border: 1px solid var(--mui-palette-border-main);
+}
+.btnCancel:hover {
+  background-color: var(--mui-palette-background-hover);
+}
+
+.btnPrimary {
+  padding: 8px 16px;
+  border-radius: 10px;
+  color: var(--mui-palette-text-contrast);
+  background-color: var(--mui-palette-primary-main);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btnPrimary:hover {
+  background-color: var(--mui-palette-primary-strong);
+}
+
+.uploadButton {
+  padding: 8px 16px;
+  height: 40px;
+  border-radius: 12px;
+  font: var(--mui-font-buttonBase);
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  background-color: var(--mui-palette-primary-300);
+  color: var(--mui-palette-primary-contrastText);
+  transition: background-color 200ms ease;
+  transform: scale(1.02);
+  box-shadow: none;
+  text-transform: none;
+  &:hover {
+    background-color: var(--mui-palette-primary-400);
+  }
+
+  &:disabled {
+    background-color: var(--mui-palette-primary-100);
+    color: var(--mui-palette-primary-contrastText);
+    cursor: not-allowed;
+  }
+}
+
+custom-input {
+  width: 192px; // w-48
+
+  .MuiOutlinedInput-root {
+    font-size: 13px;
+    border-radius: 0.5rem; // rounded-lg
+    background-color: #ffffff;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    input {
+      padding: 8px 12px; // py-2 px-3
+      color: #111827; // text-gray-900
+    }
+
+    input::placeholder {
+      color: #9ca3af; // placeholder-gray-400
+      opacity: 1;
+    }
+
+    fieldset {
+      border: 1px solid #d4d4d4; // neutral-300
+    }
+
+    &:hover fieldset {
+      border-color: #d4d4d4;
+    }
+
+    &.Mui-focused fieldset {
+      border-color: #6764ff;
+      border-width: 1px;
+    }
+
+    &.Mui-focused {
+      box-shadow: 0 0 0 2px rgba(103, 100, 255, 0.2); // focus:ring-[#6764ff]/20
+    }
+  }
+}

@@ -1,0 +1,41 @@
+export const DEVICE_FAMILY = ['Gen3', 'Gen4', 'Gen5'];
+
+export const BUILD_VERSION = ['1.0.1', '1.1.2', '2.0.1-nightly'];
+
+// temp log simulation
+export const logs: string[] = [
+  '[2025-06-14 10:00:01] Checking device availability...',
+  '[2025-06-14 10:00:02] Device available: deviceID=X80zMgHv:fEywA2eM',
+  '[2025-06-14 10:00:03] Locking the device...',
+  '[2025-06-14 10:00:04] Device locked successfully.',
+  '[2025-06-14 10:00:05] Fetching build ID for device...',
+  '[2025-06-14 10:00:05] Build ID found: build_20250614_abc123',
+  '[2025-06-14 10:00:06] Verifying build availability in Artifactory...',
+  '[2025-06-14 10:00:07] Build is available at: /artifacts/build_20250614_abc123/rootfs.tar.gz',
+  '[2025-06-14 10:00:08] Extracting rootfs to NFS directory...',
+  '[2025-06-14 10:00:09] Extracting file: /boot/uImage',
+  '[2025-06-14 10:00:10] Extracting file: /etc/init.d/startup.sh',
+  '[2025-06-14 10:00:11] Extracting file: /lib/modules/module-bluetooth.ko',
+  '[2025-06-14 10:00:12] Extraction complete.',
+  '[2025-06-14 10:00:13] Placing build files to TFTP server...',
+  '[2025-06-14 10:00:14] Files copied to /tftpboot/build_20250614_abc123',
+  '[2025-06-14 10:00:15] Triggering test cycle execution...',
+  '[2025-06-14 10:00:16] Running Test: BOOT TIME TEST',
+  '[2025-06-14 10:00:18] Result: BOOT TIME TEST: PASS',
+  '[2025-06-14 10:00:19] Running Test: NETWORK CONNECTIVITY',
+  '[2025-06-14 10:00:21] Result: PING TEST: PASS',
+  '[2025-06-14 10:00:22] Running Test: DISK USAGE',
+  '[2025-06-14 10:00:24] Result: DISK USAGE TEST: PASS',
+  '[2025-06-14 10:00:25] Running Test: CPU LOAD',
+  '[2025-06-14 10:00:27] Result: CPU LOAD TEST: PASS',
+  '[2025-06-14 10:00:28] Running Test: MEMORY CHECK',
+  '[2025-06-14 10:00:30] Result: MEMORY TEST: PASS',
+  '[2025-06-14 10:00:31] Running Test: CPU TEMPERATURE',
+  '[2025-06-14 10:00:33] Result: CPU TEMPERATURE TEST: PASS',
+  '[2025-06-14 10:00:34] Running Test: BLUETOOTH APPROVAL',
+  '[2025-06-14 10:00:36] Result: BLUETOOTH TEST: PASS',
+  '[2025-06-14 10:00:37] All tests executed successfully.',
+  '[2025-06-14 10:00:38] Releasing device lock...',
+  '[2025-06-14 10:00:39] Device unlocked.',
+  '[2025-06-14 10:00:40] Test execution complete. Report uploaded to QMetry.',
+];

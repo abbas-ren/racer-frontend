@@ -1,0 +1,107 @@
+.filtersContainer {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--mui-palette-divider);
+  background-color: var(--mui-palette-background-paper);
+}
+
+.filtersWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filterLabel {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--mui-palette-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filterSelect {
+  min-width: 150px;
+
+  :global(.MuiOutlinedInput-root) {
+    background-color: var(--mui-palette-common-white);
+    border-radius: 6px;
+
+    &:hover fieldset {
+      border-color: var(--mui-palette-primary-main);
+    }
+
+    fieldset {
+      border-color: var(--mui-palette-primary-light);
+    }
+  }
+
+  :global(.MuiSelect-select) {
+    padding: 6px 10px;
+    font-size: 14px;
+    color: var(--mui-palette-text-primary);
+    letter-spacing: -0.28px;
+  }
+}
+
+.runButton {
+  min-width: 140px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  background-color: var(--mui-palette-primary-main);
+  color: var(--mui-palette-common-white);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: var(--mui-palette-primary-dark);
+  }
+
+  :global(.MuiButton-startIcon) {
+    margin-right: 8px;
+  }
+
+  &Error {
+    background-color: var(--mui-palette-error-main);
+
+    &:hover {
+      background-color: var(--mui-palette-error-dark);
+    }
+  }
+}
+
+.playIcon {
+  font-size: 14px;
+  fill: var(--mui-palette-common-white);
+}
+
+.reportButton {
+  margin-left: auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--mui-palette-text-secondary);
+  font-size: 11px;
+  text-transform: none;
+  transition: all 0.2s;
+
+  &:hover {
+    color: var(--mui-palette-warning-main);
+    background-color: var(--mui-palette-action-hover);
+  }
+
+  :global(.MuiButton-startIcon) {
+    margin-right: 6px;
+  }
+}
+
+.reportIcon {
+  font-size: 14px;
+}

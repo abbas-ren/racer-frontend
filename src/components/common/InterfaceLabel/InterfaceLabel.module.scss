@@ -1,0 +1,49 @@
+.tooltip {
+  &Label {
+    background-color: var(--mui-palette-primary-100);
+    border-radius: 0.4rem;
+    padding: 0.25rem 0.675rem;
+    width: 4rem;
+    gap: 0.7rem;
+    height: 1.25rem;
+    cursor: pointer;
+    & span {
+      line-height: unset;
+    }
+    .disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  &Icon {
+    font-size: 0.75rem;
+    color: var(--mui-palette-info-main);
+  }
+
+  &Content {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: var(--mui-palette-background-elevated);
+    max-width: 360px;
+  }
+
+  &Items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  &Chip {
+    border: 1px solid var(--mui-palette-primary-200);
+    background-color: transparent;
+    font: var(--mui-font-caption);
+    color: var(--mui-palette-primary-500);
+  }
+}
+
+.disabled {
+  background-color: var(--mui-palette-button-disabled-bg);
+}
+
+.disabledText {
+  color: var(--mui-palette-button-disabled-text);
+}

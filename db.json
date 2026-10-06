@@ -1,0 +1,542 @@
+{
+  "controllers": [
+    {
+      "controllerId": "DC-001",
+      "controllerName": "Device Controller 1",
+      "generation": "Gen 3",
+      "ipAddress": "192.168.1.10",
+      "relaysOnline": 2,
+      "relaysTotal": 2,
+      "status": "Online",
+      "relays": [
+        {
+          "relayId": "RLV-001",
+          "serialNo": "SN-001-2024",
+          "channels": 8,
+          "status": "Online"
+        },
+        {
+          "relayId": "RLV-002",
+          "serialNo": "SN-002-2024",
+          "channels": 16,
+          "status": "Online",
+          "channelAssignments": {
+            "1": "H3-001",
+            "2": "H3-001",
+            "3": "H3-001",
+            "4": "H3-001",
+            "5": "H3-001",
+            "6": "H3-001",
+            "7": "H3-001",
+            "8": "H3-001",
+            "9": "H3-001",
+            "10": "H3-001",
+            "11": "H3-001",
+            "12": "H3-001",
+            "13": "H3-001",
+            "14": "H3-001",
+            "15": "H3-001",
+            "16": "H3-001"
+          }
+        }
+      ],
+      "id": "DC-001"
+    },
+    {
+      "id": "DC-002",
+      "controllerId": "DC-002",
+      "controllerName": "Updated Name",
+      "generation": "Gen 5",
+      "ipAddress": "192.168.1.11",
+      "relaysOnline": 0,
+      "relaysTotal": 0,
+      "status": "Online",
+      "relays": []
+    },
+    {
+      "id": "DC-003",
+      "controllerId": "DC-003",
+      "controllerName": "Device Controller 3",
+      "generation": "Gen 5",
+      "ipAddress": "192.168.1.12",
+      "relaysOnline": 1,
+      "relaysTotal": 3,
+      "status": "Offline",
+      "relays": [
+        {
+          "relayId": "RLV-006",
+          "serialNo": "SN-006-2024",
+          "channels": 8,
+          "status": "Offline"
+        }
+      ]
+    },
+    {
+      "id": "DC-004",
+      "controllerId": "DC-004",
+      "controllerName": "Device Controller 4",
+      "generation": "Gen 4",
+      "ipAddress": "192.168.1.13",
+      "relaysOnline": 1,
+      "relaysTotal": 3,
+      "status": "Online",
+      "relays": [
+        {
+          "relayId": "RLV-007",
+          "serialNo": "SN-007-2024",
+          "channels": 12,
+          "status": "Offline"
+        }
+      ]
+    },
+    {
+      "id": "DC-005",
+      "controllerId": "DC-005",
+      "controllerName": "Device Controller 4",
+      "generation": "Gen 4",
+      "ipAddress": "192.168.1.13",
+      "relaysOnline": 1,
+      "relaysTotal": 3,
+      "status": "Online",
+      "relays": [
+        {
+          "relayId": "RLV-007",
+          "serialNo": "SN-007-2024",
+          "channels": 12,
+          "status": "Offline"
+        }
+      ]
+    },
+    {
+      "id": "DC-006",
+      "controllerId": "DC-006",
+      "controllerName": "Device Controller 4",
+      "generation": "Gen 4",
+      "ipAddress": "192.168.1.13",
+      "relaysOnline": 1,
+      "relaysTotal": 3,
+      "status": "Online",
+      "relays": [
+        {
+          "relayId": "RLV-007",
+          "serialNo": "SN-007-2024",
+          "channels": 12,
+          "status": "Offline"
+        }
+      ]
+    },
+    {
+      "id": "DC-007",
+      "controllerId": "DC-007",
+      "controllerName": "Device Controller 4",
+      "generation": "Gen 4",
+      "ipAddress": "192.168.1.13",
+      "relaysOnline": 1,
+      "relaysTotal": 3,
+      "status": "Online",
+      "relays": [
+        {
+          "relayId": "RLV-007",
+          "serialNo": "SN-007-2024",
+          "channels": 12,
+          "status": "Offline"
+        }
+      ]
+    },
+    {
+      "id": "DC-008",
+      "controllerId": "DC-008",
+      "controllerName": "Device Controller 4",
+      "generation": "Gen 4",
+      "ipAddress": "192.168.1.13",
+      "relaysOnline": 1,
+      "relaysTotal": 3,
+      "status": "Online",
+      "relays": [
+        {
+          "relayId": "RLV-007",
+          "serialNo": "SN-007-2024",
+          "channels": 12,
+          "status": "Offline"
+        }
+      ]
+    },
+    {
+      "id": "DC-0010",
+      "controllerId": "DC-0010",
+      "controllerName": "Device Controller 4",
+      "generation": "Gen 4",
+      "ipAddress": "192.168.1.13",
+      "relaysOnline": 1,
+      "relaysTotal": 3,
+      "status": "Online",
+      "relays": [
+        {
+          "relayId": "RLV-007",
+          "serialNo": "SN-007-2024",
+          "channels": 12,
+          "status": "Offline"
+        }
+      ]
+    },
+    {
+      "id": "DC-011",
+      "controllerId": "DC-011",
+      "controllerName": "Device Controller 4",
+      "generation": "Gen 4",
+      "ipAddress": "192.168.1.13",
+      "relaysOnline": 1,
+      "relaysTotal": 3,
+      "status": "Online",
+      "relays": [
+        {
+          "relayId": "RLV-007",
+          "serialNo": "SN-007-2024",
+          "channels": 12,
+          "status": "Offline"
+        }
+      ]
+    },
+    {
+      "id": "DC-012",
+      "controllerId": "DC-012",
+      "controllerName": "Device Controller 4",
+      "generation": "Gen 4",
+      "ipAddress": "192.168.1.13",
+      "relaysOnline": 1,
+      "relaysTotal": 3,
+      "status": "Online",
+      "relays": [
+        {
+          "relayId": "RLV-007",
+          "serialNo": "SN-007-2024",
+          "channels": 12,
+          "status": "Offline"
+        }
+      ]
+    }
+  ],
+  "dashboardTestExecutions": [
+    {
+      "createdAt": "2026-03-16T15:10:00Z",
+      "testId": "TR84PX27",
+      "testCycleId": "R9126",
+      "deviceId": "N8",
+      "deviceName": "N8",
+      "buildId": "v3.2.2",
+      "testPlanName": "Performance Tests",
+      "status": "FAILED",
+      "total": 47,
+      "passed": 39,
+      "failed": 8,
+      "durationSeconds": 804,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-16T10:35:00Z",
+      "testId": "MK55QA91",
+      "testCycleId": "R9120",
+      "deviceId": "H6",
+      "deviceName": "H6",
+      "buildId": "v3.2.2",
+      "testPlanName": "Regression Tests",
+      "status": "COMPLETED",
+      "total": 41,
+      "passed": 41,
+      "failed": 0,
+      "durationSeconds": 696,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-15T14:25:00Z",
+      "testId": "NX31LM62",
+      "testCycleId": "R9109",
+      "deviceId": "H2",
+      "deviceName": "H2",
+      "buildId": "v3.2.1",
+      "testPlanName": "Camera Tests",
+      "status": "COMPLETED",
+      "total": 44,
+      "passed": 44,
+      "failed": 0,
+      "durationSeconds": 612,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-15T09:05:00Z",
+      "testId": "GH72ZD14",
+      "testCycleId": "R9102",
+      "deviceId": "VM7",
+      "deviceName": "VM7",
+      "buildId": "v3.2.1",
+      "testPlanName": "USB Tests",
+      "status": "IN_PROGRESS",
+      "total": 36,
+      "passed": 27,
+      "failed": 2,
+      "durationSeconds": 492,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-14T09:15:00Z",
+      "testId": "FX20B19A",
+      "testCycleId": "R9051",
+      "deviceId": "H7",
+      "deviceName": "H7",
+      "buildId": "v3.2.0",
+      "testPlanName": "Connectivity Tests",
+      "status": "IN_PROGRESS",
+      "total": 52,
+      "passed": 31,
+      "failed": 4,
+      "durationSeconds": 372,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-13T14:05:00Z",
+      "testId": "LT91KM44",
+      "testCycleId": "R9014",
+      "deviceId": "VM9",
+      "deviceName": "VM9",
+      "buildId": "v3.1.9",
+      "testPlanName": "Power Cycle Tests",
+      "status": "COMPLETED",
+      "total": 39,
+      "passed": 39,
+      "failed": 0,
+      "durationSeconds": 258,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-13T08:20:00Z",
+      "testId": "PL04NQ72",
+      "testCycleId": "R9008",
+      "deviceId": "N6",
+      "deviceName": "N6",
+      "buildId": "v3.1.8",
+      "testPlanName": "Thermal Tests",
+      "status": "FAILED",
+      "total": 44,
+      "passed": 35,
+      "failed": 9,
+      "durationSeconds": 468,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-12T16:45:00Z",
+      "testId": "AM77TR21",
+      "testCycleId": "R8962",
+      "deviceId": "H5",
+      "deviceName": "H5",
+      "buildId": "v3.1.7",
+      "testPlanName": "Stability Tests",
+      "status": "COMPLETED",
+      "total": 54,
+      "passed": 54,
+      "failed": 0,
+      "durationSeconds": 546,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-12T11:10:00Z",
+      "testId": "KD33XP10",
+      "testCycleId": "R8939",
+      "deviceId": "VM2",
+      "deviceName": "VM2",
+      "buildId": "v3.1.7",
+      "testPlanName": "Bluetooth Tests",
+      "status": "QUEUED",
+      "total": 33,
+      "passed": 0,
+      "failed": 0,
+      "durationSeconds": 0,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-11T17:35:00Z",
+      "testId": "YU58CV61",
+      "testCycleId": "R8910",
+      "deviceId": "N1",
+      "deviceName": "N1",
+      "buildId": "v3.1.6",
+      "testPlanName": "Latency Tests",
+      "status": "CANCELLED",
+      "total": 29,
+      "passed": 12,
+      "failed": 3,
+      "durationSeconds": 126,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-11T09:55:00Z",
+      "testId": "QR62WX18",
+      "testCycleId": "R8896",
+      "deviceId": "H8",
+      "deviceName": "H8",
+      "buildId": "v3.1.6",
+      "testPlanName": "Sensor Tests",
+      "status": "COMPLETED",
+      "total": 41,
+      "passed": 41,
+      "failed": 0,
+      "durationSeconds": 324,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-10T15:20:00Z",
+      "testId": "BG90MN24",
+      "testCycleId": "R8874",
+      "deviceId": "VM6",
+      "deviceName": "VM6",
+      "buildId": "v3.1.5",
+      "testPlanName": "Boot Tests",
+      "status": "IN_PROGRESS",
+      "total": 46,
+      "passed": 22,
+      "failed": 2,
+      "durationSeconds": 282,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-09T13:40:00Z",
+      "testId": "HS18ZQ59",
+      "testCycleId": "R8847",
+      "deviceId": "N5",
+      "deviceName": "N5",
+      "buildId": "v3.1.4",
+      "testPlanName": "Storage Tests",
+      "status": "COMPLETED",
+      "total": 38,
+      "passed": 38,
+      "failed": 0,
+      "durationSeconds": 294,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-09T08:05:00Z",
+      "testId": "DN43LK83",
+      "testCycleId": "R8822",
+      "deviceId": "H4",
+      "deviceName": "H4",
+      "buildId": "v3.1.4",
+      "testPlanName": "Interrupt Tests",
+      "status": "FAILED",
+      "total": 40,
+      "passed": 27,
+      "failed": 13,
+      "durationSeconds": 438,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-08T18:25:00Z",
+      "testId": "WCIQS4CE",
+      "testCycleId": "R6603",
+      "deviceId": "H3",
+      "deviceName": "H3",
+      "buildId": "v2.1.5",
+      "testPlanName": "USB Tests",
+      "status": "QUEUED",
+      "total": 41,
+      "passed": 0,
+      "failed": 0,
+      "durationSeconds": 0,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-08T15:10:00Z",
+      "testId": "QS48IJID",
+      "testCycleId": "R8353",
+      "deviceId": "VM4",
+      "deviceName": "VM4",
+      "buildId": "v2.1.5",
+      "testPlanName": "Accelerometer Tests",
+      "status": "QUEUED",
+      "total": 43,
+      "passed": 0,
+      "failed": 0,
+      "durationSeconds": 0,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-07T16:30:00Z",
+      "testId": "ZN73NTZ8",
+      "testCycleId": "R568",
+      "deviceId": "N3",
+      "deviceName": "N3",
+      "buildId": "v3.0.2",
+      "testPlanName": "Camera Tests",
+      "status": "CANCELLED",
+      "total": 36,
+      "passed": 29,
+      "failed": 6,
+      "durationSeconds": 66,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-07T12:55:00Z",
+      "testId": "I6UQHPW3",
+      "testCycleId": "R6838",
+      "deviceId": "N3",
+      "deviceName": "N3",
+      "buildId": "v3.0.2",
+      "testPlanName": "Microphone Tests",
+      "status": "COMPLETED",
+      "total": 48,
+      "passed": 48,
+      "failed": 0,
+      "durationSeconds": 360,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-06T14:40:00Z",
+      "testId": "VBOIYGVF",
+      "testCycleId": "R601",
+      "deviceId": "N4",
+      "deviceName": "N4",
+      "buildId": "v3.1.0",
+      "testPlanName": "Security Tests",
+      "status": "IN_PROGRESS",
+      "total": 47,
+      "passed": 42,
+      "failed": 3,
+      "durationSeconds": 78,
+      "logs": [],
+      "testCases": {}
+    },
+    {
+      "createdAt": "2026-03-06T09:20:00Z",
+      "testId": "WQ3132H9",
+      "testCycleId": "R3160",
+      "deviceId": "H3",
+      "deviceName": "H3",
+      "buildId": "v2.1.5",
+      "testPlanName": "Audio Tests",
+      "status": "COMPLETED",
+      "total": 25,
+      "passed": 25,
+      "failed": 0,
+      "durationSeconds": 72,
+      "logs": [],
+      "testCases": {}
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

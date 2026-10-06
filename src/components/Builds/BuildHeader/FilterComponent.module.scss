@@ -1,0 +1,85 @@
+.container {
+  gap: 8px;
+  border: 1px solid var(--mui-palette-border-lite);
+  background-color: var(--mui-palette-background-paper);
+  border-radius: 12px;
+  padding: 10px 13px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--mui-palette-gray-50);
+  }
+  &.active {
+    background-color: var(--mui-palette-primary-50);
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--mui-palette-text-secondary);
+}
+
+.select {
+  background-color: var(--mui-palette-background-default) !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--mui-palette-text-primary) !important;
+  height: 38px !important; // ✅ Tailwind py-2 equivalent
+
+  .MuiSelect-select {
+    padding: 8px 36px 8px 12px !important; // top right bottom left
+    display: flex;
+    align-items: center;
+  }
+
+  .MuiOutlinedInput-notchedOutline {
+    border-color: var(--mui-palette-border-lite) !important;
+  }
+
+  &:hover .MuiOutlinedInput-notchedOutline {
+    border-color: var(--mui-palette-border-main) !important;
+  }
+
+  .MuiSelect-icon {
+    right: 12px !important;
+    color: var(--mui-palette-icon-muted) !important;
+  }
+}
+
+.menuPaper {
+  border-radius: 12px !important;
+}
+
+/* Menu item styling */
+.menuItem {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--mui-palette-text-primary) !important;
+
+  min-height: 36px !important; // 👈 Tailwind equivalent
+  padding: 8px 12px !important; // 👈 py-2 px-3
+
+  display: flex;
+  align-items: center;
+}
+
+.clearBtn {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  border-radius: 12px !important;
+  background-color: var(--mui-palette-background-default) !important;
+  border: 1px solid var(--mui-palette-border-lite) !important;
+  color: var(--mui-palette-text-primary) !important;
+
+  &:hover {
+    background-color: var(--mui-palette-background-cool) !important;
+  }
+}

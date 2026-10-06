@@ -1,0 +1,46 @@
+.divider {
+  width: 4px;
+  background-color: var(--mui-palette-divider);
+  cursor: col-resize;
+  position: relative;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: var(--mui-palette-primary-300);
+    width: 8px;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -4px;
+    right: -4px;
+    bottom: 0;
+  }
+}
+
+.dragging {
+  background-color: var(--mui-palette-primary-300);
+  user-select: none;
+}
+
+.grip {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gripIcon {
+  font-size: 16px;
+  color: var(--mui-palette-text-secondary);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.divider:hover .gripIcon {
+  opacity: 1;
+}

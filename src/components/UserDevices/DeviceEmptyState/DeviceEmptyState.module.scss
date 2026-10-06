@@ -1,0 +1,46 @@
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  gap: 12px;
+}
+
+.emptyStateIconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.emptyStateIcon {
+  font-size: 32px;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+.emptyStateMessage {
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.emptyStateMessageWithFilters {
+  margin-bottom: 4px;
+}
+
+.emptyStateClearButton {
+  background: none;
+  border: none;
+  color: #1976d2;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 4px 8px;
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}

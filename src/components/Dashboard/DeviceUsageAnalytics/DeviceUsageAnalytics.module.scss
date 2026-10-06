@@ -1,0 +1,40 @@
+.container {
+  display: grid;
+  grid-template-columns: 0.4fr 1fr;
+  gap: 0.8rem;
+}
+
+/* Tablet and up */
+@media (min-width: 768px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small desktop and up */
+@media (min-width: 992px) {
+  .container {
+    grid-template-columns: 0.2fr 1fr;
+  }
+}
+
+/* Medium desktop and up */
+@media (min-width: 1200px) {
+  .container {
+    grid-template-columns: 0.4fr 1fr;
+  }
+}
+
+/* Large desktop and up */
+@media (min-width: 1440px) {
+  .container {
+    grid-template-columns: 0.4fr 1fr;
+  }
+}
+
+/* Very large / 2K+ */
+@media (min-width: 1920px) {
+  .container {
+    grid-template-columns: 0.4fr 1fr;
+  }
+}

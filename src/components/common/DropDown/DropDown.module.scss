@@ -1,0 +1,12 @@
+.selectRoot {
+  background-color: var(--mui-palette-background-default);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  height: 46px; //2rem;
+  padding-right: 0.5rem;
+  min-width: 165px;
+}
+
+.menuItem {
+  background-color: var(--mui-palette-background-elevated);
+}

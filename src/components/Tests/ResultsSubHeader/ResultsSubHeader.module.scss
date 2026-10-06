@@ -1,0 +1,56 @@
+.subHeader {
+  padding: 13.5px;
+  background-color: var(--mui-palette-background-cool);
+  width: 100%;
+  gap: 9px;
+
+  &Text {
+    color: var(--mui-palette-icon-subtle);
+    font-weight: 400;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+  &Title {
+    color: var(--mui-palette-icon-muted);
+  }
+}
+
+.actionButton {
+  cursor: pointer;
+  padding: 4.5px 9px;
+  border-radius: 4.5px;
+  color: var(--mui-palette-text-subtle);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--mui-palette-background-hover);
+    color: var(--mui-palette-text-tertiary);
+  }
+}
+
+.exportIcon {
+  font-size: 14px;
+}
+
+.tab {
+  flex: 1;
+  height: 28px;
+  border-radius: 4.5px;
+  background-color: var(--mui-palette-background-mist);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &Active {
+    background-color: var(--mui-palette-primary-300);
+  }
+
+  &Text {
+    color: var(--mui-palette-icon-muted);
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &Active {
+      color: var(--mui-palette-text-contrast);
+    }
+  }
+}

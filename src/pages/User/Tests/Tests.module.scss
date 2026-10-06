@@ -1,0 +1,55 @@
+.container {
+  height: 100vh;
+  overflow: hidden;
+  padding: 0 !important;
+  padding-bottom: 8px !important;
+  background-color: var(--mui-palette-background-lite);
+  width: 100%;
+}
+
+.panelsContainer {
+  display: flex;
+  flex: 1 1 auto;
+  overflow: hidden;
+  gap: 0;
+  min-height: 0;
+  position: relative;
+  width: 100%;
+}
+
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0; /* allow inner scroll areas to size correctly */
+  min-width: 60%;
+  max-width: 75%;
+  background-color: var(--mui-palette-background-paper);
+  flex: 0 0 auto; /* fixed width controlled by inline style */
+}
+
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+  width: auto; /* width set inline as percentage */
+  min-width: 25%;
+  max-width: 40%;
+  background-color: var(--mui-palette-background-lite);
+  flex: 0 0 auto; /* avoid flex growth overriding inline width */
+}
+
+.dialogPaper {
+  border-radius: 12px;
+  border: 1px solid var(--mui-palette-divider);
+  background-color: var(--mui-palette-background-paper);
+}
+
+.dialogButton {
+  border-radius: 8px;
+}
+
+.dialogActions {
+  gap: 8px;
+}

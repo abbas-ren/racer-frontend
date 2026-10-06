@@ -1,0 +1,236 @@
+.dialogPaper {
+  border: 1px solid var(--mui-palette-border-main);
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px var(--mui-palette-shadow-subtle);
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px; /* px-6 py-4 */
+  border-bottom: 1px solid var(--mui-palette-border-main);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerIcon {
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--mui-palette-warning2-10);
+}
+
+.headerIconSvg {
+  color: var(--mui-palette-warning2-main);
+  font-size: 24px;
+}
+
+.title {
+  color: var(--mui-palette-text-grey-900);
+  line-height: normal;
+}
+
+.subtitle {
+  color: var(--mui-palette-grey-600);
+}
+
+.closeBtn {
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--mui-palette-text-secondary);
+}
+.closeBtn:hover {
+  background: var(--mui-palette-background-pressed);
+}
+
+.content {
+  padding: 24px; /* p-6 */
+}
+
+.selectField {
+  height: 42px !important;
+}
+
+.selectRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .selectRow {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.label {
+  color: var(--mui-palette-text-primary);
+  font-weight: 600;
+}
+
+.attachContainer {
+  margin-top: 16px;
+  gap: 9px;
+}
+.textareaWrap {
+  margin-top: 8px;
+}
+.labelRow {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.required {
+  color: var(--mui-palette-error-main);
+  font-weight: 700;
+  line-height: 1;
+}
+.textarea :global(textarea) {
+  font-size: 13px;
+}
+.textarea :global(.MuiOutlinedInput-root) {
+  border-radius: 8px;
+}
+.textarea :global(.MuiOutlinedInput-notchedOutline) {
+  border-color: var(--mui-palette-background-pressed);
+}
+.textarea
+  :global(.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--mui-palette-background-pressed);
+}
+.textarea
+  :global(.MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline) {
+  border-color: var(--mui-palette-background-pressed);
+}
+
+.charCount {
+  font-size: 11px;
+  margin-top: 4px;
+  color: var(--mui-palette-text-secondary);
+}
+
+.uploadBox {
+  width: 100%;
+  padding: 24px;
+  border-radius: 12px;
+  border: 2px dashed var(--mui-palette-border-main);
+  background: var(--mui-palette-background-paper);
+  transition: all 0.2s ease;
+}
+.uploadBox:hover {
+  background: var(--mui-palette-background-pressed);
+}
+.uploadIcon {
+  color: var(--mui-palette-text-secondary);
+  width: 24px;
+  height: 24px;
+}
+.uploadTitle {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--mui-palette-text-primary);
+  font-weight: 600;
+}
+.uploadHint {
+  font-size: 11px;
+  color: var(--mui-palette-text-secondary);
+}
+
+.fileCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px; /* py-3 px-4 */
+  border-radius: 12px;
+  background: var(--mui-palette-background-paper);
+  border: 1px solid var(--mui-palette-border-main);
+  margin-top: 12px;
+}
+.fileInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fileBadge {
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--mui-palette-primary-100);
+}
+.fileBadgeIcon {
+  color: var(--mui-palette-primary-300);
+}
+.fileName {
+  font-size: 13px;
+  color: var(--mui-palette-text-primary);
+  font-weight: 600;
+}
+.fileSize {
+  font-size: 11px;
+  color: var(--mui-palette-text-secondary);
+}
+.removeBtn {
+  padding: 6px;
+  border-radius: 10px;
+  color: var(--mui-palette-text-secondary);
+}
+.removeBtn:hover {
+  background: var(--mui-palette-background-pressed);
+}
+
+.errorText {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--mui-palette-error-main);
+}
+
+.infoBox {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--mui-palette-primary-100);
+  border: 1px solid var(--mui-palette-primary-200);
+}
+.infoTitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+.infoText {
+  font-size: 11px;
+  margin-top: 4px;
+  color: var(--mui-palette-text-secondary);
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px; /* px-6 py-4 */
+  border-top: 1px solid var(--mui-palette-border-main);
+  background: var(--mui-palette-background-veryLight);
+}
+.cancelBtn {
+  padding: 10px 12px;
+  color: var(--mui-palette-text-secondary);
+  border-radius: 10px;
+  text-transform: none;
+}
+.cancelBtn:hover {
+  background: var(--mui-palette-background-pressed);
+}
+.submitBtn {
+  padding: 12px 28px;
+  border-radius: 12px;
+  text-transform: none;
+  background-color: var(--mui-palette-primary-300);
+}
+
+.submitBtnText {
+  font-weight: 700;
+}
+.submitBtn:hover {
+  /* color handled by variant; use default hover from theme */
+}

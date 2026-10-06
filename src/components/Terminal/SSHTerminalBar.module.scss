@@ -1,0 +1,129 @@
+.terminalWrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 16px 16px 0 0;
+  z-index: 9999 !important;
+  display: flex;
+  flex-direction: column;
+  min-height: 150px;
+  max-height: 90vh;
+  resize: none;
+  overflow: hidden;
+}
+
+.terminalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #ffffff;
+  border-bottom: 1px solid #d7d7d7;
+  font-size: 1rem;
+  color: #3835d1;
+  cursor: grab;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.terminalHeader button {
+  color: black;
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+}
+
+.terminalContent {
+  flex-grow: 1;
+  overflow: auto;
+  height: calc(100% - 48px);
+  padding: 12px 24px;
+}
+
+.resizeHandle {
+  width: 20px;
+  height: 20px;
+  cursor: se-resize;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 40%,
+    #ccc 41%,
+    #ccc 59%,
+    transparent 60%
+  );
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(
+      135deg,
+      transparent 30%,
+      #999 31%,
+      #999 33%,
+      transparent 34%,
+      transparent 40%,
+      #999 41%,
+      #999 43%,
+      transparent 44%,
+      transparent 50%,
+      #999 51%,
+      #999 53%,
+      transparent 54%,
+      transparent 60%,
+      #999 61%,
+      #999 63%,
+      transparent 64%,
+      transparent 70%,
+      #999 71%,
+      #999 73%,
+      transparent 74%
+    );
+  }
+
+  &:hover::after {
+    background: linear-gradient(
+      135deg,
+      transparent 30%,
+      #666 31%,
+      #666 33%,
+      transparent 34%,
+      transparent 40%,
+      #666 41%,
+      #666 43%,
+      transparent 44%,
+      transparent 50%,
+      #666 51%,
+      #666 53%,
+      transparent 54%,
+      transparent 60%,
+      #666 61%,
+      #666 63%,
+      transparent 64%,
+      transparent 70%,
+      #666 71%,
+      #666 73%,
+      transparent 74%
+    );
+  }
+}

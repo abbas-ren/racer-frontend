@@ -1,0 +1,32 @@
+.container {
+  padding: 13.5px;
+  background-color: var(--mui-palette-background-paper);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.resultItem {
+  padding: 9px;
+  border-radius: 4.5px;
+  gap: 8px;
+
+  &Passed {
+    background-color: var(--mui-palette-success-10);
+    color: var(--mui-palette-success-main);
+  }
+
+  &Failed {
+    background-color: var(--mui-palette-error-10);
+    color: var(--mui-palette-error-main);
+  }
+}
+
+.timestamp {
+  color: var(--mui-palette-text-disabled);
+}

@@ -1,0 +1,76 @@
+.container {
+  width: 100%;
+  // padding: 20px;
+}
+
+.tabsWrapper {
+  display: flex;
+  justify-content: center;
+  //   margin-bottom: 24px;
+}
+
+.tabsContainer {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 25px;
+  padding: 4px;
+  width: 92%;
+  display: flex;
+  gap: 2px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #f4f4f4;
+  outline: none;
+  width: 50%;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &.active {
+    background-color: white;
+    color: var(--mui-palette-primary-300);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+    &:hover {
+      background-color: white;
+    }
+  }
+}
+
+.tabPanel {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+.tabPanelContent {
+  padding: 24px;
+}
+
+.panelContent {
+  text-align: center;
+  color: white;
+
+  h2 {
+    margin: 0 0 16px 0;
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.9;
+  }
+}

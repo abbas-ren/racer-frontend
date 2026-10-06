@@ -1,0 +1,54 @@
+.container {
+  overflow: auto;
+}
+
+.tableTopHeaderContainer {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.downloadButton {
+  min-height: unset;
+  height: 1.875rem;
+}
+
+.dropDown {
+  gap: 0.675rem;
+  cursor: pointer;
+}
+
+.expandIcon {
+  color: var(--mui-palette-primary-300);
+}
+
+.popperPaper {
+  border-radius: 0.5rem;
+}
+
+.columnsList {
+  max-height: 240px;
+  overflow: auto;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.columnsListItem {
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+}
+
+.applyButton {
+  background-color: var(--mui-palette-primary-400);
+  padding: 0.675rem 0.75rem;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.tableContainer {
+  overflow: auto;
+}
+
+.tableHead {
+  background-color: var(--mui-palette-background-lite) !important;
+}

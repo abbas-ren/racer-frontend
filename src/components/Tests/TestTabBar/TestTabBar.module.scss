@@ -1,0 +1,88 @@
+.tabBarContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 8px 0 8px;
+  background-color: var(--mui-palette-background-lite);
+  flex-shrink: 0;
+}
+
+.tabsWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  overflow-x: auto;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: var(--mui-palette-grey-200);
+  border: none;
+  border-top: 1px solid transparent;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  min-width: 0; // Allow tab to shrink
+  flex-shrink: 1; // Allow tabs to shrink when needed
+
+  &:hover {
+    background-color: var(--mui-palette-grey-300);
+  }
+}
+
+.tabActive {
+  background-color: var(--mui-palette-background-paper);
+  border-top: 1px solid var(--mui-palette-divider);
+  border-left: 1px solid var(--mui-palette-divider);
+  border-right: 1px solid var(--mui-palette-divider);
+}
+
+.tabLabel {
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--mui-palette-grey-700);
+}
+
+.addTabButton {
+  flex-shrink: 0;
+  padding: 6px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  color: var(--mui-palette-text-secondary);
+
+  &:hover {
+    background-color: var(--mui-palette-action-hover);
+  }
+}
+
+.addIcon {
+  font-size: 16px;
+}
+
+.tabCloseButton {
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: 4px;
+  padding: 2px;
+  color: var(--mui-palette-grey-700);
+
+  &:hover {
+    background-color: var(--mui-palette-grey-400);
+  }
+}
+
+.tab:hover .tabCloseButton,
+.tabActive:hover .tabCloseButton {
+  opacity: 1;
+}
+
+.closeIcon {
+  font-size: 12px;
+}

@@ -1,0 +1,57 @@
+.filtersContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  @media (min-width: 900px) {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.searchField {
+  flex: 1;
+}
+
+.searchIcon {
+  font-size: 17px;
+  color: var(--mui-palette-grey-400);
+}
+
+.statusSelect {
+  min-width: 104px;
+}
+
+.filterIcon {
+  margin-right: 6px;
+  color: var(--mui-palette-grey-400);
+  font-size: 15px;
+}
+
+.menuItem {
+  font-size: 13px;
+  font-family: var(--mui-font-family);
+}
+
+.clearFiltersButton {
+  height: 40px;
+  min-width: fit-content;
+  padding: 0 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  text-transform: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mui-palette-error-main);
+  font-family: var(--mui-font-family);
+
+  &:hover {
+    color: var(--mui-palette-error-dark);
+    background-color: color-mix(
+      in srgb,
+      var(--mui-palette-error-main) 8%,
+      transparent
+    );
+  }
+}

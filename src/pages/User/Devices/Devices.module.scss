@@ -1,0 +1,227 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.tabsSection {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.tabsContainer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(132px, 1fr));
+  align-items: center;
+  position: relative;
+}
+
+.tabButton {
+  background: transparent;
+  border: none;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  border-bottom: none;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  z-index: 1;
+
+  &:hover {
+    color: #475569;
+  }
+}
+
+.tabIcon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.tabActive {
+  color: #6764ff;
+}
+
+.tabIndicator {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  height: 2px;
+  background: #6764ff;
+  transition: transform 0.25s ease;
+}
+
+.tabIndicatorRight {
+  transform: translateX(100%);
+}
+
+.header {
+  &Container {
+    padding: 18px 27px;
+    background-color: var(--mui-palette-background-elevated);
+    gap: 18px;
+  }
+}
+
+.deviceTable {
+  &Container {
+    padding: 16px;
+  }
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 96px 0;
+
+  &IconContainer {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--mui-palette-background-lite);
+    margin-bottom: 16px;
+  }
+
+  &Icon {
+    font-size: 32px;
+    color: var(--mui-palette-text-muted);
+  }
+
+  &Message {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mui-palette-text-secondary);
+    margin-bottom: 0;
+
+    &WithFilters {
+      margin-bottom: 12px;
+    }
+  }
+
+  &ClearButton {
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mui-palette-primary-300);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover,
+    &:active {
+      text-decoration: underline;
+      text-decoration-color: var(--mui-palette-primary-300);
+    }
+  }
+}
+
+.deviceName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &Indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  &Text {
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
+.executionDate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &Icon {
+    font-size: 16px;
+  }
+
+  &Text {
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+.buildChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 6px;
+  background-color: var(--mui-palette-background-default);
+
+  &Text {
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+.testResults {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &Item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &Indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  &Text {
+    font-size: 13px;
+    font-weight: 500;
+  }
+}
+
+.statusChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  width: 170px;
+  height: 28px;
+  justify-content: flex-start;
+
+  &Icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  &Text {
+    font-size: 11px;
+    font-weight: 600;
+  }
+}

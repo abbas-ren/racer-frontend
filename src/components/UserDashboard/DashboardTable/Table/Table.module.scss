@@ -1,0 +1,116 @@
+.tableHeaderCell {
+  padding: 0.5rem;
+  background-color: var(--mui-palette-background-lite) !important;
+}
+
+.tableContainer {
+  height: 62vh;
+  min-height: 350px;
+  box-shadow: none !important;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--mui-palette-primary-100);
+}
+
+.noWrapCell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--mui-palette-divider);
+  & span {
+    font-size: 0.875rem;
+  }
+  &.colored {
+    & span {
+      color: var(--mui-palette-text-subtitle2);
+    }
+  }
+
+  &.colored:nth-child(1) {
+    border-left: 1px solid var(--mui-palette-text-subtitle2);
+  }
+  &.colored:last-child {
+    border-right: 1px solid var(--mui-palette-text-subtitle2);
+  }
+}
+
+.disabled {
+  background-color: var(--mui-palette-button-disabled-bg);
+}
+
+.disabledText {
+  color: var(--mui-palette-button-disabled-text);
+}
+
+.sortIcon {
+  cursor: pointer;
+}
+
+.tableRow {
+  border-bottom: 1px solid var(--mui-palette-divider);
+}
+
+.statusText {
+  font-weight: 600;
+  font-size: 0.675rem !important;
+}
+
+.infoIcon {
+  font-size: 0.75rem;
+  color: var(--mui-palette-info-main);
+}
+
+.tooltip {
+  &Content {
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    background-color: var(--mui-palette-background-elevated);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+  }
+  &RowText1 {
+    width: 100px;
+    flex-shrink: 0;
+  }
+  &RowText2 {
+    width: 120px;
+    flex-shrink: 0;
+  }
+  &RowText3 {
+    flex: 1;
+    min-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  &Row {
+    border-bottom: 0.5px solid var(--mui-palette-divider);
+    &Container {
+      height: 60vh;
+      border: 1px solid var(--mui-palette-primary-100);
+      box-shadow: none !important;
+    }
+  }
+}
+
+.failedTestLabel {
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.selected {
+  background-color: var(--mui-palette-primary-100);
+  & > .noWrapCell {
+    border-top: 1px solid var(--mui-palette-text-subtitle2);
+    border-bottom: 1px solid var(--mui-palette-text-subtitle2);
+  }
+
+  & > .noWrapCell:nth-child(1) {
+    border-left: 1px solid var(--mui-palette-text-subtitle2);
+  }
+  & > .noWrapCell:last-child {
+    border-right: 1px solid var(--mui-palette-text-subtitle2);
+  }
+}

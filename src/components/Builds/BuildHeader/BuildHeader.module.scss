@@ -1,0 +1,35 @@
+.container {
+  padding: 18px 27px;
+  background-color: var(--mui-palette-background-elevated);
+  gap: 18px;
+}
+
+.uploadButton {
+  padding: 8px 16px;
+  height: 40px;
+  border-radius: 12px;
+  font: var(--mui-font-buttonBase);
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  background-color: var(--mui-palette-primary-300);
+  color: var(--mui-palette-primary-contrastText);
+  transition: background-color 200ms ease;
+  transform: scale(1.02);
+  box-shadow: none;
+  text-transform: none;
+  &:hover {
+    background-color: var(--mui-palette-primary-400);
+  }
+}
+
+.buttonDisabled {
+  background-color: var(--mui-palette-primary-200);
+  color: var(--mui-palette-primary-contrastText);
+  cursor: not-allowed;
+  &:hover {
+    background-color: var(--mui-palette-primary-200);
+  }
+}

@@ -1,0 +1,89 @@
+.badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 11px;
+  height: 28px;
+  min-width: fit-content;
+
+  // Size variants
+  &.small {
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    height: 22px;
+  }
+
+  &.medium {
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 11px;
+    height: 28px;
+  }
+
+  &.large {
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 14px;
+    height: 36px;
+  }
+
+  &.ready {
+    background-color: var(--mui-palette-status-ready-bg);
+    color: var(--mui-palette-status-ready-text);
+  }
+
+  &.running {
+    background-color: var(--mui-palette-status-running-bg);
+    color: var(--mui-palette-status-running-text);
+  }
+
+  &.queued {
+    background-color: var(--mui-palette-status-queued-bg);
+    color: var(--mui-palette-status-queued-text);
+  }
+
+  &.completed {
+    background-color: var(--mui-palette-status-completed-bg);
+    color: var(--mui-palette-status-completed-text);
+  }
+
+  &.failed,
+  &.cancelled {
+    background-color: var(--mui-palette-error-20);
+    color: var(--mui-palette-error-main);
+  }
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  --ci-color: currentColor;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  color: inherit;
+
+  .small & {
+    font-size: 9px;
+    letter-spacing: 0.3px;
+  }
+
+  .medium & {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  .large & {
+    font-size: 13px;
+    letter-spacing: 0.6px;
+  }
+}

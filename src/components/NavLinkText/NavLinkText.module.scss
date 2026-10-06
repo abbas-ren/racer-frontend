@@ -1,0 +1,91 @@
+.nav-link {
+  text-decoration: none;
+  color: var(--mui-palette-grey-900);
+}
+
+.list_item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0 14px 24px;
+  align-items: center;
+  width: calc(var(--sidebar-width) - 20px);
+  border-radius: 16px;
+  position: relative;
+  min-height: 72px;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: var(--mui-palette-text-muted);
+  transition: all 200ms;
+
+  &:hover:not(.active) {
+    background-color: var(--mui-palette-shadow-hoverBg);
+  }
+
+  &:hover {
+    transform: translateX(4px) scale(1.02);
+    color: var(--mui-palette-text-strong);
+  }
+}
+
+.left_bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4.5px;
+  background-color: var(--mui-palette-primary-300);
+}
+
+.list_item.active {
+  background: linear-gradient(
+    90deg,
+    var(--mui-palette-primary-lite) 0%,
+    var(--mui-palette-primary-bg) 100%
+  );
+  color: var(--mui-palette-primary-400);
+  box-shadow:
+    0px 2px 4px -2px var(--mui-palette-shadow-subtle),
+    0px 4px 6px -1px var(--mui-palette-shadow-subtle);
+}
+
+.notification_count {
+  color: var(--mui-palette-text-tertiary);
+  border-radius: 100px;
+  margin-left: 0;
+  margin-right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 26px;
+  background-color: var(--mui-palette-text-subtitle);
+}
+
+.list_item:hover .notification_count {
+  box-shadow:
+    0px 4px 6px -4px var(--mui-palette-shadow-subtle),
+    0px 10px 15px -3px var(--mui-palette-shadow-subtle);
+}
+
+.list_item.active .notification_count {
+  background-color: var(--mui-palette-button-primary-bg);
+  color: var(--mui-palette-button-primary-text);
+  box-shadow:
+    0px 4px 6px -4px var(--mui-palette-shadow-primary),
+    0px 10px 15px -3px var(--mui-palette-shadow-primary);
+}
+
+// indicator vertically middle and right side
+.indicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px;
+  height: 9px;
+  background-color: var(--mui-palette-primary-300);
+  border-radius: 50%;
+  box-shadow:
+    0px 4px 6px -4px var(--mui-palette-shadow-primary),
+    0px 10px 15px -3px var(--mui-palette-shadow-primary);
+}

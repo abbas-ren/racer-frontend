@@ -1,0 +1,108 @@
+.webcli-header {
+  -webkit-app-region: drag;
+}
+
+.webcli-header button {
+  -webkit-app-region: no-drag;
+}
+
+.webcli-output {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.webcli-output .xterm,
+.webcli-output .xterm * {
+  font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  font-kerning: none;
+  font-variant-ligatures: none;
+}
+
+.webcli-inputbar {
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.webcli-inputbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.webcli-inputbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.webcli-inputbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.webcli-inputbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.webcli-prompt {
+  color: #00ff00;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.webcli-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #d1d5db;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+
+.webcli-input::placeholder {
+  color: #4b5563;
+}
+
+/* src/components/WebCLIModal/webcli.css */
+
+/* Autocomplete suggestions */
+.webcli-autocomplete {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 4px;
+  background: #1a1f2e;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  overflow: hidden;
+  z-index: 1000;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.webcli-autocomplete-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  background: transparent;
+  color: #9ca3af;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+.webcli-autocomplete-item:hover,
+.webcli-autocomplete-item.selected {
+  background: #374151;
+  color: #60a5fa;
+}
+
+.webcli-autocomplete-item:first-child {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.webcli-autocomplete-item:last-child {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}

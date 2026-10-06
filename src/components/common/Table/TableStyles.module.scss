@@ -1,0 +1,226 @@
+.reusable-table-container {
+  width: 100%;
+  margin: 8px 0;
+
+  .table-paper {
+    width: 100%;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius) !important;
+
+    .table-container {
+      // max-height: 600px;
+      // max-height: calc(100vh - 208px);
+      // height: calc(100vh - 208px);
+      // min-height: /*350px;*/ calc(
+      //   100vh - 403px
+      // ); // instead of static value we can provide the whole page height?
+      // max-height: 650px;
+      overflow-y: auto;
+      height: calc(100vh - 200px);
+      box-shadow: none !important;
+
+      .custom-table {
+        // min-width: 650px;
+
+        .table-header-row {
+          .table-header-cell {
+            border-bottom: 2px solid var(--mui-palette-button-primary-bg);
+            border-top: 2px solid var(--mui-palette-button-primary-bg);
+
+            // Testing for sticky header issue
+            background-color: #d7d7f6;
+
+            font-size: 14px;
+            color: var(--mui-palette-primary-darkest);
+            padding: 12px 12px;
+            // text-transform: uppercase;
+            letter-spacing: 0.5px;
+
+            &:first-child {
+              padding-left: 24px;
+              border-left: 2px solid var(--mui-palette-button-primary-bg);
+              border-top-left-radius: var(--border-radius);
+            }
+
+            &:last-child {
+              padding-right: 24px;
+              border-top-right-radius: var(--border-radius);
+              border-right: 2px solid var(--mui-palette-button-primary-bg);
+            }
+          }
+        }
+
+        .table-body-row {
+          background-color: var(--mui-palette-button-secondary-text);
+          height: 66px;
+
+          &:nth-child(odd) {
+            background-color: var(--mui-palette-primary-50);
+          }
+
+          &:hover {
+            cursor: pointer;
+            // box-shadow: inset 0 0 0 1.4px var(--mui-palette-primary-500);
+            box-shadow:
+              inset 0 -1px 0 1.2px var(--mui-palette-primary-500),
+              inset 0 0 0 1.2px var(--mui-palette-primary-500);
+            border-radius: 4px;
+          }
+
+          &.clickable-row {
+            // cursor: pointer;
+            transition: background-color 0.2s ease;
+
+            // &:hover {
+            //   // background-color: var(--mui-palette-primary-50);
+            // }
+          }
+
+          &.selected {
+            box-shadow:
+              inset 0 -1px 0 1.2px var(--mui-palette-primary-500),
+              inset 0 0 0 1.2px var(--mui-palette-primary-500);
+          }
+
+          .table-body-cell {
+            padding: 12px;
+            font-size: 16px;
+            color: var(--mui-palette-grey-900);
+            margin: 12px;
+
+            &.selected_text {
+              color: var(--mui-palette-primary-300);
+            }
+
+            &.not_reachable_text {
+              color: var(--mui-palette-button-disabled-text) !important;
+            }
+
+            // border-top: 4px solid var(--mui-palette-button-secondary-text) !important;
+            // border-bottom: 4px solid var(--mui-palette-button-secondary-text) !important;
+
+            &:first-child {
+              // border-radius: 24px;
+              // border-left: 12px solid var(--mui-palette-button-secondary-text) !important;
+              padding-left: 24px;
+              font-weight: 500;
+            }
+
+            &:last-child {
+              padding-right: 24px;
+            }
+          }
+
+          &:last-child {
+            .table-body-cell {
+              border-bottom: none;
+            }
+          }
+        }
+
+        .empty-message {
+          padding: 40px 24px;
+          font-style: italic;
+          color: #999;
+          font-size: 16px;
+        }
+      }
+    }
+
+    .table-pagination {
+      border-top: 1px solid #e0e0e0;
+      background-color: #fafafa;
+
+      .MuiTablePagination-toolbar {
+        padding: 8px 16px;
+      }
+
+      .MuiTablePagination-selectLabel,
+      .MuiTablePagination-displayedRows {
+        font-size: 14px;
+        color: #666;
+      }
+
+      .MuiTablePagination-select {
+        font-size: 14px;
+      }
+
+      .MuiTablePagination-actions {
+        .MuiIconButton-root {
+          padding: 8px;
+
+          &:hover {
+            background-color: #e0e0e0;
+          }
+
+          &.Mui-disabled {
+            opacity: 0.5;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .reusable-table-container {
+    .table-paper {
+      .table-container {
+        .custom-table {
+          min-width: 500px;
+
+          .table-header-row .table-header-cell,
+          .table-body-row .table-body-cell {
+            padding: 12px 8px;
+            font-size: 12px;
+
+            &:first-child {
+              padding-left: 16px;
+            }
+
+            &:last-child {
+              padding-right: 16px;
+            }
+          }
+        }
+      }
+
+      .table-pagination {
+        .MuiTablePagination-toolbar {
+          padding: 4px 8px;
+          flex-wrap: wrap;
+        }
+
+        .MuiTablePagination-spacer {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .reusable-table-container {
+    margin: 8px 0;
+
+    .table-paper {
+      // border-radius: 8px;
+
+      .table-container {
+        .custom-table {
+          .table-header-row .table-header-cell {
+            font-size: 11px;
+            padding: 10px 6px;
+          }
+
+          .table-body-row .table-body-cell {
+            font-size: 11px;
+            padding: 10px 6px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+.page {
+  gap: 1rem;
+  padding: 0.6rem 1.25rem;
+  height: 100vh;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mui-palette-primary-300) #eef0f7;
+}
+
+.page::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.page::-webkit-scrollbar-track {
+  background: #eef0f7;
+  border-radius: 999px;
+}
+
+.page::-webkit-scrollbar-thumb {
+  background: var(--mui-palette-primary-300);
+  border-radius: 999px;
+  border: 2px solid #eef0f7;
+}
+
+.page::-webkit-scrollbar-thumb:hover {
+  background: var(--mui-palette-primary-400);
+}
+
+.analyticsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 1.35rem;
+  width: 100%;
+  align-items: stretch;
+}
+
+.trendsCardWrap {
+  min-width: 0;
+}
+
+@media (max-width: 1200px) {
+  .analyticsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .trendsCardWrap {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .analyticsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .trendsCardWrap {
+    grid-column: auto;
+  }
+}

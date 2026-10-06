@@ -1,0 +1,40 @@
+.buttonRounded {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  border-radius: 11px;
+  text-transform: none;
+}
+
+.progress {
+  background-color: var(--mui-palette-primary-300);
+  color: var(--mui-palette-text-contrast);
+}
+
+.success {
+  background-color: var(--mui-palette-success-main);
+  color: var(--mui-palette-text-contrast);
+}
+
+.error {
+  background-color: var(--mui-palette-error-main);
+  color: var(--mui-palette-text-contrast);
+}
+
+.disabled {
+  background-color: var(--mui-palette-button-disabled-bg);
+  color: var(--mui-palette-button-disabled-text);
+}
+
+.outlined {
+  background-color: var(--mui-palette-button-outlined-bg);
+  color: var(--mui-palette-button-outlined-text);
+  border: 1px solid var(--mui-palette-button-outlined-stroke);
+}
+
+.faded {
+  background-color: var(--mui-palette-grey-400);
+  color: var(--mui-palette-text-contrast);
+}

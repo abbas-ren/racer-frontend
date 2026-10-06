@@ -1,0 +1,38 @@
+.headerIconContainer {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: rgba(103, 100, 255, 0.1);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.viewIssueLink {
+  text-transform: none !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  font-family: 'DM Sans', sans-serif !important;
+  border-radius: 6px !important;
+  color: var(--mui-palette-primary-300) !important;
+  background-color: rgba(103, 100, 255, 0.1) !important;
+  padding: 4px 10px !important;
+  gap: 6px;
+}
+
+.viewIssueLink:hover {
+  background-color: rgba(103, 100, 255, 0.2) !important;
+}
+
+.gitlabLinkButton {
+  color: #6b7280 !important;
+  padding: 6px !important;
+  border-radius: 6px !important;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease;
+}
+
+.gitlabLinkButton:hover {
+  color: var(--mui-palette-primary-300) !important;
+  background-color: #f3f4f6;
+}

@@ -1,0 +1,195 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--mui-palette-background-lite);
+  flex: 1;
+  min-width: 0;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 24px;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--mui-palette-text-disabled);
+  text-align: center;
+}
+
+.header {
+  flex-shrink: 0;
+  padding: 12px;
+  border-bottom: 1px solid var(--mui-palette-divider);
+  background-color: var(--mui-palette-background-paper);
+}
+
+.testName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mui-palette-text-primary);
+  margin-bottom: 8px;
+}
+
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progressLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--mui-palette-text-secondary);
+}
+
+.progressPercentage {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mui-palette-primary-300);
+}
+
+.progressBar {
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--mui-palette-action-disabledBackground);
+
+  .MuiLinearProgress-bar {
+    background-color: var(--mui-palette-primary-300);
+    border-radius: 4px;
+  }
+}
+
+.statsRow {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--mui-palette-text-disabled);
+}
+
+.statValuePass {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--mui-palette-success-main);
+}
+
+.statValueFail {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--mui-palette-error-main);
+}
+
+.statValueTotal {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--mui-palette-info-main);
+}
+
+.statValueDuration {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--mui-palette-text-secondary);
+}
+
+.tabs {
+  border-bottom: 1px solid var(--mui-palette-divider);
+  min-height: 40px;
+  flex-shrink: 0;
+  background-color: var(--mui-palette-background-lite);
+
+  .MuiTabs-indicator {
+    background-color: var(--mui-palette-primary-300);
+  }
+}
+
+.tab {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  min-height: 40px;
+  color: var(--mui-palette-text-secondary);
+
+  &.Mui-selected {
+    color: var(--mui-palette-primary-300);
+  }
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  background-color: var(--mui-palette-background-paper);
+}
+
+.overviewContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.overviewItem {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background-color: var(--mui-palette-background-lite);
+  border-radius: 6px;
+}
+
+.overviewLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mui-palette-text-secondary);
+  min-width: 100px;
+}
+
+.overviewValue {
+  font-size: 13px;
+  color: var(--mui-palette-text-primary);
+  flex: 1;
+}
+
+.logsContent {
+  background-color: var(--mui-palette-grey-900);
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 200px;
+}
+
+.logsText {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: var(--mui-palette-grey-100);
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.noLogsText {
+  font-size: 13px;
+  color: var(--mui-palette-text-disabled);
+  text-align: center;
+  padding: 24px;
+}

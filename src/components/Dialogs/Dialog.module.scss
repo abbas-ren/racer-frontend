@@ -1,0 +1,16 @@
+.form_wrapper {
+  margin-block: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.users_form_control {
+  > div {
+    margin: 0 !important;
+  }
+}
+
+.dialog_content_wrapper {
+  padding-top: 0 !important;
+}

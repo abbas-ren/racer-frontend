@@ -1,0 +1,165 @@
+/* src/components/WebCLIModal/prompts/InputPromptWidget.css - NEW FILE */
+
+.input-prompt-widget {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 13px;
+  color: #d1d5db;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ========== CHOICES LIST ========== */
+
+.prompt-choices-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom scrollbar */
+.prompt-choices-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.prompt-choices-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.prompt-choices-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.prompt-choices-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ========== CHOICE ITEMS ========== */
+
+.prompt-choice {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px;
+  cursor: pointer;
+  transition: background 0.05s ease;
+  color: #9ca3af;
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prompt-choice.selected {
+  color: #d1d5db;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.prompt-choice:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.choice-marker {
+  color: #22c55e;
+  font-weight: bold;
+  width: 10px;
+  flex-shrink: 0;
+}
+
+.choice-number {
+  color: #6b7280;
+  min-width: 18px;
+  flex-shrink: 0;
+}
+
+.choice-checkbox {
+  color: #3b82f6;
+  min-width: 24px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.choice-label {
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.choice-desc {
+  color: #6b7280;
+  font-size: 11px;
+  font-style: italic;
+  margin-left: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ========== INPUT LINE ========== */
+
+.prompt-input-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.input-prefix {
+  color: #22c55e;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.prompt-text-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #d1d5db;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  padding: 0;
+}
+
+.prompt-text-input::placeholder {
+  color: #4b5563;
+  font-style: italic;
+}
+
+/* ========== CONFIRM OPTIONS ========== */
+
+.prompt-confirm-options {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.confirm-choice {
+  color: #9ca3af;
+  font-weight: bold;
+}
+
+.confirm-choice.selected {
+  color: #22c55e;
+}
+
+.confirm-separator {
+  color: #6b7280;
+}
+
+/* ========== HINT LINE ========== */
+
+.prompt-hint {
+  color: #6b7280;
+  font-size: 11px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

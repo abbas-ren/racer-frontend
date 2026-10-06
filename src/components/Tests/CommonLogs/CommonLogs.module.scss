@@ -1,0 +1,57 @@
+.emptyContainer {
+  padding: 13.5px;
+  height: 100%;
+}
+
+.container {
+  border-radius: 8px;
+  overflow-y: auto;
+  margin: 13.5px;
+  max-height: calc(100vh - 400px);
+}
+
+.header {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--mui-palette-background-cool);
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  color: var(--mui-palette-error-main);
+  flex-shrink: 0;
+}
+
+.headerLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--mui-palette-text-primary);
+}
+
+.content {
+  padding: 8px 12px;
+  border-top: 1px solid var(--mui-palette-divider);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.logEntry {
+  font-size: 9px;
+}
+
+.timestamp {
+  color: #99a1af;
+  font-weight: 400;
+}
+
+.logText {
+  color: #4a5565;
+  font-weight: 400;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

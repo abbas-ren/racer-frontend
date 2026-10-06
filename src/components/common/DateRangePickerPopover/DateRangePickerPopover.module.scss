@@ -1,0 +1,253 @@
+.paper {
+  width: auto;
+  min-width: max-content;
+  border-radius: 8px;
+  border: 1px solid var(--mui-palette-divider);
+  padding: 12px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+}
+
+.content {
+  gap: 12px;
+}
+
+.summaryRow {
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+  padding: 0 8px;
+}
+
+.summaryBlock {
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+}
+
+.summaryTo {
+  align-items: center;
+}
+
+.arrow {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.calendarWrap {
+  padding: 6px 4px;
+}
+
+.actions {
+  border-top: 1px solid var(--mui-palette-divider);
+  padding-top: 14px;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+:global(.rdp-root) {
+  font-size: 13px;
+  --rdp-accent-color: #030213;
+  --rdp-accent-background-color: #e9ebef;
+  --rdp-range_middle-background-color: #e9ebef;
+  --rdp-range_middle-color: #111827;
+  --rdp-months-gap: 8px;
+  --rdp-day-width: 32px;
+  --rdp-day-height: 32px;
+  --rdp-day_button-width: 30px;
+  --rdp-day_button-height: 30px;
+  --rdp-day_button-border-radius: 8px;
+  --rdp-nav_button-width: 28px;
+  --rdp-nav_button-height: 28px;
+  --rdp-nav-height: 28px;
+}
+
+:global(.rdp-months) {
+  display: flex;
+  gap: 8px;
+}
+
+:global(.rdp-month) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 258px;
+}
+
+:global(.rdp-month_caption) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  min-height: var(--rdp-nav-height);
+  padding-top: 4px;
+  text-align: center;
+}
+
+:global(.rdp-caption_label) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  max-width: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--mui-palette-text-primary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+:global(.rdp-nav) {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+:global(.rdp-root[data-nav-layout='around'] .rdp-month) {
+  position: relative;
+}
+
+:global(.rdp-root[data-nav-layout='around'] .rdp-month_caption) {
+  margin-inline-start: calc(var(--rdp-nav_button-width) + 8px);
+  margin-inline-end: calc(var(--rdp-nav_button-width) + 8px);
+}
+
+:global(.rdp-root[data-nav-layout='around'] .rdp-button_previous) {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 2px;
+  height: var(--rdp-nav_button-height);
+}
+
+:global(.rdp-root[data-nav-layout='around'] .rdp-button_next) {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 2px;
+  height: var(--rdp-nav_button-height);
+}
+
+:global(.rdp-button_previous),
+:global(.rdp-button_next) {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--mui-palette-divider);
+  background: transparent;
+  color: var(--mui-palette-text-secondary);
+  opacity: 0.75;
+}
+
+:global(.rdp-button_previous:hover),
+:global(.rdp-button_next:hover) {
+  opacity: 1;
+  background-color: var(--mui-palette-action-hover);
+}
+
+:global(.rdp-button_previous:disabled),
+:global(.rdp-button_next:disabled) {
+  opacity: 0.45;
+}
+
+:global(.rdp-month_grid) {
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+:global(.rdp-weekdays) {
+  display: flex;
+}
+
+:global(.rdp-weekday) {
+  width: 32px;
+  height: 22px;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--mui-palette-text-secondary);
+  text-align: center;
+}
+
+:global(.rdp-week) {
+  display: flex;
+  width: 100%;
+  margin-top: 2px;
+}
+
+:global(.rdp-day) {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  text-align: center;
+}
+
+:global(.rdp-range_start) {
+  border-radius: 999px 0 0 999px;
+  background: linear-gradient(to right, transparent 50%, #e9ebef 50%);
+}
+
+:global(.rdp-range_end) {
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(to right, #e9ebef 50%, transparent 50%);
+}
+
+:global(.rdp-range_middle) {
+  background: #e9ebef;
+}
+
+:global(.rdp-day_button) {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--mui-palette-text-primary);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+:global(.rdp-day_button:hover:not([disabled]):not([aria-selected='true'])) {
+  background-color: var(--mui-palette-action-hover);
+}
+
+:global(.rdp-selected .rdp-day_button),
+:global(.rdp-range_start .rdp-day_button),
+:global(.rdp-range_end .rdp-day_button) {
+  border-radius: 8px;
+  background: #030213;
+  color: #ffffff;
+}
+
+:global(.rdp-range_middle .rdp-day_button) {
+  border-radius: 0;
+  background: transparent;
+  color: #111827;
+}
+
+:global(.rdp-outside .rdp-day_button),
+:global(.rdp-disabled .rdp-day_button) {
+  color: var(--mui-palette-text-disabled);
+}
+
+:global(.rdp-hidden) {
+  visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .paper {
+    width: min(620px, calc(100vw - 1rem));
+  }
+
+  :global(.rdp-months) {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  :global(.rdp-month) {
+    min-width: 100%;
+  }
+}

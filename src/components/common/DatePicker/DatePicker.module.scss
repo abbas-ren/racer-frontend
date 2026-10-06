@@ -1,0 +1,17 @@
+.customDatePicker {
+  background-color: var(--mui-palette-background-default);
+  border-radius: 0.25rem;
+  padding: 0 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  min-width: 120px;
+  height: 30px;
+}
+
+.calendarIcon {
+  color: var(--mui-palette-primary-300);
+  font-size: 16px;
+}

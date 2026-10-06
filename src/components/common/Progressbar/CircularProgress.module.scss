@@ -1,0 +1,37 @@
+// CircularProgress.module.scss
+
+.container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circleWrapper {
+  position: relative;
+}
+
+.svg {
+  transform: rotate(-90deg);
+}
+
+.progressClockwise {
+  transform-origin: center;
+  transform: rotate(0deg);
+}
+
+.progressCounterClockwise {
+  transform-origin: center;
+  transform: rotate(180deg) scaleX(-1);
+}
+
+.textOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}

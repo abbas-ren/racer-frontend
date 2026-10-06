@@ -1,0 +1,36 @@
+.deviceName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.deviceNameIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.deviceNameText {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.executionDateText {
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.buildChip {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.buildChipText {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+}

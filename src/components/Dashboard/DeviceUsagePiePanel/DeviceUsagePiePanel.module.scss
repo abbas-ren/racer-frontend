@@ -1,0 +1,28 @@
+.container {
+  height: 100%;
+  background-color: var(--mui-palette-background-elevated);
+  border: 1px solid var(--mui-palette-primary-100);
+  border-radius: var(--border-radius);
+  padding: 0.75rem 0.675rem;
+  gap: 1rem;
+  min-width: 460px;
+}
+
+.labelContainer {
+  padding: 0.025rem 0.475rem;
+  border-radius: 0.375rem;
+  background-color: var(--mui-palette-background-default);
+}
+
+.textContainer {
+  padding: 0.075rem 0.5rem;
+  // border-radius: 0.375rem;
+  // background-color: var(--mui-palette-background-default);
+  // width: 140px;
+}
+
+.dropDownStyle {
+  height: 30px;
+  min-width: 90px;
+  padding: 0 !important;
+}

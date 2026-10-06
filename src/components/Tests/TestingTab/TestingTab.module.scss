@@ -1,0 +1,33 @@
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+  overflow: hidden;
+}
+
+.panelsContainer {
+  display: flex;
+  flex: 1;
+  gap: 0;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 25%;
+  max-width: 75%;
+}
+
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 25%;
+  max-width: 75%;
+}

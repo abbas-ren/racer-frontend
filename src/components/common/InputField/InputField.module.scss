@@ -1,0 +1,27 @@
+.form_field {
+  position: relative;
+  min-width: auto !important;
+}
+
+.password_visibility_ic {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translate(0, -50%);
+}
+
+.filled_input {
+  transform: none !important;
+  -webkit-transform: none !important;
+
+  input {
+    border-radius: 8px !important;
+    color: var(--mui-palette-primary-darkest);
+    background-color: var(--mui-palette-background-default) !important;
+    border: 1px solid var(--mui-palette-text-regular) !important;
+  }
+}
+.filled_label {
+  transform: translate(0, 0) scale(0.75) !important;
+  -webkit-transform: translate(0, 0) scale(0.75) !important;
+}

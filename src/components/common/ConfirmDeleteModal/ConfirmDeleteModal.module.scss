@@ -1,0 +1,78 @@
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 16px;
+  background-color: var(--mui-palette-background-paper);
+  border: 1px solid var(--mui-palette-border-lite);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px var(--mui-palette-shadow-subtle);
+  overflow: hidden;
+}
+
+.header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--mui-palette-border-lite);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconWrapError {
+  padding: 9px;
+  border-radius: 11.5px;
+  background-color: var(--mui-palette-error-10);
+}
+
+.title {
+  color: var(--mui-palette-text-strong);
+}
+
+.subtitle {
+  font-weight: 400;
+  color: var(--mui-palette-text-muted);
+}
+
+.body {
+  padding: 20px 24px;
+}
+
+.message {
+  color: var(--mui-palette-text-tertiary);
+}
+
+.footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--mui-palette-border-lite);
+  background-color: var(--mui-palette-background-lite);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btnCancel {
+  padding: 8px 16px;
+  border-radius: 10px;
+  background-color: var(--mui-palette-background-paper);
+  color: var(--mui-palette-text-primary);
+  border: 1px solid var(--mui-palette-border-main);
+}
+
+.btnCancel:hover {
+  background-color: var(--mui-palette-background-hover);
+}
+
+.btnDanger {
+  padding: 8px 16px;
+  border-radius: 10px;
+  color: var(--mui-palette-text-contrast);
+  background-color: var(--mui-palette-error-main);
+}
+
+.btnDanger:hover {
+  background-color: var(--mui-palette-error-strong);
+}

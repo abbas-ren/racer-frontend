@@ -1,0 +1,94 @@
+.card {
+  background-color: var(--mui-palette-background-paper);
+  border: 1px solid var(--mui-palette-divider);
+  border-radius: 1.25rem;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  height: 100%;
+  overflow: visible;
+}
+
+.header {
+  gap: 0.7rem;
+  margin-bottom: 0.2rem;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.title {
+  color: var(--mui-palette-text-primary);
+  white-space: nowrap;
+  color: var(--mui-palette-text-primary);
+  font-weight: 400;
+}
+
+.legendRow {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.15rem;
+}
+
+.rangeChip {
+  border: 1px solid var(--mui-palette-divider) !important;
+  background: var(--mui-palette-background-elevated) !important;
+  color: var(--mui-palette-text-secondary) !important;
+  border-radius: 8px !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  font-weight: 500 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  height: auto !important;
+  padding: 8px !important;
+}
+
+.rangeChip:hover {
+  background: var(--mui-palette-background-default) !important;
+  border-color: var(--mui-palette-grey-300) !important;
+}
+
+.rangeChip :global(.MuiChip-label) {
+  font: inherit !important;
+  color: inherit !important;
+  font-weight: inherit !important;
+  padding: 0 !important;
+}
+
+.rangeChip :global(.MuiChip-icon) {
+  color: inherit !important;
+  margin-left: 0 !important;
+  margin-right: 8px !important;
+  font-size: 14px !important;
+}
+
+.viewport {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  cursor: grab;
+  padding-top: 8px;
+}
+
+.viewport:active {
+  cursor: grabbing;
+}
+
+.content {
+  min-width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .header {
+    flex-wrap: wrap;
+  }
+
+  .title {
+    white-space: normal;
+    font-size: 22px !important;
+  }
+}
