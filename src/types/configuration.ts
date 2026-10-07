@@ -89,5 +89,26 @@ export interface ConfigurationSummary {
 export interface RelayDeviceOption {
   deviceId: string;
   deviceType: string;
+  deviceFamily?: string;
   macAddress: string;
+}
+
+export interface UartConfigurationRequest {
+  controllerId: string;
+  deviceId: string;
+  relayId?: string;
+  channelId?: string;
+  uartVidPid: string;
+}
+
+export interface UartConfigurationResult {
+  mac: string;
+  generation: number;
+  vidPid: string;
+  tty: string;
+  usbSerial?: string;
+  interface: number;
+  topology: string;
+  connection: 'standalone' | 'hub';
+  verified: boolean;
 }

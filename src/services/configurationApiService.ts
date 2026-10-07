@@ -21,6 +21,8 @@ import type {
   ControllerRow,
   EditControllerForm,
   RelayDeviceOption,
+  UartConfigurationRequest,
+  UartConfigurationResult,
 } from 'types/configuration';
 
 interface FetchControllersParams {
@@ -81,6 +83,16 @@ const mapRelay = (
       {},
     ),
   };
+};
+
+export const configureDeviceUart = async (
+  payload: UartConfigurationRequest,
+): Promise<UartConfigurationResult> => {
+  const response = await axiosInstance.post<UartConfigurationResult>(
+    'device/uart/configure',
+    payload,
+  );
+  return response.data;
 };
 
 const mapController = (
@@ -189,6 +201,7 @@ export const fetchRelayDeviceOptions = async (
   const devices = (response.devices ?? []).map((device) => ({
     deviceId: device.deviceId,
     deviceType: device.deviceType,
+    deviceFamily: device.deviceFamily,
     macAddress: device.macAddress,
   }));
   const hasMore = devices.length >= limit;

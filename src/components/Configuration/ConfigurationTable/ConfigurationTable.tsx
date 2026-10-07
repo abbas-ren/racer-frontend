@@ -29,7 +29,7 @@ import {
   useTheme,
 } from '@mui/material';
 import CustomIcon from 'components/common/CustomIcon/CustomIcon';
-import { isGen3Generation, isGen5Generation } from 'constants/configuration';
+import { isGen5Generation } from 'constants/configuration';
 import type {
   ControllerRow,
   RelayRow,
@@ -47,6 +47,7 @@ interface ConfigurationTableProps {
   onOpenEditDialog: (row: ControllerRow) => void;
   onOpenDeleteDialog: (row: ControllerRow) => void;
   onOpenConfigureRelayDialog: (controllerId: string, relay: RelayRow) => void;
+  onOpenConfigureUartDialog: (controller: ControllerRow) => void;
   getStatusStyles: (status: 'Online' | 'Offline') => StatusStyles;
   hasActiveFilters: boolean;
   onClearFilters: () => void;
@@ -64,6 +65,7 @@ const ConfigurationTable = ({
   onOpenEditDialog,
   onOpenDeleteDialog,
   onOpenConfigureRelayDialog,
+  onOpenConfigureUartDialog,
   getStatusStyles,
   hasActiveFilters,
   onClearFilters,
@@ -316,8 +318,7 @@ const ConfigurationTable = ({
                 </TableRow>
 
                 {expandedRows[row.controllerId] &&
-                  (isGen5Generation(row.generation) ||
-                  isGen3Generation(row.generation) ? (
+                  (isGen5Generation(row.generation) ? (
                     <TableRow
                       key={`${row.controllerId}-gen5-note`}
                       className={styles.gen5InfoRow}
@@ -328,9 +329,16 @@ const ConfigurationTable = ({
                         <div className={styles.gen5Info}>
                           <InfoOutlinedIcon className={styles.gen5Icon} />
                           <Typography className={styles.gen5Text}>
-                            Gen 3 and Gen 5 controllers do not require relay
-                            configuration.
+                            Gen 5 uses CPLD power control and does not require
+                            relay or GPIO configuration.
                           </Typography>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => onOpenConfigureUartDialog(row)}
+                          >
+                            Configure UART
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>

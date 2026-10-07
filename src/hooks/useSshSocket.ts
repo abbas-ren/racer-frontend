@@ -24,10 +24,12 @@ export function useSshSocket(
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
+    let disposed = false;
     const ws = new WebSocket(buildWebSocketUrl({ client: 'frontend', target }));
     socketRef.current = ws;
 
     ws.onopen = () => {
+      onOutput(`\r\n[FarmController] Connecting to ${target} over SSH...\r\n`);
       ws.send(JSON.stringify({ type: 'ssh_start', target }));
     };
 
@@ -44,15 +46,27 @@ export function useSshSocket(
 
     ws.onerror = (err) => {
       console.error('WebSocket error:', err);
+      onOutput(
+        '\r\n[FarmController] Terminal connection failed. Check authentication and target reachability.\r\n',
+      );
+    };
+
+    ws.onclose = () => {
+      if (!disposed) {
+        onOutput('\r\n[FarmController] Terminal session closed.\r\n');
+      }
     };
 
     return () => {
+      disposed = true;
       ws.close();
     };
   }, [target, onOutput]);
 
   const write = useCallback((chunk: string) => {
-    socketRef.current?.send(JSON.stringify({ type: 'ssh_input', chunk }));
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify({ type: 'ssh_input', chunk }));
+    }
   }, []);
 
   return { write };

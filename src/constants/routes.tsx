@@ -8,6 +8,7 @@ const AdminBuilds = lazy(() => import('pages/Admin/Builds/Builds'));
 const Configuration = lazy(
   () => import('pages/Admin/Configuration/Configuration'),
 );
+const Logs = lazy(() => import('pages/Admin/Logs/Logs'));
 const UserDashboard = lazy(() => import('pages/User/Dashboard/Dashboard'));
 const UserTests = lazy(() => import('pages/User/Tests/Tests'));
 const UserDevices = lazy(() => import('pages/User/Devices'));
@@ -21,6 +22,7 @@ export const SIDEBAR_ROUTES: RouteMap = generateRoutes('home', {
   users: 'users',
   devices: 'devices',
   configuration: 'configuration',
+  logs: 'logs',
   builds: 'builds',
   tests: 'tests',
   manual: 'manual',
@@ -52,6 +54,10 @@ export const APP_SIDEBAR_ROUTES: Route[] = [
       false,
     ),
     iconName: 'settings',
+  },
+  {
+    ...createRoute(SIDEBAR_ROUTES.logs, <Logs />, 'Logs', false),
+    iconName: 'scroll-text',
   },
   {
     ...createRoute(SIDEBAR_ROUTES.manual, <UserManual />, 'User Manual', false),

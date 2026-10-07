@@ -1,0 +1,80 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 10px;
+  border-top: 1px solid var(--mui-palette-divider);
+  border-bottom: 1px solid var(--mui-palette-divider);
+}
+
+.heading {
+  min-width: 190px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.controls {
+  min-width: 0;
+  flex: 1;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.control {
+  width: 170px;
+}
+
+.controllerControl {
+  width: min(320px, 30vw);
+}
+
+.levelControl {
+  width: 132px;
+}
+
+.status {
+  width: 100px;
+}
+
+.saveButton {
+  width: 96px;
+  height: 40px;
+}
+
+@media (max-width: 1050px) {
+  .root {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .controls {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .controllerControl {
+    width: min(360px, 100%);
+  }
+}
+
+@media (max-width: 650px) {
+  .control,
+  .controllerControl,
+  .levelControl,
+  .saveButton {
+    width: 100%;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    margin-left: 0 !important;
+
+    > * {
+      margin-left: 0 !important;
+    }
+  }
+}

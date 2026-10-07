@@ -16,6 +16,7 @@ interface ConfigurationState {
   isLoadingMore: boolean;
   isSaving: boolean;
   isSyncingHardware: boolean;
+  relayHardwareConfirmed: boolean;
   isLoadingRelayChannels: boolean;
   isLoadingMoreDevices: boolean;
   hasMoreDevices: boolean;
@@ -48,6 +49,7 @@ const initialState: ConfigurationState = {
   isLoadingMore: false,
   isSaving: false,
   isSyncingHardware: false,
+  relayHardwareConfirmed: false,
   isLoadingRelayChannels: false,
   isLoadingMoreDevices: false,
   hasMoreDevices: true,
@@ -208,6 +210,8 @@ const configurationSlice = createSlice({
       state.relayDevicesPage = 1;
       state.hasMoreDevices = true;
       state.isLoadingRelayChannels = true;
+      state.isSyncingHardware = false;
+      state.relayHardwareConfirmed = false;
       state.isConfigureRelayDialogOpen = true;
     },
     openConfigurationRelayDialogSuccess(
@@ -237,6 +241,9 @@ const configurationSlice = createSlice({
     closeConfigurationRelayDialog(state) {
       state.isConfigureRelayDialogOpen = false;
       state.isLoadingRelayChannels = false;
+      state.isSaving = false;
+      state.isSyncingHardware = false;
+      state.relayHardwareConfirmed = false;
     },
     setConfigurationChannelAssignment(
       state,
@@ -438,13 +445,15 @@ const configurationSlice = createSlice({
     },
     saveConfigurationRelayFailure(state) {
       state.isSaving = false;
+      state.isSyncingHardware = false;
     },
     hardwareSyncCompleted(state) {
       state.isSyncingHardware = false;
-      state.isConfigureRelayDialogOpen = false;
+      state.relayHardwareConfirmed = true;
     },
     hardwareSyncFailed(state) {
       state.isSyncingHardware = false;
+      state.relayHardwareConfirmed = false;
     },
   },
 });

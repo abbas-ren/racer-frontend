@@ -42,9 +42,11 @@ interface ConfigureRelayDialogProps {
   ) => Promise<RelayIdentityUpdateResponse>;
   onResetAll: () => void;
   onSave: () => void;
+  onConfigureUart: (channel: number, device: RelayDeviceOption) => void;
   channelValueOptions: RelayDeviceOption[];
   isSaving?: boolean;
   isSyncingHardware?: boolean;
+  hardwareConfirmed?: boolean;
   isLoading?: boolean;
   isLoadingMoreDevices?: boolean;
   hasMoreDevices?: boolean;
@@ -77,9 +79,11 @@ const ConfigureRelayDialog = ({
   onRelayIdentityUpdate,
   onResetAll,
   onSave,
+  onConfigureUart,
   channelValueOptions,
   isSaving = false,
   isSyncingHardware = false,
+  hardwareConfirmed = false,
   isLoading = false,
   isLoadingMoreDevices = false,
   hasMoreDevices = false,
@@ -304,22 +308,16 @@ const ConfigureRelayDialog = ({
             >
               <CircularProgress size={32} />
             </Box>
-          ) : isSyncingHardware ? (
-            <Box
-              display="flex"
-              flexDirection="column"
-              justifyContent="center"
-              alignItems="center"
-              minHeight={200}
-              gap={2}
-            >
-              <CircularProgress size={36} />
-              <Typography variant="body2" color="text.secondary">
-                Waiting for hardware confirmation...
-              </Typography>
-            </Box>
           ) : (
             <div className={styles.channelGrid}>
+              {isSyncingHardware ? (
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <CircularProgress size={18} />
+                  <Typography variant="body2" color="text.secondary">
+                    Waiting for relay and GPIO confirmation...
+                  </Typography>
+                </Stack>
+              ) : null}
               {Array.from({
                 length: selectedRelayContext?.relay.channels ?? 0,
               }).map((_, index) => {
@@ -497,6 +495,25 @@ const ConfigureRelayDialog = ({
                           </Typography>
                         </Box>
 
+                        <Box display="flex" alignItems="end">
+                          <Button
+                            variant="outlined"
+                            fullWidth
+                            disabled={
+                              !hardwareConfirmed ||
+                              isSyncingHardware ||
+                              !currentOption
+                            }
+                            onClick={() => {
+                              if (currentOption) {
+                                onConfigureUart(channelNumber, currentOption);
+                              }
+                            }}
+                          >
+                            Verify UART
+                          </Button>
+                        </Box>
+
                         <Box>
                           <Typography
                             variant="caption"
@@ -556,7 +573,6 @@ const ConfigureRelayDialog = ({
               variant="text"
               onClick={onClose}
               className={styles.cancelButton}
-              disabled={isSaving || isSyncingHardware}
             >
               Cancel
             </Button>

@@ -111,6 +111,7 @@ export interface AvailableRelayDevice {
   deviceName: string;
   ipAddress: string;
   deviceType: string;
+  deviceFamily?: string;
 }
 
 export interface AvailableRelayDevicesResponse {

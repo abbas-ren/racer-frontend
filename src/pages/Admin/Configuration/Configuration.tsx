@@ -7,9 +7,11 @@ import {
   ConfigurationStatsCards,
   ConfigurationTable,
   ConfigureRelayDialog,
+  ConfigureUartDialog,
   DeleteControllerDialog,
   EditControllerDialog,
 } from 'components/Configuration';
+import RuntimeLogSettings from 'components/Configuration/RuntimeLogSettings/RuntimeLogSettings';
 import {
   clearConfigurationFilters,
   closeConfigurationDeleteDialog,
@@ -37,16 +39,24 @@ import {
 import type {
   ChannelHardwareAssignment,
   ConfigurationStat,
+  ControllerRow,
   ControllerStatus,
   EditControllerForm,
   RelayRow,
+  RelayDeviceOption,
   StatusStyles,
+  UartConfigurationRequest,
+  UartConfigurationResult,
 } from 'types/configuration';
 import { useAuth } from 'hooks/useAuth';
 import { useSocketIoEvent } from 'hooks/useSocketIoEvent';
 import type { RootState } from 'store';
 import toastService from 'services/ToastService';
-import { saveRelayIdentity } from 'services/configurationApiService';
+import {
+  configureDeviceUart,
+  fetchRelayDeviceOptions,
+  saveRelayIdentity,
+} from 'services/configurationApiService';
 import type {
   RelayIdentityUpdatePayload,
   RelayIdentityUpdateResponse,
@@ -64,6 +74,7 @@ const Configuration = () => {
     isLoadingMore,
     isSaving,
     isSyncingHardware,
+    relayHardwareConfirmed,
     isLoadingRelayChannels,
     isLoadingMoreDevices,
     hasMoreDevices,
@@ -89,6 +100,15 @@ const Configuration = () => {
   } = useSelector((state: RootState) => state.configuration);
 
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [uartTarget, setUartTarget] = useState<{
+    controllerId: string;
+    generation: string;
+    device?: RelayDeviceOption;
+    relayId?: string;
+    channelId?: string;
+  } | null>(null);
+  const [uartDevices, setUartDevices] = useState<RelayDeviceOption[]>([]);
+  const [isLoadingUartDevices, setIsLoadingUartDevices] = useState(false);
 
   const refreshControllersDebounced = useMemo(
     () =>
@@ -107,6 +127,21 @@ const Configuration = () => {
       window.clearTimeout(timeoutId);
     };
   }, [searchTerm]);
+
+  useEffect(() => {
+    if (!isSyncingHardware) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      dispatch(hardwareSyncFailed());
+      toastService.error(
+        'Hardware confirmation timed out. The dialog is available again.',
+      );
+    }, 125_000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [dispatch, isSyncingHardware]);
 
   const selectedController = useMemo(
     () =>
@@ -204,12 +239,24 @@ const Configuration = () => {
       if (!isSyncingHardware) {
         return;
       }
+      if (
+        payload.relayId &&
+        payload.relayId !== selectedRelayContext?.relay.relayId
+      ) {
+        return;
+      }
+      if (
+        payload.controllerId &&
+        payload.controllerId !== selectedRelayContext?.controllerId
+      ) {
+        return;
+      }
 
       if (payload.status === 'completed') {
         dispatch(hardwareSyncCompleted());
         toastService.success('Hardware sync completed successfully.');
       } else if (payload.status === 'completed_with_errors' && payload.errors) {
-        dispatch(hardwareSyncCompleted());
+        dispatch(hardwareSyncFailed());
         toastService.warning(
           `Hardware sync completed with ${payload.errors.length} error(s). Some channels may need reconfiguration.`,
         );
@@ -314,6 +361,65 @@ const Configuration = () => {
     [dispatch],
   );
 
+  const openGen5UartDialog = useCallback(async (controller: ControllerRow) => {
+    setUartDevices([]);
+    setIsLoadingUartDevices(true);
+    setUartTarget({
+      controllerId: controller.controllerId,
+      generation: controller.generation,
+    });
+    try {
+      const result = await fetchRelayDeviceOptions(1, 100);
+      setUartDevices(
+        result.devices.filter((device) =>
+          `${device.deviceFamily ?? ''} ${device.deviceType}`
+            .toLowerCase()
+            .replace(/\s+/g, '')
+            .includes('gen5'),
+        ),
+      );
+    } catch {
+      toastService.error('Unable to load devices for UART configuration.');
+    } finally {
+      setIsLoadingUartDevices(false);
+    }
+  }, []);
+
+  const openRelayUartDialog = useCallback(
+    (channel: number, device: RelayDeviceOption) => {
+      if (!selectedRelayContext || !selectedController) {
+        return;
+      }
+      const relayChannel = selectedRelayContext.relay.relayChannels.find(
+        (item) => item.channelNumber === channel,
+      );
+      if (!relayChannel) {
+        toastService.error('Unable to resolve the selected relay channel.');
+        return;
+      }
+      setUartTarget({
+        controllerId: selectedRelayContext.controllerId,
+        generation: selectedController.generation,
+        device,
+        relayId: selectedRelayContext.relay.relayId,
+        channelId: relayChannel.channelId,
+      });
+    },
+    [selectedController, selectedRelayContext],
+  );
+
+  const handleConfigureUart = useCallback(
+    async (
+      request: UartConfigurationRequest,
+    ): Promise<UartConfigurationResult> => {
+      const result = await configureDeviceUart(request);
+      toastService.success(`UART verified at ${result.tty}.`);
+      dispatch(fetchConfigurationControllersRequest());
+      return result;
+    },
+    [dispatch],
+  );
+
   const handleEditSubmit = useCallback(async () => {
     if (!selectedController) {
       return;
@@ -338,15 +444,8 @@ const Configuration = () => {
       return;
     }
 
-    const changedChannels = Object.keys(channelAssignments).filter(
-      (channelKey) =>
-        channelAssignments[Number(channelKey)] !==
-        originalChannelAssignments[Number(channelKey)],
-    );
-
-    const hasAnyDeviceAssignments = changedChannels.some(
-      (channelKey) =>
-        (channelAssignments[Number(channelKey)] ?? '').trim() !== '',
+    const hasAnyDeviceAssignments = Object.values(channelAssignments).some(
+      (deviceId) => deviceId.trim() !== '',
     );
 
     dispatch(
@@ -354,13 +453,7 @@ const Configuration = () => {
         waitForHardwareSync: hasAnyDeviceAssignments,
       }),
     );
-  }, [
-    channelAssignments,
-    dispatch,
-    isSaving,
-    originalChannelAssignments,
-    selectedRelayContext,
-  ]);
+  }, [channelAssignments, dispatch, isSaving, selectedRelayContext]);
 
   const handleLoadMore = useCallback(() => {
     if (isLoading || isLoadingMore || !hasMore) {
@@ -451,6 +544,8 @@ const Configuration = () => {
     <Box className={styles.pageRoot}>
       <ConfigurationStatsCards stats={stats} />
 
+      <RuntimeLogSettings controllers={controllerRows} />
+
       <Card className={styles.configurationCard}>
         <CardContent className={styles.configurationCardContent}>
           <ConfigurationFilters
@@ -476,6 +571,7 @@ const Configuration = () => {
             onOpenEditDialog={openEditDialog}
             onOpenDeleteDialog={openDeleteDialog}
             onOpenConfigureRelayDialog={openConfigureRelayDialog}
+            onOpenConfigureUartDialog={openGen5UartDialog}
             getStatusStyles={getStatusStyles}
             hasActiveFilters={hasActiveFilters}
             onClearFilters={clearFilters}
@@ -515,14 +611,29 @@ const Configuration = () => {
         onRelayIdentityUpdate={handleRelayIdentityUpdate}
         onResetAll={handleResetChannelAssignments}
         onSave={handleSaveChannelAssignments}
+        onConfigureUart={openRelayUartDialog}
         channelValueOptions={relayDeviceOptions}
         isSaving={isSaving}
         isSyncingHardware={isSyncingHardware}
+        hardwareConfirmed={relayHardwareConfirmed}
         isLoading={isLoadingRelayChannels}
         isLoadingMoreDevices={isLoadingMoreDevices}
         hasMoreDevices={hasMoreDevices}
         onLoadMoreDevices={handleLoadMoreDevices}
         hasChanges={hasChannelChanges}
+      />
+
+      <ConfigureUartDialog
+        open={Boolean(uartTarget)}
+        controllerId={uartTarget?.controllerId ?? ''}
+        generation={uartTarget?.generation ?? ''}
+        devices={uartDevices}
+        fixedDevice={uartTarget?.device}
+        relayId={uartTarget?.relayId}
+        channelId={uartTarget?.channelId}
+        isLoadingDevices={isLoadingUartDevices}
+        onClose={() => setUartTarget(null)}
+        onConfigure={handleConfigureUart}
       />
     </Box>
   );
