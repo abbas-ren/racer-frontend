@@ -9,6 +9,7 @@ import type {
 const params = (context: ControlContext) => ({
   source: context.source,
   controllerId: context.controllerId,
+  deviceId: context.deviceId,
 });
 
 export const fetchAdminControl = async (

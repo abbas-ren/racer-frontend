@@ -21,6 +21,8 @@ export function useSshSocket(
   target: string,
   onOutput: (chunk: string) => void,
   adminTerminal = false,
+  username?: string,
+  password?: string,
 ) {
   const socketRef = useRef<WebSocket | null>(null);
   const dimensionsRef = useRef<{ cols: number; rows: number } | null>(null);
@@ -38,7 +40,13 @@ export function useSshSocket(
 
     ws.onopen = () => {
       onOutput(`\r\n[FarmController] Connecting to ${target} over SSH...\r\n`);
-      ws.send(JSON.stringify({ type: 'ssh_start', target }));
+      ws.send(
+        JSON.stringify({
+          type: 'ssh_start',
+          target,
+          ...(adminTerminal ? { username, password } : {}),
+        }),
+      );
       if (dimensionsRef.current) {
         ws.send(
           JSON.stringify({ type: 'ssh_resize', ...dimensionsRef.current }),
@@ -74,7 +82,7 @@ export function useSshSocket(
       disposed = true;
       ws.close();
     };
-  }, [adminTerminal, target, onOutput]);
+  }, [adminTerminal, target, username, password, onOutput]);
 
   const write = useCallback((chunk: string) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {

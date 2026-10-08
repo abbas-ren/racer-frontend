@@ -179,7 +179,9 @@ function Devices() {
 
   const handleDeleteConfirm = useCallback(() => {
     setDeletingDeviceId(deleteConfirm.deviceId);
-    dispatch(deleteDeviceRequest(deleteConfirm.deviceId));
+    dispatch(
+      deleteDeviceRequest({ deviceId: deleteConfirm.deviceId, force: false }),
+    );
     setDeleteConfirm((prev) => ({ ...prev, open: false }));
   }, [dispatch, deleteConfirm.deviceId]);
 

@@ -1,4 +1,4 @@
-export type ControlSource = 'farmcontroller' | 'edgecontroller';
+export type ControlSource = 'farmcontroller' | 'edgecontroller' | 'edgeagent';
 export type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonValue[] | JsonObject;
 export interface JsonObject {
@@ -8,6 +8,7 @@ export interface JsonObject {
 export interface ControlContext {
   source: ControlSource;
   controllerId?: string;
+  deviceId?: string;
 }
 
 export interface FarmControlSnapshot {
@@ -86,7 +87,29 @@ export interface EdgeControlSnapshot {
   constraints: Record<string, JsonValue>;
 }
 
-export type ControlSnapshot = FarmControlSnapshot | EdgeControlSnapshot;
+export interface AgentControlSnapshot {
+  service: 'edgeagent';
+  version: string;
+  restartPending: false;
+  configuration: {
+    logLevel: string;
+    heartbeatSeconds: number;
+  };
+  runtime: {
+    deviceId: string;
+    generation: number;
+    approved: boolean;
+    activeTest: string | null;
+    rebooting: boolean;
+  };
+  capabilities: string[];
+  constraints: Record<string, JsonValue>;
+}
+
+export type ControlSnapshot =
+  | FarmControlSnapshot
+  | EdgeControlSnapshot
+  | AgentControlSnapshot;
 
 export interface EdgeControlDraft extends JsonObject {
   configPath: string;
@@ -113,6 +136,11 @@ export interface EdgeControlDraft extends JsonObject {
   paths: EdgeMappingPaths;
 }
 
+export interface AgentControlDraft extends JsonObject {
+  logLevel: string;
+  heartbeatSeconds: number;
+}
+
 export type ControlAction =
   | 'restart'
   | 'discardStaged'
@@ -120,4 +148,5 @@ export type ControlAction =
   | 'clearUsbMappings'
   | 'clearGen5Mappings'
   | 'clearUartMappings'
-  | 'clearControllerUid';
+  | 'clearControllerUid'
+  | 'cancelActiveTest';

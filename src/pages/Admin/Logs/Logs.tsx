@@ -25,6 +25,7 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { fetchAllDeviceControllers } from 'services/deviceControllerAPIService';
@@ -98,6 +99,8 @@ const Logs = () => {
   const [isLive, setIsLive] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const pendingLevelDirtyRef = useRef(false);
+  const initializedContextRef = useRef<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -139,6 +142,7 @@ const Logs = () => {
     }),
     [controller?.deviceControllerId, device?.deviceId, source],
   );
+  const contextKey = `${context.source}:${context.controllerId ?? context.deviceId ?? ''}`;
 
   const refresh = useCallback(
     async (showLoading = false) => {
@@ -160,7 +164,14 @@ const Logs = () => {
         const level = normalizeLevel(response.level);
         setLogs(response.logs ?? []);
         setCaptureLevel(level);
-        setPendingLevel(level);
+        if (
+          initializedContextRef.current !== contextKey ||
+          !pendingLevelDirtyRef.current
+        ) {
+          setPendingLevel(level);
+          pendingLevelDirtyRef.current = false;
+          initializedContextRef.current = contextKey;
+        }
         setError(null);
       } catch (requestError) {
         setError(
@@ -174,7 +185,7 @@ const Logs = () => {
         }
       }
     },
-    [context, controller, device, source],
+    [context, contextKey, controller, device, source],
   );
 
   useEffect(() => {
@@ -249,6 +260,7 @@ const Logs = () => {
       );
       setCaptureLevel(level);
       setPendingLevel(level);
+      pendingLevelDirtyRef.current = false;
       toastService.success(`Capture level changed to ${level}`);
       await refresh();
     } catch (requestError) {
@@ -405,9 +417,11 @@ const Logs = () => {
             labelId="capture-level-label"
             label="Capture level"
             value={pendingLevel}
-            onChange={(event) =>
-              setPendingLevel(event.target.value as RuntimeLogLevel)
-            }
+            onChange={(event) => {
+              const level = event.target.value as RuntimeLogLevel;
+              setPendingLevel(level);
+              pendingLevelDirtyRef.current = level !== captureLevel;
+            }}
             disabled={sourceUnavailable}
           >
             {LOG_LEVELS.map((level) => (

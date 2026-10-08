@@ -9,11 +9,20 @@
 
 .headingRow,
 .hostBand,
+.credentialsBand,
 .terminalBar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+}
+
+.credentialsBand {
+  justify-content: flex-end;
+
+  :global(.MuiTextField-root) {
+    width: min(280px, 32vw);
+  }
 }
 
 .hostBand {
@@ -86,12 +95,17 @@
   }
 
   .headingRow,
-  .hostBand {
+  .hostBand,
+  .credentialsBand {
     align-items: stretch;
     flex-direction: column;
   }
 
   .hostBand :global(.MuiAutocomplete-root) {
+    width: 100%;
+  }
+
+  .credentialsBand :global(.MuiTextField-root) {
     width: 100%;
   }
 

@@ -132,9 +132,9 @@ function useTableRowUtility(paginationParams?: UseDeviceParams) {
     }
   });
 
-  const deleteDevice = async (id: string) => {
+  const deleteDevice = async (id: string, force = false) => {
     dispatch(removeDeviceAlerts({ deviceId: id }));
-    dispatch(deleteDeviceRequest(id));
+    dispatch(deleteDeviceRequest({ deviceId: id, force }));
   };
   const saveHeartbeatTimeout = async (id: string, value: number) => {
     dispatch(heartbeatTimeoutRequest({ deviceId: id, value }));

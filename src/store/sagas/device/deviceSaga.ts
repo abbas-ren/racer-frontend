@@ -157,10 +157,12 @@ function* updateDeviceStatus(
   }
 }
 
-function* deleteDeviceSaga(action: PayloadAction<string>) {
+function* deleteDeviceSaga(
+  action: PayloadAction<{ deviceId: string; force?: boolean }>,
+) {
   try {
     yield call(deleteDeviceAPI, action.payload);
-    yield put(deleteDeviceSuccess(action.payload));
+    yield put(deleteDeviceSuccess(action.payload.deviceId));
     // yield put(
     //   fetchDeviceRequest({
     //     page: '1',

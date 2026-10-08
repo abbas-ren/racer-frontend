@@ -58,8 +58,8 @@ const DeviceHeartbeatDisplay: React.FC<DeviceHeartbeatDisplayProps> = ({
     setIsDialogOpen(false);
   };
 
-  const handleConfirmDelete = () => {
-    deleteDevice(device.deviceId);
+  const handleConfirmDelete = (force = false) => {
+    deleteDevice(device.deviceId, force);
     setIsDialogOpen(false);
   };
 
@@ -142,6 +142,7 @@ const DeviceHeartbeatDisplay: React.FC<DeviceHeartbeatDisplayProps> = ({
           onConfirm={handleConfirmDelete}
           resourceName={'Device'}
           resourceId={device.deviceId}
+          allowForceDelete={!hasHeartbeat || seconds > heartbeatTimeout}
         />
       )}
     </div>

@@ -190,7 +190,10 @@ const deviceSlice = createSlice({
       state.actionLoading = false;
       state.error = action.payload;
     },
-    deleteDeviceRequest: (state, action: PayloadAction<string>) => {
+    deleteDeviceRequest: (
+      state,
+      action: PayloadAction<{ deviceId: string; force?: boolean }>,
+    ) => {
       void action;
       state.actionLoading = true;
     },

@@ -18,6 +18,8 @@ import {
   Typography,
 } from '@mui/material';
 import {
+  Ban,
+  CircleHelp,
   Database,
   FileCog,
   RefreshCw,
@@ -28,14 +30,21 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { actionHelpFor, controlHelpFor } from 'constants/adminControlHelp';
 import {
   fetchAdminControl,
   runAdminControlAction,
   updateAdminControl,
 } from 'services/adminControlApiService';
 import { fetchAllDeviceControllers } from 'services/deviceControllerAPIService';
+import {
+  fetchDevicesForTopologyApi,
+  type TopologyDevice,
+} from 'services/deviceApiService';
 import toastService from 'services/ToastService';
 import type {
+  AgentControlDraft,
+  AgentControlSnapshot,
   ControlAction,
   ControlContext,
   ControlSnapshot,
@@ -51,12 +60,19 @@ import styles from './ControlCenter.module.scss';
 const LOG_LEVELS = ['trace', 'debug', 'info', 'warn', 'error', 'off'];
 
 const labelFor = (value: string) =>
-  value
-    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-    .replace(/_/g, ' ')
-    .replace(/^./, (character) => character.toUpperCase());
+  value === 'testRail'
+    ? 'TestRail'
+    : value
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/_/g, ' ')
+        .replace(/^./, (character) => character.toUpperCase());
 
 const clone = <Value,>(value: Value): Value => structuredClone(value);
+
+const actionHelpText = (action: ControlAction) => {
+  const help = actionHelpFor(action);
+  return `${help.description} Example: ${help.example}`;
+};
 
 const setValueAtPath = (
   source: JsonObject,
@@ -135,6 +151,20 @@ const edgeDraftFrom = (snapshot: EdgeControlSnapshot): EdgeControlDraft => ({
   paths: clone(snapshot.paths.staged),
 });
 
+const agentDraftFrom = (snapshot: AgentControlSnapshot): AgentControlDraft => ({
+  logLevel: snapshot.configuration.logLevel,
+  heartbeatSeconds: snapshot.configuration.heartbeatSeconds,
+});
+
+const TEST_RAIL_FIELDS = new Set([
+  'test_rail_base_url',
+  'test_rail_api_version',
+  'test_rail_username',
+  'test_rail_api_key',
+  'test_rail_project_id',
+  'test_rail_timeout_seconds',
+]);
+
 const EDGE_SECTIONS: Record<string, string[]> = {
   service: ['configPath'],
   network: [
@@ -153,7 +183,12 @@ const EDGE_SECTIONS: Record<string, string[]> = {
   paths: ['paths'],
 };
 
+const AGENT_SECTIONS: Record<string, string[]> = {
+  runtime: ['logLevel', 'heartbeatSeconds'],
+};
+
 interface ControlFieldProps {
+  source: ControlSource;
   name: string;
   path: string[];
   value: JsonValue;
@@ -163,6 +198,7 @@ interface ControlFieldProps {
 }
 
 const ControlField = ({
+  source,
   name,
   path,
   value,
@@ -180,6 +216,7 @@ const ControlField = ({
             .map(([childName, childValue]) => (
               <ControlField
                 key={childName}
+                source={source}
                 name={childName}
                 path={[...path, childName]}
                 value={childValue}
@@ -198,46 +235,79 @@ const ControlField = ({
     );
   }
 
+  const isSecret = configuredSecret !== undefined || name === 'apiToken';
+  const help = controlHelpFor(source, path, value, isSecret);
+  const fieldHelp = (
+    <Tooltip
+      title={
+        <Box>
+          <Typography variant="caption" display="block">
+            {help.description}
+          </Typography>
+          <Typography variant="caption" display="block">
+            Example: {help.example}
+          </Typography>
+          <Typography variant="caption" display="block">
+            Effect: {help.effect}
+          </Typography>
+        </Box>
+      }
+    >
+      <button
+        type="button"
+        className={styles.helpButton}
+        aria-label={`Help for ${labelFor(name)}`}
+      >
+        <CircleHelp size={15} />
+      </button>
+    </Tooltip>
+  );
+
   if (typeof value === 'boolean') {
     return (
-      <Box className={styles.switchField}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={value}
-              onChange={(event) => onChange(path, event.target.checked)}
-            />
-          }
-          label={labelFor(name)}
-        />
-        {activeValue !== undefined && activeValue !== value && (
-          <Typography variant="caption" color="warning.main">
-            Active: {String(activeValue)}
-          </Typography>
-        )}
+      <Box className={styles.fieldShell}>
+        {fieldHelp}
+        <Box className={styles.switchField}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={value}
+                onChange={(event) => onChange(path, event.target.checked)}
+              />
+            }
+            label={labelFor(name)}
+          />
+          {activeValue !== undefined && activeValue !== value && (
+            <Typography variant="caption" color="warning.main">
+              Active: {String(activeValue)}
+            </Typography>
+          )}
+        </Box>
       </Box>
     );
   }
 
-  const isSecret = configuredSecret !== undefined || name === 'apiToken';
   const isLogLevel =
     name === 'logLevel' || (name === 'level' && path.includes('logging'));
   if (isLogLevel) {
     return (
-      <TextField
-        select
-        size="small"
-        label={labelFor(name)}
-        value={String(value ?? '')}
-        onChange={(event) => onChange(path, event.target.value)}
-        helperText="Applied live"
-      >
-        {LOG_LEVELS.map((level) => (
-          <MenuItem key={level} value={level}>
-            {labelFor(level)}
-          </MenuItem>
-        ))}
-      </TextField>
+      <Box className={styles.fieldShell}>
+        {fieldHelp}
+        <TextField
+          select
+          size="small"
+          label={labelFor(name)}
+          value={String(value ?? '')}
+          onChange={(event) => onChange(path, event.target.value)}
+          helperText="Applied live"
+        >
+          {LOG_LEVELS.map((level) => (
+            <MenuItem key={level} value={level}>
+              {labelFor(level)}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Box>
     );
   }
 
@@ -246,49 +316,52 @@ const ControlField = ({
     activeValue !== undefined &&
     JSON.stringify(activeValue) !== JSON.stringify(value);
   return (
-    <TextField
-      size="small"
-      type={
-        isSecret ? 'password' : typeof value === 'number' ? 'number' : 'text'
-      }
-      label={labelFor(name)}
-      value={displayValue}
-      autoComplete={isSecret ? 'new-password' : undefined}
-      placeholder={
-        isSecret && configuredSecret
-          ? 'Configured; enter to replace'
-          : undefined
-      }
-      onChange={(event) => {
-        if (Array.isArray(value)) {
-          onChange(
-            path,
-            event.target.value
-              .split(',')
-              .map((item) => item.trim())
-              .filter(Boolean),
-          );
-        } else if (typeof value === 'number') {
-          onChange(path, Number(event.target.value));
-        } else {
-          onChange(path, event.target.value);
+    <Box className={styles.fieldShell}>
+      {fieldHelp}
+      <TextField
+        size="small"
+        type={
+          isSecret ? 'password' : typeof value === 'number' ? 'number' : 'text'
         }
-      }}
-      helperText={
-        isSecret
-          ? configuredSecret
-            ? 'Write-only; a value is configured'
-            : 'Write-only'
-          : changed
-            ? `Active: ${Array.isArray(activeValue) ? activeValue.join(', ') : String(activeValue)}`
-            : Array.isArray(value)
-              ? 'Comma-separated values'
-              : ' '
-      }
-      FormHelperTextProps={{
-        className: changed ? styles.changedHint : undefined,
-      }}
-    />
+        label={labelFor(name)}
+        value={displayValue}
+        autoComplete={isSecret ? 'new-password' : undefined}
+        placeholder={
+          isSecret && configuredSecret
+            ? 'Configured; enter to replace'
+            : undefined
+        }
+        onChange={(event) => {
+          if (Array.isArray(value)) {
+            onChange(
+              path,
+              event.target.value
+                .split(',')
+                .map((item) => item.trim())
+                .filter(Boolean),
+            );
+          } else if (typeof value === 'number') {
+            onChange(path, Number(event.target.value));
+          } else {
+            onChange(path, event.target.value);
+          }
+        }}
+        helperText={
+          isSecret
+            ? configuredSecret
+              ? 'Write-only; a value is configured'
+              : 'Write-only'
+            : changed
+              ? `Active: ${Array.isArray(activeValue) ? activeValue.join(', ') : String(activeValue)}`
+              : Array.isArray(value)
+                ? 'Comma-separated values'
+                : ' '
+        }
+        FormHelperTextProps={{
+          className: changed ? styles.changedHint : undefined,
+        }}
+      />
+    </Box>
   );
 };
 
@@ -298,6 +371,8 @@ const ControlCenter = () => {
   const [controller, setController] = useState<DeviceControllerItem | null>(
     null,
   );
+  const [devices, setDevices] = useState<TopologyDevice[]>([]);
+  const [device, setDevice] = useState<TopologyDevice | null>(null);
   const [snapshot, setSnapshot] = useState<ControlSnapshot | null>(null);
   const [draft, setDraft] = useState<JsonObject | null>(null);
   const [section, setSection] = useState('');
@@ -308,6 +383,15 @@ const ControlCenter = () => {
     fetchAllDeviceControllers({ page: 1, limit: 100 })
       .then((response) => setControllers(response.data ?? []))
       .catch(() => toastService.error('Failed to load EdgeControllers'));
+    fetchDevicesForTopologyApi()
+      .then((response) =>
+        setDevices(
+          (response.data ?? []).filter(
+            (candidate) => candidate.status.toLowerCase() === 'approved',
+          ),
+        ),
+      )
+      .catch(() => toastService.error('Failed to load EdgeAgent devices'));
   }, []);
 
   const context = useMemo<ControlContext>(
@@ -317,12 +401,16 @@ const ControlCenter = () => {
         source === 'edgecontroller'
           ? controller?.deviceControllerId
           : undefined,
+      deviceId: source === 'edgeagent' ? device?.deviceId : undefined,
     }),
-    [controller?.deviceControllerId, source],
+    [controller?.deviceControllerId, device?.deviceId, source],
   );
 
   const load = useCallback(async () => {
-    if (source === 'edgecontroller' && !controller) {
+    if (
+      (source === 'edgecontroller' && !controller) ||
+      (source === 'edgeagent' && !device)
+    ) {
       setSnapshot(null);
       setDraft(null);
       return;
@@ -334,12 +422,16 @@ const ControlCenter = () => {
       const nextDraft =
         response.service === 'farmcontroller'
           ? clone(response.staged)
-          : edgeDraftFrom(response);
+          : response.service === 'edgecontroller'
+            ? edgeDraftFrom(response)
+            : agentDraftFrom(response);
       setDraft(nextDraft);
       setSection(
         response.service === 'farmcontroller'
           ? (Object.keys(nextDraft)[0] ?? '')
-          : Object.keys(EDGE_SECTIONS)[0],
+          : response.service === 'edgecontroller'
+            ? Object.keys(EDGE_SECTIONS)[0]
+            : Object.keys(AGENT_SECTIONS)[0],
       );
     } catch (error) {
       toastService.error(
@@ -350,7 +442,7 @@ const ControlCenter = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [context, controller, source]);
+  }, [context, controller, device, source]);
 
   useEffect(() => {
     void load();
@@ -359,8 +451,12 @@ const ControlCenter = () => {
   const sections = useMemo(
     () =>
       snapshot?.service === 'farmcontroller' && draft
-        ? Object.keys(draft)
-        : Object.keys(EDGE_SECTIONS),
+        ? Object.keys(draft).flatMap((name) =>
+            name === 'tests' ? ['testRail', 'testIntegrations'] : [name],
+          )
+        : snapshot?.service === 'edgeagent'
+          ? Object.keys(AGENT_SECTIONS)
+          : Object.keys(EDGE_SECTIONS),
     [draft, snapshot?.service],
   );
 
@@ -377,7 +473,7 @@ const ControlCenter = () => {
       let payload = omitNulls(draft) as JsonObject;
       if (snapshot.service === 'farmcontroller') {
         omitBlankSecrets(payload, snapshot.secrets);
-      } else {
+      } else if (snapshot.service === 'edgecontroller') {
         const edgePayload = clone(payload);
         if (!edgePayload.apiToken) delete edgePayload.apiToken;
         edgePayload.relaySerialNumber ||= null;
@@ -390,7 +486,9 @@ const ControlCenter = () => {
       setDraft(
         response.service === 'farmcontroller'
           ? clone(response.staged)
-          : edgeDraftFrom(response),
+          : response.service === 'edgecontroller'
+            ? edgeDraftFrom(response)
+            : agentDraftFrom(response),
       );
       toastService.success(
         response.restartPending
@@ -411,8 +509,10 @@ const ControlCenter = () => {
       destructive &&
       !window.confirm(
         action === 'restart'
-          ? `Restart ${source === 'farmcontroller' ? 'FarmController' : 'EdgeController'} now?`
-          : 'This permanently removes the selected mapping data. Continue?',
+          ? `Restart ${labelFor(source)} now?`
+          : action === 'cancelActiveTest'
+            ? 'Cancel the active test on this EdgeAgent?'
+            : 'This permanently removes the selected mapping data. Continue?',
       )
     ) {
       return;
@@ -430,11 +530,15 @@ const ControlCenter = () => {
     }
   };
 
+  const farmSection =
+    section === 'testRail' || section === 'testIntegrations'
+      ? 'tests'
+      : section;
   const activeSection =
     snapshot?.service === 'farmcontroller'
-      ? (snapshot.active[section] as JsonValue | undefined)
+      ? (snapshot.active[farmSection] as JsonValue | undefined)
       : undefined;
-  const sectionValue = draft?.[section];
+  const sectionValue = draft?.[farmSection];
   const visibleSectionValue =
     snapshot?.service === 'farmcontroller' &&
     sectionValue &&
@@ -442,11 +546,26 @@ const ControlCenter = () => {
     typeof sectionValue === 'object'
       ? Object.fromEntries(
           Object.entries(sectionValue).filter(
-            ([name]) => !(snapshot.secrets[`${section}.${name}`] !== undefined),
+            ([name]) =>
+              !(snapshot.secrets[`${farmSection}.${name}`] !== undefined) &&
+              (section === 'testRail'
+                ? TEST_RAIL_FIELDS.has(name)
+                : section === 'testIntegrations'
+                  ? !TEST_RAIL_FIELDS.has(name)
+                  : true),
           ),
         )
       : sectionValue;
-  const edgeSectionFields = EDGE_SECTIONS[section] ?? [];
+  const remoteSectionFields =
+    snapshot?.service === 'edgeagent'
+      ? (AGENT_SECTIONS[section] ?? [])
+      : (EDGE_SECTIONS[section] ?? []);
+  const testRailEnabled = Boolean(
+    draft?.tests &&
+    typeof draft.tests === 'object' &&
+    !Array.isArray(draft.tests) &&
+    (draft.tests as JsonObject).test_rail_base_url,
+  );
 
   return (
     <Box className={styles.pageRoot}>
@@ -501,6 +620,7 @@ const ControlCenter = () => {
           >
             <MenuItem value="farmcontroller">FarmController</MenuItem>
             <MenuItem value="edgecontroller">EdgeController</MenuItem>
+            <MenuItem value="edgeagent">EdgeAgent</MenuItem>
           </Select>
         </FormControl>
         {source === 'edgecontroller' && (
@@ -517,6 +637,23 @@ const ControlCenter = () => {
             )}
           />
         )}
+        {source === 'edgeagent' && (
+          <Autocomplete
+            size="small"
+            options={devices}
+            value={device}
+            onChange={(_, value) => setDevice(value)}
+            getOptionLabel={(option) =>
+              `${option.deviceName || option.deviceId} · ${option.deviceId} · ${option.ipAddress}`
+            }
+            isOptionEqualToValue={(option, value) =>
+              option.deviceId === value.deviceId
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="EdgeAgent device" />
+            )}
+          />
+        )}
         {snapshot && (
           <Stack direction="row" spacing={1} className={styles.statusStrip}>
             <Chip
@@ -526,11 +663,23 @@ const ControlCenter = () => {
             />
             <Chip
               label={
-                snapshot.restartPending
-                  ? 'Staged changes'
-                  : 'Active matches staged'
+                snapshot.service === 'edgeagent'
+                  ? snapshot.runtime.activeTest
+                    ? `Test ${snapshot.runtime.activeTest} active`
+                    : 'Agent idle'
+                  : snapshot.restartPending
+                    ? 'Staged changes'
+                    : 'Active matches staged'
               }
-              color={snapshot.restartPending ? 'warning' : 'success'}
+              color={
+                snapshot.service === 'edgeagent'
+                  ? snapshot.runtime.activeTest
+                    ? 'info'
+                    : 'success'
+                  : snapshot.restartPending
+                    ? 'warning'
+                    : 'success'
+              }
               size="small"
               variant="outlined"
             />
@@ -547,7 +696,9 @@ const ControlCenter = () => {
           <Typography color="text.secondary">
             {source === 'edgecontroller'
               ? 'Select an EdgeController to manage.'
-              : 'Configuration is unavailable.'}
+              : source === 'edgeagent'
+                ? 'Select an approved EdgeAgent device to manage.'
+                : 'Configuration is unavailable.'}
           </Typography>
         </Box>
       ) : (
@@ -567,7 +718,17 @@ const ControlCenter = () => {
           <Box className={styles.editorBand}>
             <Box className={styles.sectionHeading}>
               <Box>
-                <Typography variant="h6">{labelFor(section)}</Typography>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography variant="h6">{labelFor(section)}</Typography>
+                  {section === 'testRail' && (
+                    <Chip
+                      size="small"
+                      label={testRailEnabled ? 'Enabled' : 'Disabled'}
+                      color={testRailEnabled ? 'success' : 'default'}
+                      variant="outlined"
+                    />
+                  )}
+                </Stack>
                 <Typography variant="body2" color="text.secondary">
                   Live-safe values apply immediately; other values are staged
                   for restart.
@@ -585,21 +746,24 @@ const ControlCenter = () => {
               {snapshot.service === 'farmcontroller' &&
               visibleSectionValue !== undefined ? (
                 <ControlField
+                  source={source}
                   name={section}
-                  path={[section]}
+                  path={[farmSection]}
                   value={visibleSectionValue}
                   activeValue={activeSection}
                   onChange={updateDraft}
                 />
               ) : (
-                edgeSectionFields.map((name) => (
+                remoteSectionFields.map((name) => (
                   <ControlField
                     key={name}
+                    source={source}
                     name={name}
                     path={[name]}
                     value={draft[name]}
                     configuredSecret={
-                      name === 'apiToken'
+                      name === 'apiToken' &&
+                      snapshot.service === 'edgecontroller'
                         ? (snapshot as EdgeControlSnapshot).authentication
                             .tokenConfigured
                         : undefined
@@ -611,18 +775,29 @@ const ControlCenter = () => {
             </Box>
             {snapshot.service === 'farmcontroller' &&
               Object.entries(snapshot.secrets)
-                .filter(([path]) => path.startsWith(`${section}.`))
+                .filter(([path]) => {
+                  if (!path.startsWith(`${farmSection}.`)) return false;
+                  const parts = path.split('.');
+                  const name = parts[parts.length - 1] ?? '';
+                  return section === 'testRail'
+                    ? TEST_RAIL_FIELDS.has(name)
+                    : section === 'testIntegrations'
+                      ? !TEST_RAIL_FIELDS.has(name)
+                      : true;
+                })
                 .map(([path, configured]) => {
                   const parts = path.split('.');
                   const name = parts[parts.length - 1];
                   return (
                     <Box className={styles.secretField} key={path}>
                       <ControlField
+                        source={source}
                         name={name}
                         path={path.split('.')}
                         value={
-                          draft[section] && typeof draft[section] === 'object'
-                            ? ((draft[section] as JsonObject)[name] ?? '')
+                          draft[farmSection] &&
+                          typeof draft[farmSection] === 'object'
+                            ? ((draft[farmSection] as JsonObject)[name] ?? '')
                             : ''
                         }
                         configuredSecret={configured}
@@ -635,35 +810,47 @@ const ControlCenter = () => {
 
           <Box className={styles.actionBar}>
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-              <Button
-                variant="contained"
-                startIcon={
-                  isSaving ? <CircularProgress size={16} /> : <Save size={17} />
-                }
-                disabled={isSaving}
-                onClick={() => void save()}
-              >
-                Save configuration
-              </Button>
+              <Tooltip title="Validate and apply this section. Example: change the log level to debug, then save configuration.">
+                <span>
+                  <Button
+                    variant="contained"
+                    startIcon={
+                      isSaving ? (
+                        <CircularProgress size={16} />
+                      ) : (
+                        <Save size={17} />
+                      )
+                    }
+                    disabled={isSaving}
+                    onClick={() => void save()}
+                  >
+                    Save configuration
+                  </Button>
+                </span>
+              </Tooltip>
               {snapshot.service === 'farmcontroller' &&
                 snapshot.restartPending && (
-                  <Button
-                    variant="outlined"
-                    startIcon={<RotateCcw size={17} />}
-                    onClick={() => void runAction('discardStaged')}
-                  >
-                    Discard staged
-                  </Button>
+                  <Tooltip title={actionHelpText('discardStaged')}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<RotateCcw size={17} />}
+                      onClick={() => void runAction('discardStaged')}
+                    >
+                      Discard staged
+                    </Button>
+                  </Tooltip>
                 )}
             </Stack>
-            <Button
-              color="warning"
-              variant="outlined"
-              startIcon={<RefreshCw size={17} />}
-              onClick={() => void runAction('restart', true)}
-            >
-              Restart service
-            </Button>
+            <Tooltip title={actionHelpText('restart')}>
+              <Button
+                color="warning"
+                variant="outlined"
+                startIcon={<RefreshCw size={17} />}
+                onClick={() => void runAction('restart', true)}
+              >
+                Restart service
+              </Button>
+            </Tooltip>
           </Box>
 
           {snapshot.service === 'edgecontroller' && (
@@ -678,12 +865,14 @@ const ControlCenter = () => {
                 </Typography>
               </Box>
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                <Button
-                  variant="outlined"
-                  onClick={() => void runAction('reloadMappings')}
-                >
-                  Reload mappings
-                </Button>
+                <Tooltip title={actionHelpText('reloadMappings')}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => void runAction('reloadMappings')}
+                  >
+                    Reload mappings
+                  </Button>
+                </Tooltip>
                 {(
                   [
                     'clearUsbMappings',
@@ -692,17 +881,45 @@ const ControlCenter = () => {
                     'clearControllerUid',
                   ] as ControlAction[]
                 ).map((action) => (
-                  <Button
-                    key={action}
-                    color="error"
-                    variant="text"
-                    startIcon={<Trash2 size={16} />}
-                    onClick={() => void runAction(action, true)}
-                  >
-                    {labelFor(action)}
-                  </Button>
+                  <Tooltip key={action} title={actionHelpText(action)}>
+                    <Button
+                      color="error"
+                      variant="text"
+                      startIcon={<Trash2 size={16} />}
+                      onClick={() => void runAction(action, true)}
+                    >
+                      {labelFor(action)}
+                    </Button>
+                  </Tooltip>
                 ))}
               </Stack>
+            </Box>
+          )}
+          {snapshot.service === 'edgeagent' && (
+            <Box className={styles.maintenanceBand}>
+              <Box>
+                <Typography variant="subtitle1" fontWeight={700}>
+                  Agent operations
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Device {snapshot.runtime.deviceId} · Gen
+                  {snapshot.runtime.generation} ·{' '}
+                  {snapshot.runtime.approved ? 'approved' : 'not approved'}
+                </Typography>
+              </Box>
+              <Tooltip title={actionHelpText('cancelActiveTest')}>
+                <span>
+                  <Button
+                    color="warning"
+                    variant="outlined"
+                    startIcon={<Ban size={16} />}
+                    disabled={!snapshot.runtime.activeTest}
+                    onClick={() => void runAction('cancelActiveTest', true)}
+                  >
+                    Cancel active test
+                  </Button>
+                </span>
+              </Tooltip>
             </Box>
           )}
         </>

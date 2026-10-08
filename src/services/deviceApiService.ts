@@ -52,10 +52,13 @@ export const updateDeviceStatusAPI = async ({
   return response.data;
 };
 
-export const deleteDeviceAPI = async (
-  deviceID: string,
-): Promise<{ success: boolean; message: string }> => {
-  const response = await axiosInstance.delete(`device/${deviceID}`);
+export const deleteDeviceAPI = async (request: {
+  deviceId: string;
+  force?: boolean;
+}): Promise<{ success: boolean; message: string }> => {
+  const response = await axiosInstance.delete(`device/${request.deviceId}`, {
+    params: request.force ? { force: true } : undefined,
+  });
   return response.data;
 };
 export const saveHeartbeatTimeoutAPI = async ({

@@ -7,9 +7,13 @@ import '@xterm/xterm/css/xterm.css';
 export default function TerminalComponent({
   target,
   adminTerminal = false,
+  username,
+  password,
 }: {
   target: string;
   adminTerminal?: boolean;
+  username?: string;
+  password?: string;
 }) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
@@ -18,7 +22,13 @@ export default function TerminalComponent({
     termRef.current?.write(chunk);
   }, []);
 
-  const { resize, write } = useSshSocket(target, handleOutput, adminTerminal);
+  const { resize, write } = useSshSocket(
+    target,
+    handleOutput,
+    adminTerminal,
+    username,
+    password,
+  );
 
   useEffect(() => {
     const term = new Terminal({
