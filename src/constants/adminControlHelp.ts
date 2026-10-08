@@ -57,6 +57,11 @@ const FIELD_HELP: Record<
     description: 'Hardware generation managed by this EdgeController.',
     example: '4',
   },
+  'edgecontroller.raspberryPiModel': {
+    description:
+      'Raspberry Pi board profile used to translate physical header pins and select the GPIO chip.',
+    example: 'Raspberry Pi 4',
+  },
   'edgecontroller.relaySerialNumber': {
     description: 'USB relay serial selected for Gen3/Gen4 power control.',
     example: 'A50285BI',

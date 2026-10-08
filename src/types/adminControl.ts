@@ -37,6 +37,15 @@ export interface EdgeMappingPaths extends JsonObject {
   gen5PowerInventory: string;
 }
 
+export interface EdgeGpioHeaderProfile {
+  model: number;
+  chip: string;
+  pins: Array<{
+    physicalPin: number;
+    lineOffset: number;
+  }>;
+}
+
 export interface EdgeControlSnapshot {
   service: 'edgecontroller';
   version: string;
@@ -65,6 +74,8 @@ export interface EdgeControlSnapshot {
   };
   hardware: {
     generation: number;
+    raspberryPiModel?: number;
+    gpioHeaderProfile?: EdgeGpioHeaderProfile;
     relaySerialNumber: string | null;
     relayVidPid: string | null;
   };
@@ -121,6 +132,7 @@ export interface EdgeControlDraft extends JsonObject {
   httpPort: number;
   wsPort: number;
   generation: number;
+  raspberryPiModel: number;
   enableGen3: boolean;
   enableGen4: boolean;
   enableGen5: boolean;

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { buildWebSocketUrl } from 'constants/config';
+import { createAuthenticatedWebSocket } from 'utils/authenticatedWebSocket';
 
 interface SshOutputMessage {
   type: 'ssh';
@@ -29,7 +30,9 @@ export function useSshSocket(
 
   useEffect(() => {
     let disposed = false;
-    const ws = new WebSocket(
+    let opened = false;
+    let connectionErrorShown = false;
+    const ws = createAuthenticatedWebSocket(
       buildWebSocketUrl({
         client: 'frontend',
         target,
@@ -39,6 +42,7 @@ export function useSshSocket(
     socketRef.current = ws;
 
     ws.onopen = () => {
+      opened = true;
       onOutput(`\r\n[FarmController] Connecting to ${target} over SSH...\r\n`);
       ws.send(
         JSON.stringify({
@@ -66,6 +70,8 @@ export function useSshSocket(
     };
 
     ws.onerror = (err) => {
+      if (disposed || connectionErrorShown) return;
+      connectionErrorShown = true;
       console.error('WebSocket error:', err);
       onOutput(
         '\r\n[FarmController] Terminal connection failed. Check authentication and target reachability.\r\n',
@@ -73,8 +79,12 @@ export function useSshSocket(
     };
 
     ws.onclose = () => {
-      if (!disposed) {
+      if (!disposed && opened) {
         onOutput('\r\n[FarmController] Terminal session closed.\r\n');
+      } else if (!disposed && !connectionErrorShown) {
+        onOutput(
+          '\r\n[FarmController] Terminal connection was rejected before the session opened.\r\n',
+        );
       }
     };
 

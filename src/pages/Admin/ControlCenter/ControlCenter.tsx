@@ -136,6 +136,7 @@ const edgeDraftFrom = (snapshot: EdgeControlSnapshot): EdgeControlDraft => ({
   httpPort: snapshot.network.farmControllerHttpPort,
   wsPort: snapshot.network.farmControllerWebSocketPort,
   generation: snapshot.hardware.generation,
+  raspberryPiModel: snapshot.hardware.raspberryPiModel ?? 4,
   enableGen3: snapshot.features.staged.gen3,
   enableGen4: snapshot.features.staged.gen4,
   enableGen5: snapshot.features.staged.gen5,
@@ -177,7 +178,12 @@ const EDGE_SECTIONS: Record<string, string[]> = {
     'wsPort',
   ],
   features: ['enableGen3', 'enableGen4', 'enableGen5', 'enableRtos'],
-  hardware: ['generation', 'relaySerialNumber', 'relayVidPid'],
+  hardware: [
+    'generation',
+    'raspberryPiModel',
+    'relaySerialNumber',
+    'relayVidPid',
+  ],
   logging: ['logLevel', 'logFile', 'logNetwork', 'logStream'],
   authentication: ['authEnabled', 'apiToken'],
   paths: ['paths'],
@@ -306,6 +312,25 @@ const ControlField = ({
               {labelFor(level)}
             </MenuItem>
           ))}
+        </TextField>
+      </Box>
+    );
+  }
+
+  if (source === 'edgecontroller' && name === 'raspberryPiModel') {
+    return (
+      <Box className={styles.fieldShell}>
+        {fieldHelp}
+        <TextField
+          select
+          size="small"
+          label="Raspberry Pi model"
+          value={Number(value)}
+          onChange={(event) => onChange(path, Number(event.target.value))}
+          helperText="Used for GPIO header mapping"
+        >
+          <MenuItem value={4}>Raspberry Pi 4</MenuItem>
+          <MenuItem value={5}>Raspberry Pi 5</MenuItem>
         </TextField>
       </Box>
     );
@@ -559,7 +584,12 @@ const ControlCenter = () => {
   const remoteSectionFields =
     snapshot?.service === 'edgeagent'
       ? (AGENT_SECTIONS[section] ?? [])
-      : (EDGE_SECTIONS[section] ?? []);
+      : (EDGE_SECTIONS[section] ?? []).filter(
+          (name) =>
+            name !== 'raspberryPiModel' ||
+            draft?.generation === 3 ||
+            draft?.generation === 4,
+        );
   const testRailEnabled = Boolean(
     draft?.tests &&
     typeof draft.tests === 'object' &&

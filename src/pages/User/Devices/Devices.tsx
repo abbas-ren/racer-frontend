@@ -177,13 +177,16 @@ function Devices() {
     setDeleteConfirm((prev) => ({ ...prev, open: false }));
   }, []);
 
-  const handleDeleteConfirm = useCallback(() => {
-    setDeletingDeviceId(deleteConfirm.deviceId);
-    dispatch(
-      deleteDeviceRequest({ deviceId: deleteConfirm.deviceId, force: false }),
-    );
-    setDeleteConfirm((prev) => ({ ...prev, open: false }));
-  }, [dispatch, deleteConfirm.deviceId]);
+  const handleDeleteConfirm = useCallback(
+    (force = false) => {
+      setDeletingDeviceId(deleteConfirm.deviceId);
+      dispatch(
+        deleteDeviceRequest({ deviceId: deleteConfirm.deviceId, force }),
+      );
+      setDeleteConfirm((prev) => ({ ...prev, open: false }));
+    },
+    [dispatch, deleteConfirm.deviceId],
+  );
 
   const handleClearFilters = useCallback(() => {
     dispatch(setSearch(''));
@@ -381,6 +384,7 @@ function Devices() {
             onConfirm={handleDeleteConfirm}
             resourceName="Device"
             resourceId={deleteConfirm.deviceName || deleteConfirm.deviceId}
+            allowForceDelete
           />
         </>
       )}

@@ -19,6 +19,7 @@ interface DeleteConfirmDialogProps {
   resourceName: string;
   resourceId: string;
   allowForceDelete?: boolean;
+  requireForceDelete?: boolean;
 }
 
 export const DeleteConfirmDialog = ({
@@ -28,6 +29,7 @@ export const DeleteConfirmDialog = ({
   resourceName,
   resourceId,
   allowForceDelete = false,
+  requireForceDelete = false,
 }: DeleteConfirmDialogProps) => {
   const [forceDelete, setForceDelete] = useState(false);
 
@@ -86,7 +88,9 @@ export const DeleteConfirmDialog = ({
           </Typography>
           {allowForceDelete && (
             <Alert severity="warning">
-              The device is offline and cannot clear its local approval state.
+              {requireForceDelete
+                ? 'The device is offline and cannot clear its local approval state.'
+                : 'Use force removal only when the device endpoint is unavailable. Its local approval state will not be cleared.'}
               <FormControlLabel
                 control={
                   <Checkbox
@@ -112,7 +116,7 @@ export const DeleteConfirmDialog = ({
             color="error"
             variant="contained"
             onClick={confirm}
-            disabled={allowForceDelete && !forceDelete}
+            disabled={requireForceDelete && !forceDelete}
             className={styles.footerButton}
           >
             Delete {resourceName}

@@ -5,6 +5,7 @@ import '@xterm/xterm/css/xterm.css';
 import './webcli.css';
 import { getAuth, getUsername } from '../../utils/auth';
 import { buildWebSocketUrl } from 'constants/config';
+import { createAuthenticatedWebSocket } from 'utils/authenticatedWebSocket';
 import { InputPromptWidget } from './InputPromptWidget';
 import { PromptRequest } from './types';
 
@@ -254,7 +255,7 @@ export default function WebCLIModal({
 
     console.log('Connecting CLI WebSocket for user:', userId);
 
-    const ws = new WebSocket(
+    const ws = createAuthenticatedWebSocket(
       buildWebSocketUrl({ client: 'cli', userId, userName }),
     );
 

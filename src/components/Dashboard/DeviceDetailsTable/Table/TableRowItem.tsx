@@ -57,9 +57,9 @@ const TableRowItem = ({ row, filteredColumns }: TableRowItemProps) => {
     setIsDialogOpen(false);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = (force = false) => {
     console.log('Device deleted!');
-    deleteDevice(selectedDeviceId!);
+    deleteDevice(selectedDeviceId!, force);
     setIsDialogOpen(false);
   };
 
@@ -146,6 +146,8 @@ const TableRowItem = ({ row, filteredColumns }: TableRowItemProps) => {
           onConfirm={handleConfirmDelete}
           resourceName={'Device'}
           resourceId={selectedDeviceId}
+          allowForceDelete
+          requireForceDelete={notReachable}
         />
       )}
     </>

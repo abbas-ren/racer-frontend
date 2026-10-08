@@ -22,6 +22,7 @@ import type {
   RelayIdentityUpdatePayload,
   RelayIdentityUpdateResponse,
 } from 'types/deviceController';
+import type { EdgeGpioHeaderProfile } from 'types/adminControl';
 import styles from './ConfigureRelayDialog.module.scss';
 
 interface ConfigureRelayDialogProps {
@@ -52,6 +53,7 @@ interface ConfigureRelayDialogProps {
   hasMoreDevices?: boolean;
   onLoadMoreDevices?: () => void;
   hasChanges?: boolean;
+  gpioHeaderProfile: EdgeGpioHeaderProfile | null;
 }
 
 const compactSelectSx = {
@@ -89,11 +91,9 @@ const ConfigureRelayDialog = ({
   hasMoreDevices = false,
   onLoadMoreDevices,
   hasChanges = false,
+  gpioHeaderProfile,
 }: ConfigureRelayDialogProps) => {
   const menuListRef = useRef<HTMLUListElement | null>(null);
-  const gpioOptions = useRef(
-    Array.from({ length: 25 }, (_, index) => String(index + 2)),
-  );
   // Track which channel cards have the GPIO section expanded.
   // Driven by explicit per-channel user interaction, NOT by global channelAssignments,
   // so that selecting a device on one card never expands a different card.
@@ -223,6 +223,20 @@ const ConfigureRelayDialog = ({
       }
     },
     [hasMoreDevices, isLoadingMoreDevices, onLoadMoreDevices],
+  );
+
+  const gpioLabel = useCallback(
+    (lineOffset: string) => {
+      const pin = gpioHeaderProfile?.pins.find(
+        (candidate) => String(candidate.lineOffset) === lineOffset,
+      );
+      return pin
+        ? `Physical pin ${pin.physicalPin} (GPIO${pin.lineOffset})`
+        : lineOffset
+          ? `GPIO line ${lineOffset}`
+          : 'None';
+    },
+    [gpioHeaderProfile],
   );
 
   return (
@@ -421,7 +435,7 @@ const ConfigureRelayDialog = ({
                           color="text.secondary"
                           className={styles.gpioSummaryText}
                         >
-                          GPIO {currentHardware.gpio || 'None'} • Default:{' '}
+                          {gpioLabel(currentHardware.gpio)} • Default:{' '}
                           {currentHardware.gpioDefaultLevel} • Relay default:{' '}
                           {currentHardware.relayDefaultLevel}
                         </Typography>
@@ -436,13 +450,15 @@ const ConfigureRelayDialog = ({
                             color="text.secondary"
                             className={styles.channelLabel}
                           >
-                            GPIO pin
+                            Raspberry Pi {gpioHeaderProfile?.model ?? ''} header
+                            pin
                           </Typography>
                           <Select
                             fullWidth
                             size="small"
                             sx={compactSelectSx}
                             value={currentHardware.gpio}
+                            disabled={!gpioHeaderProfile}
                             onChange={(event) =>
                               onChannelHardwareChange(
                                 channelNumber,
@@ -452,12 +468,13 @@ const ConfigureRelayDialog = ({
                             }
                           >
                             <MenuItem value="">None</MenuItem>
-                            {gpioOptions.current.map((gpioValue) => (
+                            {gpioHeaderProfile?.pins.map((pin) => (
                               <MenuItem
-                                key={`gpio-${channelNumber}-${gpioValue}`}
-                                value={gpioValue}
+                                key={`gpio-${channelNumber}-${pin.physicalPin}`}
+                                value={String(pin.lineOffset)}
                               >
-                                {gpioValue}
+                                Physical pin {pin.physicalPin} (GPIO
+                                {pin.lineOffset})
                               </MenuItem>
                             ))}
                           </Select>

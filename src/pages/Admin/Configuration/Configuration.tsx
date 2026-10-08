@@ -52,6 +52,7 @@ import { useAuth } from 'hooks/useAuth';
 import { useSocketIoEvent } from 'hooks/useSocketIoEvent';
 import type { RootState } from 'store';
 import toastService from 'services/ToastService';
+import { fetchAdminControl } from 'services/adminControlApiService';
 import {
   configureDeviceUart,
   fetchRelayDeviceOptions,
@@ -61,6 +62,7 @@ import type {
   RelayIdentityUpdatePayload,
   RelayIdentityUpdateResponse,
 } from 'types/deviceController';
+import type { EdgeGpioHeaderProfile } from 'types/adminControl';
 import styles from './Configuration.module.scss';
 
 const Configuration = () => {
@@ -109,6 +111,38 @@ const Configuration = () => {
   } | null>(null);
   const [uartDevices, setUartDevices] = useState<RelayDeviceOption[]>([]);
   const [isLoadingUartDevices, setIsLoadingUartDevices] = useState(false);
+  const [gpioHeaderProfile, setGpioHeaderProfile] =
+    useState<EdgeGpioHeaderProfile | null>(null);
+
+  useEffect(() => {
+    if (!isConfigureRelayDialogOpen || !selectedRelayContext) {
+      setGpioHeaderProfile(null);
+      return;
+    }
+
+    let cancelled = false;
+    setGpioHeaderProfile(null);
+    fetchAdminControl({
+      source: 'edgecontroller',
+      controllerId: selectedRelayContext.controllerId,
+    })
+      .then((control) => {
+        if (!cancelled && control.service === 'edgecontroller') {
+          setGpioHeaderProfile(control.hardware.gpioHeaderProfile ?? null);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          toastService.error(
+            'Unable to load the Raspberry Pi GPIO header profile.',
+          );
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isConfigureRelayDialogOpen, selectedRelayContext]);
 
   const refreshControllersDebounced = useMemo(
     () =>
@@ -621,6 +655,7 @@ const Configuration = () => {
         hasMoreDevices={hasMoreDevices}
         onLoadMoreDevices={handleLoadMoreDevices}
         hasChanges={hasChannelChanges}
+        gpioHeaderProfile={gpioHeaderProfile}
       />
 
       <ConfigureUartDialog

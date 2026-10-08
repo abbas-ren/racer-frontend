@@ -142,7 +142,8 @@ const DeviceHeartbeatDisplay: React.FC<DeviceHeartbeatDisplayProps> = ({
           onConfirm={handleConfirmDelete}
           resourceName={'Device'}
           resourceId={device.deviceId}
-          allowForceDelete={!hasHeartbeat || seconds > heartbeatTimeout}
+          allowForceDelete
+          requireForceDelete={!hasHeartbeat || seconds > heartbeatTimeout}
         />
       )}
     </div>

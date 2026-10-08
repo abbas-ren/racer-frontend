@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { buildWebSocketUrl } from 'constants/config';
+import { createAuthenticatedWebSocket } from 'utils/authenticatedWebSocket';
 
 interface SshOutputMessage {
   type: 'ssh';
@@ -15,7 +16,10 @@ export function useRtosSocket(
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocket(buildWebSocketUrl({ client: 'frontend' }));
+    let disposed = false;
+    const ws = createAuthenticatedWebSocket(
+      buildWebSocketUrl({ client: 'frontend' }),
+    );
     socketRef.current = ws;
 
     ws.onopen = () => {
@@ -40,10 +44,15 @@ export function useRtosSocket(
     };
 
     ws.onerror = (err) => {
+      if (disposed) return;
       console.error('WebSocket error:', err);
+      onOutput(
+        '\r\n[FarmController] RTOS terminal connection failed. Check authentication and target reachability.\r\n',
+      );
     };
 
     return () => {
+      disposed = true;
       ws.close();
     };
   }, [deviceId, onOutput, command]);
