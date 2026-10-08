@@ -69,6 +69,10 @@ const compactSelectSx = {
   },
 };
 
+const legacyGpioOptions = Array.from({ length: 25 }, (_, index) =>
+  String(index + 2),
+);
+
 const ConfigureRelayDialog = ({
   open,
   onClose,
@@ -450,15 +454,15 @@ const ConfigureRelayDialog = ({
                             color="text.secondary"
                             className={styles.channelLabel}
                           >
-                            Raspberry Pi {gpioHeaderProfile?.model ?? ''} header
-                            pin
+                            {gpioHeaderProfile
+                              ? `Raspberry Pi ${gpioHeaderProfile.model} header pin`
+                              : 'GPIO line'}
                           </Typography>
                           <Select
                             fullWidth
                             size="small"
                             sx={compactSelectSx}
                             value={currentHardware.gpio}
-                            disabled={!gpioHeaderProfile}
                             onChange={(event) =>
                               onChannelHardwareChange(
                                 channelNumber,
@@ -477,6 +481,15 @@ const ConfigureRelayDialog = ({
                                 {pin.lineOffset})
                               </MenuItem>
                             ))}
+                            {!gpioHeaderProfile &&
+                              legacyGpioOptions.map((gpioValue) => (
+                                <MenuItem
+                                  key={`gpio-${channelNumber}-${gpioValue}`}
+                                  value={gpioValue}
+                                >
+                                  GPIO line {gpioValue}
+                                </MenuItem>
+                              ))}
                           </Select>
                         </Box>
 

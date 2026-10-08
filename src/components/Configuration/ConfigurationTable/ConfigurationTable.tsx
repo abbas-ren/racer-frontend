@@ -429,9 +429,17 @@ const ConfigurationTable = ({
                           align="center"
                           className={styles.actionsCell}
                         >
-                          <Tooltip title="Configure Channel" arrow>
-                            <Box
-                              className={styles.configureButton}
+                          <Tooltip title="Configure relay / GPIO" arrow>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              startIcon={
+                                <CustomIcon
+                                  name="settings"
+                                  size={18}
+                                  color={theme.palette.icon?.primary}
+                                />
+                              }
                               onClick={() =>
                                 onOpenConfigureRelayDialog(
                                   row.controllerId,
@@ -439,12 +447,8 @@ const ConfigurationTable = ({
                                 )
                               }
                             >
-                              <CustomIcon
-                                name="settings"
-                                size={18}
-                                color={theme.palette.icon?.primary}
-                              />
-                            </Box>
+                              Configure
+                            </Button>
                           </Tooltip>
                         </TableCell>
                       </TableRow>
