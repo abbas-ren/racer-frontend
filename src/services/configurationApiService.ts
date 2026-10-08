@@ -134,11 +134,24 @@ export const fetchControllers = async (
   const response: DeviceControllerListResponse =
     await fetchAllDeviceControllers(query);
   const controllers = response.data ?? [];
+  const rows = await Promise.all(
+    controllers.map(async (controller) => {
+      let relays = controller.relays ?? [];
+      if (relays.length === 0) {
+        try {
+          relays = await fetchRelaysByControllerId(
+            controller.deviceControllerId,
+          );
+        } catch {
+          relays = controller.relays ?? [];
+        }
+      }
+      return mapController(controller, relays);
+    }),
+  );
 
   return {
-    rows: controllers.map((controller) =>
-      mapController(controller, controller.relays ?? []),
-    ),
+    rows,
     hasMore: response.currentPage < response.totalPages,
     summary: {
       controllers: {
