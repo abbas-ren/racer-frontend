@@ -20,17 +20,30 @@ interface SshOutputMessage {
 export function useSshSocket(
   target: string,
   onOutput: (chunk: string) => void,
+  adminTerminal = false,
 ) {
   const socketRef = useRef<WebSocket | null>(null);
+  const dimensionsRef = useRef<{ cols: number; rows: number } | null>(null);
 
   useEffect(() => {
     let disposed = false;
-    const ws = new WebSocket(buildWebSocketUrl({ client: 'frontend', target }));
+    const ws = new WebSocket(
+      buildWebSocketUrl({
+        client: 'frontend',
+        target,
+        ...(adminTerminal ? { adminTerminal: 'true' } : {}),
+      }),
+    );
     socketRef.current = ws;
 
     ws.onopen = () => {
       onOutput(`\r\n[FarmController] Connecting to ${target} over SSH...\r\n`);
       ws.send(JSON.stringify({ type: 'ssh_start', target }));
+      if (dimensionsRef.current) {
+        ws.send(
+          JSON.stringify({ type: 'ssh_resize', ...dimensionsRef.current }),
+        );
+      }
     };
 
     ws.onmessage = (event) => {
@@ -61,7 +74,7 @@ export function useSshSocket(
       disposed = true;
       ws.close();
     };
-  }, [target, onOutput]);
+  }, [adminTerminal, target, onOutput]);
 
   const write = useCallback((chunk: string) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
@@ -69,5 +82,14 @@ export function useSshSocket(
     }
   }, []);
 
-  return { write };
+  const resize = useCallback((cols: number, rows: number) => {
+    dimensionsRef.current = { cols, rows };
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(
+        JSON.stringify({ type: 'ssh_resize', cols, rows }),
+      );
+    }
+  }, []);
+
+  return { resize, write };
 }

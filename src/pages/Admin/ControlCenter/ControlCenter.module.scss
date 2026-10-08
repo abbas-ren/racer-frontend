@@ -1,0 +1,171 @@
+.pageRoot {
+  min-width: 0;
+  padding: 22px 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.headingRow,
+.sectionHeading,
+.actionBar,
+.maintenanceBand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.contextBand {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.65fr) minmax(280px, 1.35fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--mui-palette-divider);
+  border-bottom: 1px solid var(--mui-palette-divider);
+}
+
+.statusStrip {
+  justify-self: end;
+  min-width: max-content;
+}
+
+.iconButton {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
+.sectionTabs {
+  min-height: 44px;
+  border-bottom: 1px solid var(--mui-palette-divider);
+
+  :global(.MuiTab-root) {
+    min-height: 44px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+}
+
+.editorBand {
+  min-width: 0;
+  padding: 4px 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border-bottom: 1px solid var(--mui-palette-divider);
+}
+
+.sectionHeading {
+  padding-top: 6px;
+}
+
+.fieldGrid {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px 16px;
+}
+
+.fieldGroup {
+  grid-column: 1 / -1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.switchField {
+  min-height: 58px;
+  padding: 3px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  border: 1px solid var(--mui-palette-divider);
+  border-radius: 6px;
+}
+
+.changedHint {
+  color: var(--mui-palette-warning-main);
+}
+
+.secretField {
+  max-width: calc((100% - 32px) / 3);
+}
+
+.actionBar {
+  padding: 2px 0 4px;
+}
+
+.maintenanceBand {
+  align-items: flex-start;
+  padding: 16px 0;
+  border-top: 1px solid var(--mui-palette-divider);
+  border-bottom: 1px solid var(--mui-palette-divider);
+}
+
+.emptyState {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  border: 1px dashed var(--mui-palette-divider);
+  border-radius: 6px;
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .fieldGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .secretField {
+    max-width: calc((100% - 16px) / 2);
+  }
+}
+
+@media (max-width: 800px) {
+  .contextBand {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .statusStrip {
+    justify-self: start;
+    flex-wrap: wrap;
+  }
+
+  .maintenanceBand {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .pageRoot {
+    padding: 16px 12px 24px;
+  }
+
+  .headingRow,
+  .sectionHeading,
+  .actionBar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .headingRow > :last-child,
+  .actionBar > :last-child {
+    align-self: stretch;
+  }
+
+  .fieldGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .secretField {
+    max-width: none;
+  }
+}

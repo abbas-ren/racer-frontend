@@ -1,4 +1,7 @@
-export type RuntimeLogSource = 'farmcontroller' | 'edgecontroller';
+export type RuntimeLogSource =
+  | 'farmcontroller'
+  | 'edgecontroller'
+  | 'edgeagent';
 export type RuntimeLogLevel =
   | 'trace'
   | 'debug'
@@ -25,4 +28,5 @@ export interface RuntimeLogsResponse {
 export interface RuntimeLogRequestContext {
   source: RuntimeLogSource;
   controllerId?: string;
+  deviceId?: string;
 }

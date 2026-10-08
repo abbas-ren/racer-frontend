@@ -9,6 +9,10 @@ const Configuration = lazy(
   () => import('pages/Admin/Configuration/Configuration'),
 );
 const Logs = lazy(() => import('pages/Admin/Logs/Logs'));
+const ControlCenter = lazy(
+  () => import('pages/Admin/ControlCenter/ControlCenter'),
+);
+const Terminals = lazy(() => import('pages/Admin/Terminals/Terminals'));
 const UserDashboard = lazy(() => import('pages/User/Dashboard/Dashboard'));
 const UserTests = lazy(() => import('pages/User/Tests/Tests'));
 const UserDevices = lazy(() => import('pages/User/Devices'));
@@ -23,6 +27,8 @@ export const SIDEBAR_ROUTES: RouteMap = generateRoutes('home', {
   devices: 'devices',
   configuration: 'configuration',
   logs: 'logs',
+  controlCenter: 'control-center',
+  terminals: 'terminals',
   builds: 'builds',
   tests: 'tests',
   manual: 'manual',
@@ -58,6 +64,19 @@ export const APP_SIDEBAR_ROUTES: Route[] = [
   {
     ...createRoute(SIDEBAR_ROUTES.logs, <Logs />, 'Logs', false),
     iconName: 'scroll-text',
+  },
+  {
+    ...createRoute(
+      SIDEBAR_ROUTES.controlCenter,
+      <ControlCenter />,
+      'Control Center',
+      false,
+    ),
+    iconName: 'sliders-horizontal',
+  },
+  {
+    ...createRoute(SIDEBAR_ROUTES.terminals, <Terminals />, 'Terminals', false),
+    iconName: 'square-terminal',
   },
   {
     ...createRoute(SIDEBAR_ROUTES.manual, <UserManual />, 'User Manual', false),

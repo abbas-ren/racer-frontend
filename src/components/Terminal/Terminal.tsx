@@ -1,18 +1,24 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { FitAddon } from '@xterm/addon-fit';
 import { Terminal } from '@xterm/xterm';
 import { useSshSocket } from '../../hooks/useSshSocket';
 import '@xterm/xterm/css/xterm.css';
 
-export default function TerminalComponent({ target }: { target: string }) {
+export default function TerminalComponent({
+  target,
+  adminTerminal = false,
+}: {
+  target: string;
+  adminTerminal?: boolean;
+}) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const termRef = useRef<Terminal | null>(null);
 
   const handleOutput = useCallback((chunk: string) => {
-    console.log('[Terminal Input]', chunk);
     termRef.current?.write(chunk);
   }, []);
 
-  const { write } = useSshSocket(target, handleOutput);
+  const { resize, write } = useSshSocket(target, handleOutput, adminTerminal);
 
   useEffect(() => {
     const term = new Terminal({
@@ -52,16 +58,27 @@ export default function TerminalComponent({ target }: { target: string }) {
         brightWhite: '#ffffff',
       },
     });
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
 
     term.open(terminalRef.current!);
+    termRef.current = term;
+    const inputSubscription = term.onData((data) => write(data));
+    const resizeSubscription = term.onResize(({ cols, rows }) =>
+      resize(cols, rows),
+    );
+    const observer = new ResizeObserver(() => fitAddon.fit());
+    observer.observe(terminalRef.current!);
+    fitAddon.fit();
     term.focus();
 
-    termRef.current = term;
-
-    term.onData((data) => write(data));
-
-    return () => term.dispose();
-  }, [write]);
+    return () => {
+      observer.disconnect();
+      inputSubscription.dispose();
+      resizeSubscription.dispose();
+      term.dispose();
+    };
+  }, [resize, write]);
 
   return (
     <div
@@ -70,6 +87,7 @@ export default function TerminalComponent({ target }: { target: string }) {
         height: '100%',
         width: '100%',
         padding: '16px',
+        boxSizing: 'border-box',
         backgroundColor: '#0b1220',
       }}
     />

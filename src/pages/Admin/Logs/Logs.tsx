@@ -29,6 +29,10 @@ import {
 } from 'react';
 import { fetchAllDeviceControllers } from 'services/deviceControllerAPIService';
 import {
+  fetchDevicesForTopologyApi,
+  type TopologyDevice,
+} from 'services/deviceApiService';
+import {
   fetchRuntimeLogs,
   updateRuntimeLogLevel,
 } from 'services/runtimeLogsApiService';
@@ -82,6 +86,8 @@ const Logs = () => {
   const [controller, setController] = useState<DeviceControllerItem | null>(
     null,
   );
+  const [devices, setDevices] = useState<TopologyDevice[]>([]);
+  const [device, setDevice] = useState<TopologyDevice | null>(null);
   const [logs, setLogs] = useState<RuntimeLogEntry[]>([]);
   const [captureLevel, setCaptureLevel] = useState<RuntimeLogLevel>('info');
   const [pendingLevel, setPendingLevel] = useState<RuntimeLogLevel>('info');
@@ -106,6 +112,17 @@ const Logs = () => {
           toastService.error('Failed to load EdgeControllers');
         }
       });
+    fetchDevicesForTopologyApi()
+      .then((response) => {
+        if (active) {
+          setDevices(response.data ?? []);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          toastService.error('Failed to load EdgeAgent devices');
+        }
+      });
     return () => {
       active = false;
     };
@@ -118,13 +135,19 @@ const Logs = () => {
         source === 'edgecontroller'
           ? controller?.deviceControllerId
           : undefined,
+      deviceId: source === 'edgeagent' ? device?.deviceId : undefined,
     }),
-    [controller?.deviceControllerId, source],
+    [controller?.deviceControllerId, device?.deviceId, source],
   );
 
   const refresh = useCallback(
     async (showLoading = false) => {
       if (source === 'edgecontroller' && !controller) {
+        setLogs([]);
+        setError(null);
+        return;
+      }
+      if (source === 'edgeagent' && !device) {
         setLogs([]);
         setError(null);
         return;
@@ -151,7 +174,7 @@ const Logs = () => {
         }
       }
     },
-    [context, controller, source],
+    [context, controller, device, source],
   );
 
   useEffect(() => {
@@ -216,6 +239,9 @@ const Logs = () => {
     if (source === 'edgecontroller' && !controller) {
       return;
     }
+    if (source === 'edgeagent' && !device) {
+      return;
+    }
     setIsSavingLevel(true);
     try {
       const level = normalizeLevel(
@@ -248,7 +274,9 @@ const Logs = () => {
     });
   };
 
-  const edgeUnavailable = source === 'edgecontroller' && !controller;
+  const sourceUnavailable =
+    (source === 'edgecontroller' && !controller) ||
+    (source === 'edgeagent' && !device);
 
   return (
     <Box className={styles.pageRoot}>
@@ -278,7 +306,7 @@ const Logs = () => {
                 aria-label="Refresh logs"
                 variant="outlined"
                 onClick={() => void refresh(true)}
-                disabled={isLoading || edgeUnavailable}
+                disabled={isLoading || sourceUnavailable}
                 sx={{ minWidth: 40, width: 40, px: 0 }}
               >
                 {isLoading ? (
@@ -306,6 +334,7 @@ const Logs = () => {
           >
             <MenuItem value="farmcontroller">FarmController</MenuItem>
             <MenuItem value="edgecontroller">EdgeController</MenuItem>
+            <MenuItem value="edgeagent">EdgeAgent</MenuItem>
           </Select>
         </FormControl>
 
@@ -323,6 +352,25 @@ const Logs = () => {
             }
             renderInput={(params) => (
               <TextField {...params} label="EdgeController" />
+            )}
+            className={styles.controllerControl}
+          />
+        )}
+
+        {source === 'edgeagent' && (
+          <Autocomplete
+            size="small"
+            options={devices}
+            value={device}
+            onChange={(_, value) => setDevice(value)}
+            getOptionLabel={(option) =>
+              `${option.deviceName || option.deviceId} · ${option.deviceId} · ${option.ipAddress}`
+            }
+            isOptionEqualToValue={(option, value) =>
+              option.deviceId === value.deviceId
+            }
+            renderInput={(params) => (
+              <TextField {...params} label="EdgeAgent device" />
             )}
             className={styles.controllerControl}
           />
@@ -360,7 +408,7 @@ const Logs = () => {
             onChange={(event) =>
               setPendingLevel(event.target.value as RuntimeLogLevel)
             }
-            disabled={edgeUnavailable}
+            disabled={sourceUnavailable}
           >
             {LOG_LEVELS.map((level) => (
               <MenuItem key={level} value={level}>
@@ -377,7 +425,7 @@ const Logs = () => {
           }
           onClick={() => void applyLevel()}
           disabled={
-            isSavingLevel || edgeUnavailable || pendingLevel === captureLevel
+            isSavingLevel || sourceUnavailable || pendingLevel === captureLevel
           }
           className={styles.applyButton}
         >
@@ -385,10 +433,12 @@ const Logs = () => {
         </Button>
       </Box>
 
-      {edgeUnavailable ? (
+      {sourceUnavailable ? (
         <Box className={styles.emptyState}>
           <Typography color="text.secondary">
-            Select an EdgeController to inspect and configure its logs.
+            {source === 'edgeagent'
+              ? 'Select an EdgeAgent device to inspect and configure its logs.'
+              : 'Select an EdgeController to inspect and configure its logs.'}
           </Typography>
         </Box>
       ) : error ? (

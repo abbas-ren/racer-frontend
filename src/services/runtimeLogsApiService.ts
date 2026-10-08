@@ -15,6 +15,7 @@ export const fetchRuntimeLogs = async (
       params: {
         source: context.source,
         controllerId: context.controllerId,
+        deviceId: context.deviceId,
         limit,
       },
     },
@@ -31,6 +32,7 @@ export const updateRuntimeLogLevel = async (
     {
       source: context.source,
       controllerId: context.controllerId,
+      deviceId: context.deviceId,
       level,
     },
   );
