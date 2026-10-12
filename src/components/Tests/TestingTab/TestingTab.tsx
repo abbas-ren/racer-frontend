@@ -40,6 +40,7 @@ function TestingTab({ tabId, isActive }: TestingTabProps) {
     ? {
         testId: String(fullExecution.testId),
         status: fullExecution.status as TestStatus,
+        cancelRequested: fullExecution.cancelRequested,
       }
     : null;
 

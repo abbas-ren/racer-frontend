@@ -1,5 +1,15 @@
-import { Box, Stack, Dialog, Typography, useTheme } from '@mui/material';
-import type { ReactNode } from 'react';
+import {
+  Box,
+  Stack,
+  Dialog,
+  Typography,
+  useTheme,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from '@mui/material';
+import { useState, type ReactNode } from 'react';
 import { toastService } from 'services/ToastService';
 import styles from './UploadBuild.module.scss';
 import { useUploadBuild } from './hooks';
@@ -16,7 +26,7 @@ export interface UploadBuildProps {
   onConfirm: (payload: {
     files: File[];
     tags?: Record<string, string>;
-    adminTag?: string;
+    buildType: 'official' | 'custom';
   }) => void;
 }
 
@@ -28,6 +38,10 @@ function UploadBuild({
   onConfirm,
 }: UploadBuildProps) {
   const theme = useTheme();
+  const [buildType, setBuildType] = useState<'official' | 'custom'>(
+    userType === 'admin' ? 'official' : 'custom',
+  );
+
   const instructions: Array<{
     id: string;
     title: ReactNode;
@@ -94,7 +108,7 @@ function UploadBuild({
     handlePickFiles,
     handleRemove,
     handleTagChange,
-  } = useUploadBuild({ maxFiles, userType });
+  } = useUploadBuild({ maxFiles, buildType });
 
   const handleUpload = () => {
     if (files.length === 0) {
@@ -106,7 +120,7 @@ function UploadBuild({
     }
 
     const filenameTags =
-      userType === 'user'
+      buildType === 'custom'
         ? files.reduce<Record<string, string>>((acc, file) => {
             const fileKey = getFileKey(file);
             const tag = tags[fileKey];
@@ -120,6 +134,7 @@ function UploadBuild({
     onConfirm({
       files,
       tags: filenameTags,
+      buildType,
     });
   };
 
@@ -140,6 +155,21 @@ function UploadBuild({
         <UploadHeader iconColor={theme.palette.blue[500]} />
 
         <Box className={styles.body}>
+          <FormControl fullWidth size="small" className={styles.buildType}>
+            <InputLabel id="upload-build-type-label">Build type</InputLabel>
+            <Select
+              labelId="upload-build-type-label"
+              label="Build type"
+              value={buildType}
+              onChange={(event) =>
+                setBuildType(event.target.value as 'official' | 'custom')
+              }
+            >
+              <MenuItem value="official">Official</MenuItem>
+              <MenuItem value="custom">Custom</MenuItem>
+            </Select>
+          </FormControl>
+
           <UploadDropZone
             fileCount={files.length}
             totalSize={totalSize}
@@ -204,7 +234,7 @@ function UploadBuild({
                   file={f}
                   fileKey={fileKey}
                   index={i}
-                  userType={userType}
+                  buildType={buildType}
                   tagValue={tags[fileKey] || ''}
                   fileError={fileErrors[fileKey]}
                   isValidating={tagValidationInProgress[fileKey] || false}

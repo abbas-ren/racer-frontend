@@ -13,7 +13,7 @@ interface FileRowProps {
   file: File;
   fileKey: string;
   index: number;
-  userType: 'user' | 'admin';
+  buildType: 'official' | 'custom';
   tagValue: string;
   fileError?: string;
   isValidating: boolean;
@@ -30,7 +30,7 @@ function FileRow({
   file,
   fileKey,
   index,
-  userType,
+  buildType,
   tagValue,
   fileError,
   isValidating,
@@ -67,7 +67,7 @@ function FileRow({
           )}
         </Stack>
         <Stack direction="row" alignItems="center" gap={1.5}>
-          {userType === 'user' && (
+          {buildType === 'custom' && (
             <Box sx={{ position: 'relative' }}>
               <AppInput
                 placeholder="Tag/Short Description"

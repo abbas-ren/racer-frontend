@@ -28,6 +28,7 @@ import type { FilterOption } from '../TestFilters';
 export default function useTestFilterHandlers(execution?: {
   testId: string;
   status: TestStatus;
+  cancelRequested?: boolean;
 }) {
   const dispatch = useDispatch();
   const currentTab = useSelector(selectActiveTabId);

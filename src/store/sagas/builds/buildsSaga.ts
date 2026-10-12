@@ -9,6 +9,8 @@ import {
   fetchBuildsSuccess,
   fetchBuildsFailure,
   updateBuildFlagRequest,
+  updateBuildStatusRequest,
+  updateBuildStatusInState,
   deleteBuildRequest,
   adminActionSuccess,
   adminActionFailure,
@@ -18,6 +20,7 @@ import {
   fetchBuildFilters,
   fetchBuilds,
   updateBuildFlag,
+  updateBuildStatus,
   deleteBuild,
 } from 'services/buildAPIService';
 import type { RootState } from 'store';
@@ -26,6 +29,7 @@ import type {
   BuildsQuery,
   BuildsListResponse,
 } from 'types/builds';
+import type { BuildStatus } from 'types/builds';
 import { toastService } from 'services/ToastService';
 
 // Fetch filters handler
@@ -68,6 +72,39 @@ function* handleUpdateFlag(
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Failed to update flag';
+    yield put(adminActionFailure(message));
+    toastService.error(message, { clearExisting: false, autoClose: 3000 });
+  }
+}
+
+function* handleUpdateStatus(
+  action: PayloadAction<{ id: string; status: BuildStatus }>,
+): Generator<
+  unknown,
+  void,
+  { id: string; status: BuildStatus; isFaulty: boolean }
+> {
+  try {
+    const response = yield call(
+      updateBuildStatus,
+      action.payload.id,
+      action.payload.status,
+    );
+    yield put(
+      updateBuildStatusInState({
+        releaseId: response.id,
+        status: response.status,
+        isFaulty: response.isFaulty,
+      }),
+    );
+    yield put(adminActionSuccess());
+    toastService.success('Build status updated', {
+      clearExisting: false,
+      autoClose: 3000,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Failed to update build status';
     yield put(adminActionFailure(message));
     toastService.error(message, { clearExisting: false, autoClose: 3000 });
   }
@@ -128,5 +165,6 @@ export default function* watchBuilds(): SagaIterator {
   yield takeLatest(fetchBuildFiltersRequest.type, handleFetchFilters);
   yield takeLatest(fetchBuildsRequest.type, handleFetchBuilds);
   yield takeLatest(updateBuildFlagRequest.type, handleUpdateFlag);
+  yield takeLatest(updateBuildStatusRequest.type, handleUpdateStatus);
   yield takeLatest(deleteBuildRequest.type, handleDeleteBuild);
 }

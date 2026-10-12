@@ -13,6 +13,7 @@ import {
   TestExecutionsByBuildResponse,
 } from 'typesCustom/tests';
 import { TestCaseEntryForLogs } from 'types/tests';
+import { TestStatus } from 'types/tests';
 import axiosInstance from '../AxiosConfig';
 import { FetchDataQuery } from 'store/index';
 
@@ -193,6 +194,17 @@ export const fetchTestExecutionByBuild = async (
     {
       params,
     },
+  );
+  return response.data;
+};
+
+export const updateTestExecutionStatus = async (
+  testId: string,
+  status: TestStatus,
+): Promise<{ testId: string; status: TestStatus }> => {
+  const response = await axiosInstance.put(
+    `device/test/execution/${testId}/status`,
+    { status },
   );
   return response.data;
 };

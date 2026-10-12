@@ -96,11 +96,7 @@ import {
   getTestExecutionAnalytics,
 } from 'services/analyticsApiService';
 import { fetchBuildsForDeviceRequest } from 'store/slices/device/deviceSlice';
-import {
-  clearTabExecution,
-  updateExecutionCancelRequested,
-} from 'store/slices/testExecution/testExecutionsSlice';
-import { selectActiveTabId } from 'store/slices/testExecution/selectors';
+import { updateExecutionCancelRequested } from 'store/slices/testExecution/testExecutionsSlice';
 
 const getDeviceID = (state: RootState) => state.tests.selectedData.deviceID;
 // const getBuildID = (state: RootState) => state.tests.selectedData.buildID;

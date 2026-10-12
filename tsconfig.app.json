@@ -25,22 +25,22 @@
     "esModuleInterop": true,
     // "types": ["jest", "@testing-library/jest-dom"],
 
-    "baseUrl": "./src",
     "paths": {
-      "services/*": ["services/*"],
-      "components/*": ["components/*"],
-      "hooks/*": ["hooks/*"],
-      "assets/*": ["assets/*"],
-      "pages/*": ["pages/*"],
-      "store/*": ["store/*"],
-      "styles/*": ["styles/*"],
-      "routes/*": ["routes/*"],
-      "types/*": ["types/*"],
-      "typesCustom/*": ["types/*"],
-      "utils/*": ["utils/*"],
-      "constants/*": ["constants/*"],
-      "context/*": ["context/*"],
-      "test/*": ["test/*"]
+      "*": ["./src/*"],
+      "services/*": ["./src/services/*"],
+      "components/*": ["./src/components/*"],
+      "hooks/*": ["./src/hooks/*"],
+      "assets/*": ["./src/assets/*"],
+      "pages/*": ["./src/pages/*"],
+      "store/*": ["./src/store/*"],
+      "styles/*": ["./src/styles/*"],
+      "routes/*": ["./src/routes/*"],
+      "types/*": ["./src/types/*"],
+      "typesCustom/*": ["./src/types/*"],
+      "utils/*": ["./src/utils/*"],
+      "constants/*": ["./src/constants/*"],
+      "context/*": ["./src/context/*"],
+      "test/*": ["./src/test/*"]
     }
   },
   "include": ["src", "theme.d.ts"]

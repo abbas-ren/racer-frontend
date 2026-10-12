@@ -1,6 +1,5 @@
 import { memo } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import {
   Box,
   Button,
@@ -12,7 +11,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { isGen5Generation } from 'constants/configuration';
 import type { EditControllerForm } from 'types/configuration';
 import styles from './EditControllerDialog.module.scss';
 

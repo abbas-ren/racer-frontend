@@ -10,7 +10,7 @@ import {
 
 interface UseUploadBuildParams {
   maxFiles: number;
-  userType: 'user' | 'admin';
+  buildType: 'official' | 'custom';
 }
 
 /**
@@ -19,7 +19,7 @@ interface UseUploadBuildParams {
  */
 export default function useUploadBuild({
   maxFiles,
-  userType,
+  buildType,
 }: UseUploadBuildParams) {
   const fileKeyMapRef = useRef<WeakMap<File, string>>(new WeakMap());
   const fileKeyCounterRef = useRef(0);
@@ -51,7 +51,7 @@ export default function useUploadBuild({
   const isUploadDisabled =
     Object.keys(fileErrors).length > 0 ||
     Object.values(tagValidationInProgress).some((v) => v) ||
-    (userType === 'user' &&
+    (buildType === 'custom' &&
       files.length > 0 &&
       files.some((f) => !tags[getFileKey(f)] || !tags[getFileKey(f)].trim()));
 
@@ -69,7 +69,7 @@ export default function useUploadBuild({
         setFiles(combined);
         setFileErrors(errors);
 
-        if (userType === 'admin') {
+        if (buildType === 'official') {
           void Promise.all(
             combined.map(async (f) => {
               const fileKey = getFileKey(f);
@@ -110,7 +110,7 @@ export default function useUploadBuild({
       }
       if (inputRef.current) inputRef.current.value = '';
     },
-    [files, getFileKey, maxFiles, userType],
+    [buildType, files, getFileKey, maxFiles],
   );
 
   const handleRemove = useCallback(
@@ -135,14 +135,14 @@ export default function useUploadBuild({
           delete tagValidationTimers.current[fileKey];
         }
 
-        if (userType === 'user') {
+        if (buildType === 'custom') {
           const nextTags = { ...tags };
           delete nextTags[fileKey];
           setTags(nextTags);
         }
       }
     },
-    [files, fileErrors, getFileKey, tagValidationInProgress, tags, userType],
+    [buildType, files, fileErrors, getFileKey, tagValidationInProgress, tags],
   );
 
   const handleTagChange = useCallback(
@@ -228,12 +228,47 @@ export default function useUploadBuild({
     [tags],
   );
 
+  useEffect(() => {
+    if (files.length === 0) return;
+
+    const { errors } = validateFiles(files, getFileKey);
+    if (buildType === 'custom') {
+      files.forEach((file) => {
+        const formatError = validateFilenameFormat(file.name);
+        if (formatError) errors[getFileKey(file)] = formatError;
+      });
+      setFileErrors(errors);
+      return;
+    }
+
+    let cancelled = false;
+    void Promise.all(
+      files.map(async (file) => {
+        const parsed = parseBuildFilename(file.name);
+        if (!parsed) {
+          errors[getFileKey(file)] =
+            'Invalid filename. Expected [device_type]__version.zip';
+          return;
+        }
+        if (await checkReleaseExists(parsed.deviceType, parsed.version)) {
+          errors[getFileKey(file)] =
+            `Release already exists for ${parsed.deviceType} ${parsed.version}`;
+        }
+      }),
+    ).finally(() => {
+      if (!cancelled) setFileErrors(errors);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [buildType, files, getFileKey]);
+
   // Cleanup timers on unmount
   useEffect(() => {
+    const timers = tagValidationTimers.current;
     return () => {
-      Object.values(tagValidationTimers.current).forEach((timer) =>
-        clearTimeout(timer),
-      );
+      Object.values(timers).forEach((timer) => clearTimeout(timer));
     };
   }, []);
 

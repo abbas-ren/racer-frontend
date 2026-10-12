@@ -1,5 +1,5 @@
 import { TestSuite } from 'typesCustom/tests';
-import { TestDetails } from '../components/Tests';
+import type { TestDetails } from '../components/Tests/TestDetailsPanel';
 
 export interface UseNewTestsExecutionReturn {
   testSuites: TestSuite[];

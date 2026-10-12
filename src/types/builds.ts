@@ -21,6 +21,7 @@ export interface BuildState {
 
 // ===== Builds listing types =====
 export type BuildTypeEnum = 'OFFICIAL' | 'CUSTOM';
+export type BuildStatus = 'untested' | 'testing' | 'passed' | 'failed';
 
 export interface BuildRelease {
   id: string;

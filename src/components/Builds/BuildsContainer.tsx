@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useState, useRef, memo, useCallback } from 'react';
-import { Box, Stack, Typography, useTheme } from '@mui/material';
+import {
+  Box,
+  MenuItem,
+  Select,
+  Stack,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from 'store';
 import styles from './BuildsContainer.module.scss';
@@ -23,13 +30,14 @@ import {
   setBuildsDeviceType,
   setBuildsFlagged,
   updateBuildFlagRequest,
+  updateBuildStatusRequest,
   updateBuildFlagInState,
   updateBuildStatusInState,
   removeBuildFromState,
   deleteBuildRequest,
 } from 'store/slices/builds/buildsSlice';
 import { setUploadProgress } from 'store/slices/upload/uploadSlice';
-import type { BuildRelease } from 'types/builds';
+import type { BuildRelease, BuildStatus } from 'types/builds';
 import { toastService } from 'services/ToastService';
 import { uploadFiles } from 'services/uploadService';
 
@@ -478,27 +486,51 @@ const BuildsContainer = ({
 
           return (
             <Box className={cellsStyles.statusContainer}>
-              <Box
-                className={cellsStyles.statusBadge}
-                sx={
-                  statusBgColor
-                    ? {
-                        backgroundColor: statusBgColor,
-                        border: `1px solid ${statusBorderColor}`,
-                      }
-                    : undefined
-                }
-              >
-                <CustomIcon name={iconName} size={14} color={statusColor} />
-                <Typography
-                  className={cellsStyles.statusText}
-                  sx={{
-                    color: statusColor,
-                  }}
+              {userType === 'admin' ? (
+                <Select
+                  size="small"
+                  value={
+                    (row.status?.toLowerCase() || 'untested') as BuildStatus
+                  }
+                  onChange={(event) =>
+                    dispatch(
+                      updateBuildStatusRequest({
+                        id: row.id,
+                        status: event.target.value as BuildStatus,
+                      }),
+                    )
+                  }
+                  aria-label={`Status for build ${row.version}`}
+                  sx={{ minWidth: 132 }}
                 >
-                  {statusLabel}
-                </Typography>
-              </Box>
+                  <MenuItem value="untested">Waiting</MenuItem>
+                  <MenuItem value="testing">Validating</MenuItem>
+                  <MenuItem value="passed">Active</MenuItem>
+                  <MenuItem value="failed">Flagged</MenuItem>
+                </Select>
+              ) : (
+                <Box
+                  className={cellsStyles.statusBadge}
+                  sx={
+                    statusBgColor
+                      ? {
+                          backgroundColor: statusBgColor,
+                          border: `1px solid ${statusBorderColor}`,
+                        }
+                      : undefined
+                  }
+                >
+                  <CustomIcon name={iconName} size={14} color={statusColor} />
+                  <Typography
+                    className={cellsStyles.statusText}
+                    sx={{
+                      color: statusColor,
+                    }}
+                  >
+                    {statusLabel}
+                  </Typography>
+                </Box>
+              )}
               {isFlagged && (
                 <Typography
                   className={cellsStyles.statusDescription}
@@ -556,6 +588,7 @@ const BuildsContainer = ({
     theme.palette.error,
     theme.palette.success,
     theme.palette.warning,
+    dispatch,
     userType,
   ]);
 
@@ -745,6 +778,7 @@ const BuildsContainer = ({
               filesCount: files.length,
               fileNames: files.map((f) => f.name),
               tags: payload.tags,
+              buildType: payload.buildType,
               userType,
             });
 
@@ -767,6 +801,7 @@ const BuildsContainer = ({
               await uploadFiles({
                 files,
                 scope: userType === 'admin' ? 'admin' : 'user',
+                buildType: payload.buildType,
                 userId,
                 tags: payload.tags,
                 onProgress: (percent, meta) => {

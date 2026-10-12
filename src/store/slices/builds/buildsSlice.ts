@@ -4,6 +4,7 @@ import type {
   BuildsQuery,
   BuildsListResponse,
   BuildRelease,
+  BuildStatus,
 } from 'types/builds';
 
 interface BuildsState {
@@ -137,6 +138,13 @@ const buildsSlice = createSlice({
       // Don't set loading - flag updates happen instantly via WebSocket
       state.error = null;
     },
+    updateBuildStatusRequest(
+      state,
+      _action: PayloadAction<{ id: string; status: BuildStatus }>,
+    ) {
+      void _action;
+      state.error = null;
+    },
     updateBuildFlagInState(
       state,
       action: PayloadAction<{ releaseId: string; isFaulty: boolean }>,
@@ -216,6 +224,7 @@ export const {
   fetchBuildsSuccess,
   fetchBuildsFailure,
   updateBuildFlagRequest,
+  updateBuildStatusRequest,
   updateBuildFlagInState,
   updateBuildStatusInState,
   removeBuildFromState,

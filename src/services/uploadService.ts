@@ -7,6 +7,7 @@ import type { AxiosError } from 'axios';
 export interface UploadOptions {
   files: File[];
   scope: 'admin' | 'user';
+  buildType: 'official' | 'custom';
   userId: string;
   tags?: Record<string, string>;
   onProgress?: (
@@ -29,6 +30,7 @@ export const uploadFiles = async (opts: UploadOptions) => {
   const {
     files,
     scope,
+    buildType,
     userId,
     tags,
     onProgress,
@@ -63,8 +65,8 @@ export const uploadFiles = async (opts: UploadOptions) => {
       allTags: tags,
     });
 
-    // Validate tag for user uploads (custom builds)
-    if (scope === 'user' && (!tag || !tag.trim())) {
+    // Custom builds require a distinguishing tag.
+    if (buildType === 'custom' && (!tag || !tag.trim())) {
       onError?.(new Error('Tag is required for custom builds'), {
         fileIndex: i,
         fileName,
@@ -86,6 +88,7 @@ export const uploadFiles = async (opts: UploadOptions) => {
             filetype: file.type || 'application/octet-stream',
             uploadId,
             tag,
+            buildType,
           },
           headers: {
             'x-user-id': userId,

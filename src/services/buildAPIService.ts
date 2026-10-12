@@ -1,6 +1,7 @@
 import axiosInstance from '../AxiosConfig';
 import type {
   BuildRelease,
+  BuildStatus,
   BuildsQuery,
   BuildsListResponse,
 } from 'types/builds';
@@ -50,6 +51,17 @@ export const updateBuildFlag = async (id: string, isFaulty: boolean) => {
     isFaulty,
   });
   return response.data;
+};
+
+export const updateBuildStatus = async (id: string, status: BuildStatus) => {
+  const response = await axiosInstance.put(`${BASE_URL}/${id}/status`, {
+    status,
+  });
+  return response.data as {
+    id: string;
+    status: BuildStatus;
+    isFaulty: boolean;
+  };
 };
 
 export const deleteBuild = async (id: string) => {

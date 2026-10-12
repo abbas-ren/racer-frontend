@@ -1,14 +1,25 @@
-import { Dispatch, SetStateAction, UIEvent, useEffect, useMemo } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  UIEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Box, CheckCircle2, Server, X, XCircle } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   clearBuildExecutions,
   fetchBuildExecutionsRequest,
+  updateBuildExecutionStatus,
   RootState,
 } from 'store/index';
 import { BuildPerformanceItem, SidebarConfig } from '../types';
 import { composeDashboardClasses } from '../styles/dashboardStyles';
-import { Tooltip } from '@mui/material';
+import { MenuItem, Select, Tooltip } from '@mui/material';
+import { updateTestExecutionStatus } from 'services/testsApiService';
+import { toastService } from 'services/ToastService';
+import { TestStatus } from 'types/tests';
 
 interface BuildSidebarProps {
   selectedBuild: BuildPerformanceItem | null;
@@ -27,6 +38,9 @@ const BuildSidebar = ({
 }: BuildSidebarProps) => {
   const PAGE_SIZE = 5;
   const dispatch = useDispatch();
+  const [updatingExecutionId, setUpdatingExecutionId] = useState<string | null>(
+    null,
+  );
   const executions = useSelector(
     (state: RootState) => state.dashboard.buildExecutions,
   );
@@ -92,6 +106,30 @@ const BuildSidebar = ({
     if (normalized === 'queued' || normalized === 'in_progress') return 'busy';
 
     return 'busy';
+  };
+
+  const handleExecutionStatusChange = async (
+    testId: string,
+    status: TestStatus,
+  ) => {
+    setUpdatingExecutionId(testId);
+    try {
+      const response = await updateTestExecutionStatus(testId, status);
+      dispatch(updateBuildExecutionStatus(response));
+      toastService.success('Test execution status updated', {
+        clearExisting: false,
+        autoClose: 3000,
+      });
+    } catch (error) {
+      toastService.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to update test execution status',
+        { clearExisting: false, autoClose: 3000 },
+      );
+    } finally {
+      setUpdatingExecutionId(null);
+    }
   };
 
   useEffect(() => {
@@ -355,7 +393,6 @@ const BuildSidebar = ({
             )}
 
             {executionCards.map((execution) => {
-              const executionStatus = formatExecutionStatus(execution.status);
               const isPerfect = execution.failedCount === 0;
 
               return (
@@ -378,14 +415,29 @@ const BuildSidebar = ({
                         <span className={composeDashboardClasses('dth-tag')}>
                           {execution.testId || `Execution ${execution.id}`}
                         </span>
-                        <span
+                        <Select
+                          size="small"
+                          value={execution.status}
+                          disabled={updatingExecutionId === execution.testId}
+                          onClick={(event) => event.stopPropagation()}
+                          onChange={(event) =>
+                            void handleExecutionStatusChange(
+                              execution.testId,
+                              event.target.value as TestStatus,
+                            )
+                          }
+                          aria-label={`Status for test execution ${execution.testId}`}
                           className={composeDashboardClasses(
                             'dth-status',
                             getExecutionStatusClassName(execution.status),
                           )}
                         >
-                          {executionStatus}
-                        </span>
+                          {Object.values(TestStatus).map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {formatExecutionStatus(status)}
+                            </MenuItem>
+                          ))}
+                        </Select>
                       </div>
                       <div
                         className={composeDashboardClasses(
