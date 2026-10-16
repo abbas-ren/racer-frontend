@@ -213,19 +213,24 @@ export const useBuildSidebarWebSocket = ({
       buildId?: string;
       testId?: string;
       status?: TestStatus;
+      progress?: number | null;
+      message?: string | null;
       cancelRequested?: boolean;
     }) => {
+      const testId = payload?.testId;
+      const status = payload?.status;
       const receivedBuildId = payload?.buildId;
+
+      console.log(
+        `Received test_execution_update for testId: ${testId} with status: ${status} and receivedBuildId: ${receivedBuildId}`,
+        payload,
+      );
+
+      
       if (!receivedBuildId || receivedBuildId !== targetBuildId) {
         return;
       }
 
-      const testId = payload?.testId;
-      const status = payload?.status;
-      console.log(
-        `Received test_execution_update for testId: ${testId} with status: ${status}`,
-        payload,
-      );
       if (!testId) {
         return;
       }
@@ -239,7 +244,7 @@ export const useBuildSidebarWebSocket = ({
       const hasExecution = executionIdsRef.current.has(testId);
 
       if (status) {
-        dispatch(updateBuildExecutionStatus({ testId, status }));
+        dispatch(updateBuildExecutionStatus({ testId, status, progress: payload?.progress ?? null, message: payload?.message ?? null }));
       }
 
       // Keep single execution API only for missing executions.
