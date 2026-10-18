@@ -259,6 +259,10 @@ export default function WebCLIModal({
       buildWebSocketUrl({ client: 'cli', userId, userName }),
     );
 
+    ws.onmessage = (event) => {
+      console.log('Received WebSocket message:', JSON.parse(event.data));
+    };
+
     const handleTestUpdate = (
       terminal: Terminal,
       testId: string,

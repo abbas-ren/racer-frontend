@@ -75,6 +75,7 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
     };
 
     const onBuildPerformanceUpdate = (data: DashboardEventPayload['data']) => {
+      console.log('Received build performance update:', data);
       const targetBuildId = data?.buildId;
       if (typeof targetBuildId === 'string' && targetBuildId) {
         const buildExists = buildIdsRef.current.has(targetBuildId);
@@ -95,6 +96,7 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
     };
 
     const onBuildDeleted = (data: { releaseId?: string }) => {
+      console.log('Received build deleted update:', data);
       if (typeof data?.releaseId === 'string' && data.releaseId) {
         dispatch(removeBuildPerformance(data.releaseId));
         dispatch(fetchBuildsPerformanceRequest());

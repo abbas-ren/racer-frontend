@@ -479,14 +479,17 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
     };
 
     const onTestExecution = (data: TestExecutionUpdate) => {
+      console.log('Received test execution update:', data);
       handleTestExecutionMessageRef.current(data);
     };
 
     const onDeviceState = (data: DeviceStateUpdatePayload) => {
+      console.log('Received device state update:', data);
       handleDeviceStateUpdateRef.current(data);
     };
 
     const onDevicePower = (data: DevicePowerUpdatePayload) => {
+      console.log('Received device power update:', data);
       handleDevicePowerUpdateRef.current(data);
     };
 
@@ -535,6 +538,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
     };
 
     const onBuildPerformanceUpdate = (payload: { buildId?: string }) => {
+      console.log('Received build performance update:', payload);
       if (typeof payload?.buildId === 'string' && payload.buildId) {
         if (listedBuildIdsRef.current.has(payload.buildId)) {
           scheduleDashboardBuildRefreshRef.current(payload.buildId);
@@ -543,6 +547,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
     };
 
     const onBuildDeleted = (data: { releaseId?: string }) => {
+      console.log('Received build deleted update:', data);
       if (typeof data?.releaseId === 'string' && data.releaseId) {
         dispatch(removeUserDashboardBuildComparison(data.releaseId));
         dispatch(fetchUserDashboardDataRequest());

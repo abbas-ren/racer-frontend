@@ -15,6 +15,7 @@ export const useHeartbeatSocket = (
   const lastSeen = useRef<HeartbeatStatus>({});
 
   useSocketIoEvent<HeartbeatPingPayload>(WSPayloadKind.heartbeatPing, (payload) => {
+    console.log('Received heartbeat ping:', payload);
     const heartbeatId = payload.deviceId;
 
     if (!heartbeatId) {
