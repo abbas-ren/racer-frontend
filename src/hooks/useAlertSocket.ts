@@ -1,6 +1,6 @@
-import { AlertData } from '../services/wsClient';
 import { useSocketIoEvent } from './useSocketIoEvent';
+import type { AlertDataPayload } from 'typesCustom/websocket';
 
-export const useAlertSocket = (onAlert: (alert: AlertData) => void) => {
-  useSocketIoEvent<AlertData>('alert', onAlert);
+export const useAlertSocket = (onAlert: (alert: AlertDataPayload) => void) => {
+  useSocketIoEvent<AlertDataPayload>('alert', onAlert);
 };

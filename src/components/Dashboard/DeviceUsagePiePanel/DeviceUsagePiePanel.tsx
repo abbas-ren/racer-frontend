@@ -15,9 +15,9 @@ import {
 import { RootState } from 'store/store';
 import { Dayjs } from 'dayjs';
 import { useAlertSocket } from 'hooks/useAlertSocket';
-import { AlertData } from 'services/wsClient';
 import { DEVICE_FAMILY } from 'constants/tests';
 import { buildPiePanelData, PiePanel } from './usagePiePanelDataUtils';
+import { AlertDataPayload } from 'types/websocket';
 
 function DeviceUsagePiePanel() {
   const theme = useTheme();
@@ -52,7 +52,7 @@ function DeviceUsagePiePanel() {
     }
   }, [user, deviceList, dispatch]);
 
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (alert.subtype === 'device-approval') {
       dispatch(setSelectedDeviceFamily('all'));
     }

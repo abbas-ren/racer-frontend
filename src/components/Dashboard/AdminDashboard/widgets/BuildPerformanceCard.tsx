@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBuildsPerformanceRequest, RootState } from 'store/index';
 import { useAlertSocket } from 'hooks/useAlertSocket';
-import { AlertData } from 'services/wsClient';
+import { AlertDataPayload } from 'types/websocket';
 import { BuildPerformanceData } from 'types/analytics';
 import { BuildPerformanceItem } from '../types';
 import CardHeader from './CardHeader';
@@ -23,7 +23,7 @@ const BuildPerformanceCard = ({ onBuildClick }: BuildPerformanceCardProps) => {
     dispatch(fetchBuildsPerformanceRequest());
   }, [dispatch]);
 
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (
       alert.subtype === 'build-flagged' ||
       alert.subtype === 'test-result-changed'

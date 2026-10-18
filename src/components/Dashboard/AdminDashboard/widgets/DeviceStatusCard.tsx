@@ -10,7 +10,7 @@ import { useEffect, useMemo } from 'react';
 import { DeviceState } from 'typesCustom/components';
 import { getDeviceStateColor, getDeviceStateLabel } from 'utils/dashboard';
 import { useAlertSocket } from 'hooks/useAlertSocket';
-import { AlertData } from 'services/wsClient';
+import { AlertDataPayload } from 'types/websocket';
 
 const DeviceStatusCard = () => {
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ const DeviceStatusCard = () => {
     dispatch(fetchDeviceStateAnalyticsRequest());
   }, [dispatch]);
 
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (
       alert.subtype === 'device-approval' ||
       alert.subtype === 'device-state-change' ||

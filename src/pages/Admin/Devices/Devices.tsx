@@ -25,8 +25,8 @@ import SSHTerminalComponent from 'components/Terminal/Terminal';
 import SSHTerminalBar from 'components/Terminal/SSHTeminalBar';
 import useDevice from 'hooks/useDevice';
 import { useAlertSocket } from 'hooks/useAlertSocket';
-import { AlertData } from 'services/wsClient';
 import TreeTopology from './TreeTopology';
+import { AlertDataPayload } from 'typesCustom/websocket';
 
 export const ROW_PER_PAGE = 10;
 
@@ -163,7 +163,7 @@ const Devices = () => {
   const { heartbeatTimers, deviceHeartbeatStatus } = useHeartbeatManager();
   const { searchTerm, setSearchTerm, filteredData } = useDeviceSearch(data);
 
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (!alert?.subtype) return;
     switch (alert?.subtype) {
       case 'device-deletion':

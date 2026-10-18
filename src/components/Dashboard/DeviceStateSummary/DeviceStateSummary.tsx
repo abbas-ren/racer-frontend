@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { fetchDeviceStateAnalyticsRequest } from 'store/slices';
 import { RootState } from 'store/store';
 import { useAlertSocket } from 'hooks/useAlertSocket';
-import { AlertData } from 'services/wsClient';
+import { AlertDataPayload } from 'types/websocket';
 
 function DeviceStateSummary() {
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ function DeviceStateSummary() {
   useEffect(() => {
     dispatch(fetchDeviceStateAnalyticsRequest());
   }, [dispatch]);
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (
       alert.subtype === 'device-approval' ||
       alert.subtype === 'device-state-change' ||

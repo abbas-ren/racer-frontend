@@ -1,6 +1,5 @@
-import { UserData } from '../services/wsClient';
 import { useSocketIoEvent } from './useSocketIoEvent';
-
-export const useUsersSocket = (onUser: (user: UserData) => void) => {
-  useSocketIoEvent<UserData>('user', onUser);
+import type { UserDataPayload } from 'typesCustom/websocket';
+export const useUsersSocket = (onUser: (user: UserDataPayload) => void) => {
+  useSocketIoEvent<UserDataPayload>('userData', onUser);
 };

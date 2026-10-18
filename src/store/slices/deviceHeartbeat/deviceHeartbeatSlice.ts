@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { HeartbeatData } from 'services/wsClient';
+import { HeartbeatDataPayload } from 'types/websocket';
 
 interface DeviceHeartbeatState {
-  heartbeats: Record<string, HeartbeatData>;
+  heartbeats: Record<string, HeartbeatDataPayload>;
   heartbeatTimers: Record<string, number>;
   deviceHeartbeatStatus: Record<string, boolean>;
 }
@@ -19,7 +19,7 @@ const deviceHeartbeatSlice = createSlice({
   reducers: {
     setBulkHeartbeats: (
       state,
-      action: PayloadAction<Record<string, HeartbeatData>>,
+      action: PayloadAction<Record<string, HeartbeatDataPayload>>,
     ) => {
       for (const [deviceId, data] of Object.entries(action.payload)) {
         state.heartbeats[deviceId] = data;

@@ -14,12 +14,12 @@ import {
   LabelList,
 } from 'recharts';
 import { useAlertSocket } from '../../../hooks/useAlertSocket';
-import { AlertData } from '../../../services/wsClient';
 import LegendLabel from './LegendLabel';
 import {
   CustomBarWithCap,
   transformAnalyticsToChartData,
 } from './GraphChartUtils';
+import { AlertDataPayload } from 'types/websocket';
 
 function DeviceUsageGraph() {
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ function DeviceUsageGraph() {
 
   // chartData derived via useMemo; avoid setState in effects
 
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (alert.subtype === 'device-approval') {
       dispatch(fetchDeviceUsageAnalyticsSummaryRequest());
     }

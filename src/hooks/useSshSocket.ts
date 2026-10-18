@@ -1,12 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { buildWebSocketUrl } from 'constants/config';
 import { createAuthenticatedWebSocket } from 'utils/authenticatedWebSocket';
-
-interface SshOutputMessage {
-  type: 'ssh';
-  stream: 'stdout' | 'stderr';
-  chunk: string;
-}
+import { SshOutputPayload } from 'types/websocket';
+import { WSPayloadKind } from 'constants/websocket';
 
 // interface SshStartMessage {
 //   type: 'ssh_start';
@@ -60,8 +56,8 @@ export function useSshSocket(
 
     ws.onmessage = (event) => {
       try {
-        const msg: SshOutputMessage = JSON.parse(event.data);
-        if (msg.type === 'ssh') {
+        const msg: SshOutputPayload = JSON.parse(event.data);
+        if (msg.kind === WSPayloadKind.sshOutput) {
           onOutput(msg.chunk);
         }
       } catch (err) {
@@ -96,7 +92,7 @@ export function useSshSocket(
 
   const write = useCallback((chunk: string) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify({ type: 'ssh_input', chunk }));
+      socketRef.current.send(JSON.stringify({ kind: WSPayloadKind.sshInput, chunk }));
     }
   }, []);
 

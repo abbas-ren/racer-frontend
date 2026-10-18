@@ -9,7 +9,7 @@ import { RootState } from 'store/store';
 import { DeviceStatus } from 'typesCustom/components';
 import { IDevice } from 'typesCustom/types';
 import { useAlertSocket } from './useAlertSocket';
-import { AlertData } from 'services/wsClient';
+import { AlertDataPayload } from 'types/websocket';
 import { ROW_PER_PAGE } from 'pages/Admin/Devices/Devices';
 
 export interface UseDeviceParams {
@@ -64,7 +64,7 @@ const useDevice = ({
     [dispatch],
   );
 
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (!alert?.subtype) return;
     switch (alert?.subtype) {
       case 'device-addition':

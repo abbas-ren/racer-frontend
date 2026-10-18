@@ -1,12 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { buildWebSocketUrl } from 'constants/config';
 import { createAuthenticatedWebSocket } from 'utils/authenticatedWebSocket';
-
-interface SshOutputMessage {
-  type: 'ssh';
-  stream: 'stdout' | 'stderr';
-  chunk: string;
-}
+import { SshOutputPayload } from 'types/websocket';
+import { WSPayloadKind } from 'constants/websocket';
 
 export function useRtosSocket(
   deviceId: string,
@@ -34,8 +30,8 @@ export function useRtosSocket(
 
     ws.onmessage = (event) => {
       try {
-        const msg: SshOutputMessage = JSON.parse(event.data);
-        if (msg.type === 'ssh') {
+        const msg: SshOutputPayload = JSON.parse(event.data);
+        if (msg.kind === WSPayloadKind.sshOutput) {
           onOutput(msg.chunk);
         }
       } catch (err) {

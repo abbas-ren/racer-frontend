@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { DeviceResponse, FetchDataQuery } from 'store/types/sagaTypes';
 import type { IDevice } from 'typesCustom/types';
-import { DevicePowerChange, DeviceStateChange } from 'typesCustom/types';
+import { DevicePowerUpdatePayload, DeviceStateUpdatePayload } from 'typesCustom/websocket';
 import { DeviceState } from 'typesCustom/components';
 
 export type UserDevicesSortOrder = 'asc' | 'desc';
@@ -122,7 +122,7 @@ const userDevicesSlice = createSlice({
     },
 
     // Handle device state updates from WebSocket
-    deviceStateUpdate: (state, action: PayloadAction<DeviceStateChange>) => {
+    deviceStateUpdate: (state, action: PayloadAction<DeviceStateUpdatePayload>) => {
       if (action.payload.deviceId) {
         const deviceIndex = state.data.findIndex(
           (dev) => dev.deviceId === action.payload.deviceId,
@@ -136,7 +136,7 @@ const userDevicesSlice = createSlice({
     },
 
     // Handle device power updates from WebSocket
-    devicePowerUpdate: (state, action: PayloadAction<DevicePowerChange>) => {
+    devicePowerUpdate: (state, action: PayloadAction<DevicePowerUpdatePayload>) => {
       if (action.payload.deviceId) {
         const deviceIndex = state.data.findIndex(
           (dev) => dev.deviceId === action.payload.deviceId,

@@ -21,7 +21,7 @@ import useDevice, { UseDeviceParams } from 'hooks/useDevice';
 import { TestStatus } from 'typesCustom/tests';
 import { STATE_LABEL } from 'constants/dashboard';
 import { useAlertSocket } from 'hooks/useAlertSocket';
-import { AlertData } from 'services/wsClient';
+import { AlertDataPayload } from 'types/websocket';
 
 const HideForUnApproved = [
   // 'deviceId',
@@ -120,7 +120,7 @@ function useTableRowUtility(paginationParams?: UseDeviceParams) {
     // }
   };
 
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (!alert?.subtype) return;
     switch (alert?.subtype) {
       case 'device-deletion':

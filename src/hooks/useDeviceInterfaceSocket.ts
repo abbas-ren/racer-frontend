@@ -91,7 +91,7 @@ export const useDeviceInterfaceSocket = (
         dispatch(
           setBulkHeartbeats({
             [deviceId]: {
-              type: 'heartbeat' as const,
+              kind: 'heartbeat' as const,
               controllerId: deviceId,
               deviceControllerId: deviceId,
               timestamp: payload.timestamp,
@@ -103,7 +103,7 @@ export const useDeviceInterfaceSocket = (
     };
 
     // Handle interface changes — update sidebar device interfaces in Redux
-    const handleInterfaceUpdate = (payload: InterfaceUpdatePayload) => {
+    const mhandleInterfaceUpdate = (payload: InterfaceUpdatePayload) => {
       if (payload.deviceId !== deviceId) {
         return;
       }
@@ -120,7 +120,7 @@ export const useDeviceInterfaceSocket = (
         dispatch(
           setBulkHeartbeats({
             [deviceId]: {
-              type: 'heartbeat' as const,
+              kind: 'heartbeat' as const,
               deviceId,
               timestamp: payload.timestamp,
               data: payload.heartbeatData,
@@ -131,19 +131,19 @@ export const useDeviceInterfaceSocket = (
     };
 
     if (targetType === 'device_controller') {
-      socket.on('device_controller:ping', handleControllerPing);
+      socket.on('device_controller_ping', handleControllerPing);
     } else {
-      socket.on('device:ping', handlePing);
-      socket.on('device:interface-update', handleInterfaceUpdate);
+      socket.on('device_ping', handlePing);
+      socket.on('device_interface_update', mhandleInterfaceUpdate);
     }
 
     return () => {
       clearInterval(timerInterval);
       if (targetType === 'device_controller') {
-        socket.off('device_controller:ping', handleControllerPing);
+        socket.off('device_controller_ping', handleControllerPing);
       } else {
-        socket.off('device:ping', handlePing);
-        socket.off('device:interface-update', handleInterfaceUpdate);
+        socket.off('device_ping', handlePing);
+        socket.off('device_interface_update', mhandleInterfaceUpdate);
       }
       socket.emit(`leave:${roomEventPrefix}`, deviceId);
     };

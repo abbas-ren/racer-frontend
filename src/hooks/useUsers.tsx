@@ -15,7 +15,7 @@ import { USER_ACTION_LOADING } from 'constants/messagesConstants';
 import { Id } from 'react-toastify';
 import toastService from 'services/ToastService';
 import { useUsersSocket } from './useUsersSocket';
-import { UserData } from 'services/wsClient';
+import { UserDataPayload } from 'types/websocket';
 
 const useUsers = () => {
   const dispatch = useDispatch();
@@ -96,7 +96,7 @@ const useUsers = () => {
     [dispatch],
   );
 
-  useUsersSocket((user: UserData) => {
+  useUsersSocket((user: UserDataPayload) => {
     if (user?.message) {
       dispatch(addUserRequest(user.message));
     }

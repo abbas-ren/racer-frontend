@@ -6,7 +6,7 @@ import CardHeader from './CardHeader';
 import { composeDashboardClasses } from '../styles/dashboardStyles';
 import { fetchDeviceByFamiliesRequest, RootState } from 'store/index';
 import { useAlertSocket } from 'hooks/useAlertSocket';
-import { AlertData } from 'services/wsClient';
+import { AlertDataPayload } from 'types/websocket';
 import { getDeviceStateColor } from 'utils/dashboard';
 import type { DeviceState } from 'typesCustom/components';
 
@@ -18,7 +18,7 @@ const DeviceFamiliesCard = () => {
     dispatch(fetchDeviceByFamiliesRequest());
   }, [dispatch]);
 
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (
       alert.subtype === 'device-approval' ||
       alert.subtype === 'device-state-change' ||

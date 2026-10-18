@@ -32,10 +32,10 @@ import {
   triggerDevicesRefresh,
 } from 'store/slices/userDevices/userDevicesSlice';
 import { TestExecutionUpdate, TestStatus } from 'typesCustom/tests';
-import { DevicePowerChange, DeviceStateChange } from 'typesCustom/types';
 import { isEmpty } from 'utils/common';
 import type { RootState } from 'store/store';
 import type { Socket } from 'socket.io-client';
+import { DevicePowerUpdatePayload, DeviceStateUpdatePayload } from 'types/websocket';
 
 export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
   const dispatch = useDispatch();
@@ -400,7 +400,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
   }, [totalDevices]);
 
   const handleDeviceStateUpdate = useCallback(
-    (message: DeviceStateChange) => {
+    (message: DeviceStateUpdatePayload) => {
       // Update both device slice and userDevices slice (in-place row update)
       dispatch(deviceSliceStateUpdate(message));
       dispatch(userDevicesStateUpdate(message));
@@ -416,7 +416,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
   );
 
   const handleDevicePowerUpdate = useCallback(
-    (message: DevicePowerChange) => {
+    (message: DevicePowerUpdatePayload) => {
       // Update userDevices slice with power state
       dispatch(userDevicesPowerUpdate(message));
     },
@@ -482,11 +482,11 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       handleTestExecutionMessageRef.current(data);
     };
 
-    const onDeviceState = (data: DeviceStateChange) => {
+    const onDeviceState = (data: DeviceStateUpdatePayload) => {
       handleDeviceStateUpdateRef.current(data);
     };
 
-    const onDevicePower = (data: DevicePowerChange) => {
+    const onDevicePower = (data: DevicePowerUpdatePayload) => {
       handleDevicePowerUpdateRef.current(data);
     };
 

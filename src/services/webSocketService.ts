@@ -1,13 +1,33 @@
-import { createWebSocket, WebSocketMessage } from './wsClient';
+import { GeneralWebsocketMessage } from 'types/websocket';
+import { createWebSocket } from './wsClient';
 
-type MessageCallback = (data: WebSocketMessage) => void;
-type MessageType = WebSocketMessage['type'];
+type MessageCallback = (data: GeneralWebsocketMessage['payload']) => void;
+type MessageType = GeneralWebsocketMessage['payload']['kind'];
 
 const listeners: Record<MessageType, Set<MessageCallback>> = {
   heartbeat: new Set(),
+  heartbeatPing: new Set(),
   alert: new Set(),
-  user: new Set(),
-  ssh: new Set(),
+  userData: new Set(),
+  sshOutput: new Set(),
+  deviceStateUpdate: new Set(),
+  devicePowerUpdate: new Set(),
+  deviceControllerChanged: new Set(),
+  testExecution: new Set(),
+  buildTestExecutionUpdate: new Set(),
+  buildPerformanceUpdate: new Set(),
+  buildStatusChanged: new Set(),
+  buildUploaded: new Set(),
+  uploadProgress: new Set(),
+  uploadError: new Set(),
+  uploadComplete: new Set(),
+  relayConfigurationStatus: new Set(),
+  rtosLog: new Set(),
+  testExecutionStatusUpdate: new Set(),
+  testExecutionTestcaseUpdate: new Set(),
+  testExecutionQueuedUpdate: new Set(),
+  testExecutionCancelRequestedUpdate: new Set(),
+  
 };
 
 let socket: WebSocket | null = null;
@@ -20,8 +40,8 @@ export const subscribeTo = (type: MessageType, callback: MessageCallback) => {
 export const startWebSocket = () => {
   if (socket) return;
 
-  socket = createWebSocket('frontend', (data) => {
-    listeners[data.type]?.forEach((cb) => cb(data));
+  socket = createWebSocket('frontend', (data: GeneralWebsocketMessage) => {
+    listeners[data['payload'].kind]?.forEach((cb) => cb(data['payload']));
   });
 
   socket.onclose = () => {

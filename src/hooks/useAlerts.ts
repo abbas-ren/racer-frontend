@@ -11,7 +11,7 @@ import type { Alerts } from 'store/types/sagaTypes';
 import { useAuth } from './useAuth';
 import { ROLES } from 'utils/common';
 import { useAlertSocket } from './useAlertSocket';
-import { AlertData } from 'services/wsClient';
+import { AlertDataPayload } from 'types/websocket';
 
 const useAlerts = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -39,7 +39,7 @@ const useAlerts = () => {
     [dispatch],
   );
 
-  useAlertSocket((alert: AlertData) => {
+  useAlertSocket((alert: AlertDataPayload) => {
     if (alert?.message) {
       dispatch(addSingleAlert(alert.message));
     }
