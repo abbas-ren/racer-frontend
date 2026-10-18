@@ -291,18 +291,18 @@ export const useBuildSidebarWebSocket = ({
     ws.on('connect', onConnect);
     ws.on('disconnect', onDisconnect);
     ws.on('connect_error', onConnectError);
-    ws.on('build_performance_update', onBuildPerformanceUpdate);
-    ws.on('test_execution_update', onTestExecutionUpdate);
-    ws.on('build_test_execution_update', onBuildTestExecutionUpdate);
+    ws.on('buildPerformanceUpdate', onBuildPerformanceUpdate);
+    ws.on('testExecutionUpdate', onTestExecutionUpdate);
+    ws.on('buildTestExecutionUpdate', onBuildTestExecutionUpdate);
 
     return () => {
       ws.emit('leave:build', targetBuildId);
       ws.off('connect', onConnect);
       ws.off('disconnect', onDisconnect);
       ws.off('connect_error', onConnectError);
-      ws.off('build_performance_update', onBuildPerformanceUpdate);
-      ws.off('test_execution_update', onTestExecutionUpdate);
-      ws.off('build_test_execution_update', onBuildTestExecutionUpdate);
+      ws.off('buildPerformanceUpdate', onBuildPerformanceUpdate);
+      ws.off('testExecutionUpdate', onTestExecutionUpdate);
+      ws.off('buildTestExecutionUpdate', onBuildTestExecutionUpdate);
       if (wsRef.current === ws) {
         wsRef.current = null;
       }

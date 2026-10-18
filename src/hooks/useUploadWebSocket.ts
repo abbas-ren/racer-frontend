@@ -3,14 +3,14 @@ import { getSharedSocket } from 'services/socketIoClient';
 import type { Socket } from 'socket.io-client';
 
 interface UploadEvent {
-  type:
-    | 'upload_progress'
-    | 'upload_complete'
-    | 'upload_error'
-    | 'build_uploaded'
-    | 'build_status_changed'
-    | 'build_flagged'
-    | 'build_deleted';
+  kind:
+    | 'uploadProgress'
+    | 'uploadComplete'
+    | 'uploadError'
+    | 'buildUploaded'
+    | 'buildStatusChanged'
+    | 'buildFlagged'
+    | 'buildDeleted';
   data?: {
     percent?: number;
     uploadId?: string;
@@ -205,22 +205,22 @@ export const useUploadWebSocket = ({
       }
     };
 
-    ws.on('upload_progress', onUploadProgress);
-    ws.on('upload_complete', onUploadComplete);
-    ws.on('upload_error', onUploadError);
-    ws.on('build_uploaded', onBuildUploadedEvent);
-    ws.on('build_status_changed', onBuildStatusChangedEvent);
-    ws.on('build_flagged', onBuildFlaggedEvent);
-    ws.on('build_deleted', onBuildDeletedEvent);
+    ws.on('uploadProgress', onUploadProgress);
+    ws.on('uploadComplete', onUploadComplete);
+    ws.on('uploadError', onUploadError);
+    ws.on('buildUploaded', onBuildUploadedEvent);
+    ws.on('buildStatusChanged', onBuildStatusChangedEvent);
+    ws.on('buildFlagged', onBuildFlaggedEvent);
+    ws.on('buildDeleted', onBuildDeletedEvent);
 
     return () => {
-      ws.off('upload_progress', onUploadProgress);
-      ws.off('upload_complete', onUploadComplete);
-      ws.off('upload_error', onUploadError);
-      ws.off('build_uploaded', onBuildUploadedEvent);
-      ws.off('build_status_changed', onBuildStatusChangedEvent);
-      ws.off('build_flagged', onBuildFlaggedEvent);
-      ws.off('build_deleted', onBuildDeletedEvent);
+      ws.off('uploadProgress', onUploadProgress);
+      ws.off('uploadComplete', onUploadComplete);
+      ws.off('uploadError', onUploadError);
+      ws.off('buildUploaded', onBuildUploadedEvent);
+      ws.off('buildStatusChanged', onBuildStatusChangedEvent);
+      ws.off('buildFlagged', onBuildFlaggedEvent);
+      ws.off('buildDeleted', onBuildDeletedEvent);
       wsRef.current = null;
     };
   }, [enabled, userId]);

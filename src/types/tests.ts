@@ -202,8 +202,8 @@ export interface TestCycleResponse {
 }
 
 export enum TestStatus {
-  NOT_EXECUTED = 'not_executed',
-  IN_PROGRESS = 'in_progress',
+  NOT_EXECUTED = 'notExecuted',
+  IN_PROGRESS = 'inProgress',
   COMPLETED = 'completed',
   QUEUED = 'queued',
   CANCELLED = 'cancelled',
@@ -212,7 +212,7 @@ export enum TestStatus {
 
 export interface TestExecutionUpdate {
   testId: string;
-  type: 'status' | 'log' | 'new' | 'cancel_requested' | 'rtos_log';
+  type: 'status' | 'log' | 'new' | 'cancelRequested' | 'rtosLog';
   data: {
     status?: TestStatus;
     message?: string;

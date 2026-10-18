@@ -104,8 +104,8 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
     ws.on('connect', onConnect);
     ws.on('disconnect', onDisconnect);
     ws.on('connect_error', onConnectError);
-    ws.on('build_performance_update', onBuildPerformanceUpdate);
-    ws.on('build_deleted', onBuildDeleted);
+    ws.on('buildPerformanceUpdate', onBuildPerformanceUpdate);
+    ws.on('buildDeleted', onBuildDeleted);
 
     return () => {
       clearDebounceTimers();
@@ -113,8 +113,8 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
       ws.off('connect', onConnect);
       ws.off('disconnect', onDisconnect);
       ws.off('connect_error', onConnectError);
-      ws.off('build_performance_update', onBuildPerformanceUpdate);
-      ws.off('build_deleted', onBuildDeleted);
+      ws.off('buildPerformanceUpdate', onBuildPerformanceUpdate);
+      ws.off('buildDeleted', onBuildDeleted);
     };
   }, [dashboard, dispatch]);
 

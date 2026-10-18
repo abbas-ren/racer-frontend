@@ -23,7 +23,7 @@ function ResultProgressBar({
     execution?.status === 'failed' ||
     execution?.status === 'cancelled';
   const isActive =
-    execution?.status === 'in_progress' || execution?.status === 'queued';
+    execution?.status === 'inProgress' || execution?.status === 'queued';
   return (
     <Box className={clsx(styles.container, { [styles.completed]: isComplete })}>
       {/* Header */}

@@ -317,7 +317,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         debouncedDailySummaryRefresh();
       }
 
-      if (message.type === 'cancel_requested') {
+      if (message.type === 'cancelRequested') {
         cancelledTestIdsRef.current.add(message.testId);
         dispatch(
           updateExecutionCancelRequested({
@@ -327,7 +327,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         );
       }
 
-      if (message.type === 'rtos_log' && message.data.rtosLogPath) {
+      if (message.type === 'rtosLog' && message.data.rtosLogPath) {
         dispatch(
           patchUserDashboardExecutionRtosLogPath({
             testId: message.testId,
@@ -552,12 +552,12 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
     ws.on('connect', onConnect);
     ws.on('disconnect', onDisconnect);
     ws.on('connect_error', onConnectError);
-    ws.on('test_execution', onTestExecution);
-    ws.on('device_state_update', onDeviceState);
-    ws.on('device_power_update', onDevicePower);
-    ws.on('execution_report_update', onExecutionReportUpdate);
-    ws.on('build_performance_update', onBuildPerformanceUpdate);
-    ws.on('build_deleted', onBuildDeleted);
+    ws.on('testExecution', onTestExecution);
+    ws.on('deviceStateUpdate', onDeviceState);
+    ws.on('devicePowerUpdate', onDevicePower);
+    ws.on('executionReportUpdate', onExecutionReportUpdate);
+    ws.on('buildPerformanceUpdate', onBuildPerformanceUpdate);
+    ws.on('buildDeleted', onBuildDeleted);
 
     return () => {
       if (isUser) {
@@ -566,12 +566,12 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       ws.off('connect', onConnect);
       ws.off('disconnect', onDisconnect);
       ws.off('connect_error', onConnectError);
-      ws.off('test_execution', onTestExecution);
-      ws.off('device_state_update', onDeviceState);
-      ws.off('device_power_update', onDevicePower);
-      ws.off('execution_report_update', onExecutionReportUpdate);
-      ws.off('build_performance_update', onBuildPerformanceUpdate);
-      ws.off('build_deleted', onBuildDeleted);
+      ws.off('testExecution', onTestExecution);
+      ws.off('deviceStateUpdate', onDeviceState);
+      ws.off('devicePowerUpdate', onDevicePower);
+      ws.off('executionReportUpdate', onExecutionReportUpdate);
+      ws.off('buildPerformanceUpdate', onBuildPerformanceUpdate);
+      ws.off('buildDeleted', onBuildDeleted);
       if (wsRef.current === ws) {
         wsRef.current = null;
       }
