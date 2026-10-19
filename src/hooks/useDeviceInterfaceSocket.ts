@@ -7,28 +7,9 @@ import {
   setDeviceHeartbeatStatus,
   updateSidebarDeviceInterfaces,
 } from 'store/slices';
+import { DeviceControllerPingPayload, InterfaceUpdatePayload, DevicePingPayload } from 'types/websocket';
 
-interface InterfaceUpdatePayload {
-  deviceId: string;
-  changes: Array<{
-    type: string;
-    interfaceId: string | null;
-    status: string;
-  }>;
-  heartbeatData: any;
-  timestamp: string;
-}
 
-interface DevicePingPayload {
-  deviceId: string;
-  timestamp: string;
-}
-
-interface DeviceControllerPingPayload {
-  controllerId: string;
-  timestamp: string;
-  metrics?: any;
-}
 
 /**
  * Joins the socket.io room `device:<deviceId>` when the sidebar opens.
@@ -71,8 +52,8 @@ export const useDeviceInterfaceSocket = (
     }, 1000);
 
     // Handle heartbeat ping — reset timer for this device
-    const handlePing = (payload: DevicePingPayload) => {
-      if (payload.deviceId !== deviceId) {
+    const handlePing = (payload: [DevicePingPayload]) => {
+      if (payload?.[0]?.deviceId !== deviceId) {
         return;
       }
       dispatch(setHeartbeatTimer({ deviceId, value: 0 }));
@@ -80,14 +61,17 @@ export const useDeviceInterfaceSocket = (
     };
 
     const handleControllerPing = (payload: DeviceControllerPingPayload) => {
-      if (payload.controllerId !== deviceId) {
+      console.log('[handleControllerPing] Is array:', Array.isArray(payload));
+      console.log('[handleControllerPing] Payload:', payload);
+
+      if (payload?.controllerId !== deviceId) {
         return;
       }
 
       dispatch(setHeartbeatTimer({ deviceId, value: 0 }));
       dispatch(setDeviceHeartbeatStatus({ deviceId, status: true }));
 
-      if (payload.metrics) {
+      if (payload?.metrics) {
         dispatch(
           setBulkHeartbeats({
             [deviceId]: {
@@ -104,7 +88,7 @@ export const useDeviceInterfaceSocket = (
 
     // Handle interface changes — update sidebar device interfaces in Redux
     const mhandleInterfaceUpdate = (payload: InterfaceUpdatePayload) => {
-      if (payload.deviceId !== deviceId) {
+      if (payload?.deviceId !== deviceId) {
         return;
       }
 
@@ -112,18 +96,18 @@ export const useDeviceInterfaceSocket = (
       dispatch(
         updateSidebarDeviceInterfaces({
           deviceId,
-          changes: payload.changes,
+          changes: payload?.changes,
         }),
       );
 
-      if (payload.heartbeatData) {
+      if (payload?.heartbeatData) {
         dispatch(
           setBulkHeartbeats({
             [deviceId]: {
               kind: 'heartbeat' as const,
               deviceId,
-              timestamp: payload.timestamp,
-              data: payload.heartbeatData,
+              timestamp: payload?.timestamp,
+              data: payload?.heartbeatData,
             },
           }),
         );
@@ -131,19 +115,19 @@ export const useDeviceInterfaceSocket = (
     };
 
     if (targetType === 'device_controller') {
-      socket.on('device_controller_ping', handleControllerPing);
+      socket.on('deviceControllerPing', handleControllerPing);
     } else {
       socket.on('device_ping', handlePing);
-      socket.on('device_interface_update', mhandleInterfaceUpdate);
+      socket.on('deviceInterfaceUpdate', mhandleInterfaceUpdate);
     }
 
     return () => {
       clearInterval(timerInterval);
       if (targetType === 'device_controller') {
-        socket.off('device_controller_ping', handleControllerPing);
+        socket.off('deviceControllerPing', handleControllerPing);
       } else {
         socket.off('device_ping', handlePing);
-        socket.off('device_interface_update', mhandleInterfaceUpdate);
+        socket.off('deviceInterfaceUpdate', mhandleInterfaceUpdate);
       }
       socket.emit(`leave:${roomEventPrefix}`, deviceId);
     };

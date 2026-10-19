@@ -184,6 +184,14 @@ export interface BuildUploadedPayload {
   buildType: string;
 }
 
+export interface BuildDeletedPayload {
+  kind: 'buildDeleted';
+  releaseId: string;
+  version: string;
+  deviceType: string;
+  userId: string;
+}
+
 // ----------------- Upload-related events ---------------
 
 export interface UploadProgressPayload {
@@ -224,4 +232,29 @@ export interface RtosLogPayload {
   buildId?: string;
   path: string;
   userId: string;
+}
+
+export interface InterfaceUpdatePayload {
+  kind: 'interfaceUpdate';
+  deviceId: string;
+  changes: Array<{
+    type: string;
+    interfaceId: string | null;
+    status: string;
+  }>;
+  heartbeatData: any;
+  timestamp: string;
+}
+
+export interface DevicePingPayload {
+  kind: 'devicePing';
+  deviceId: string;
+  timestamp: string;
+}
+
+export interface DeviceControllerPingPayload {
+  kind: 'deviceControllerPing';
+  controllerId: string;
+  timestamp: string;
+  metrics?: any;
 }

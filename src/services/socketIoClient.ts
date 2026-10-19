@@ -34,6 +34,10 @@ export function getSharedSocket(userId?: string): Socket {
     socket.connect();
   }
 
+  // socket.onAny((event, ...args) => {
+  //   // triggered when the event is received
+  //   console.log(`Socket received event: ${event}`, args);
+  // });
   return socket;
 }
 
