@@ -10,9 +10,10 @@ import {
   updateBuildExecutionStatus,
   updateExecutionCancelRequested,
 } from 'store/index';
-import { TestStatus } from 'types/tests';
 import { isEmpty } from 'utils/common';
 import type { Socket } from 'socket.io-client';
+import { BuildPerformanceUpdatePayload, BuildTestExecutionUpdatePayload, TestExecutionUpdatePayload } from 'types/websocket';
+import { WSPayloadKind } from 'constants/websocket';
 
 interface UseBuildSidebarWebSocketProps {
   buildId: string | null;
@@ -202,21 +203,15 @@ export const useBuildSidebarWebSocket = ({
       setIsConnected(false);
     };
 
-    const onBuildPerformanceUpdate = (payload: { buildId?: string }) => {
+    const onBuildPerformanceUpdate = (payload: BuildPerformanceUpdatePayload) => {
+      console.log('Received build performance update:', payload);
       const receivedBuildId = payload?.buildId;
       if (receivedBuildId && receivedBuildId === targetBuildId) {
         refetchBuildExecutionsRef.current(receivedBuildId);
       }
     };
 
-    const onTestExecutionUpdate = (payload: {
-      buildId?: string;
-      testId?: string;
-      status?: TestStatus;
-      progress?: number | null;
-      message?: string | null;
-      cancelRequested?: boolean;
-    }) => {
+    const onTestExecutionUpdate = (payload: TestExecutionUpdatePayload) => {
       const testId = payload?.testId;
       const status = payload?.status;
       const receivedBuildId = payload?.buildId;
@@ -254,11 +249,7 @@ export const useBuildSidebarWebSocket = ({
       }
     };
 
-    const onBuildTestExecutionUpdate = (payload: {
-      buildId?: string;
-      testId?: string;
-      testCaseId?: number;
-    }) => {
+    const onBuildTestExecutionUpdate = (payload: BuildTestExecutionUpdatePayload) => {
       const receivedBuildId = payload?.buildId;
       if (!receivedBuildId || receivedBuildId !== targetBuildId) {
         return;
@@ -288,21 +279,21 @@ export const useBuildSidebarWebSocket = ({
       scheduleBuildPerformanceRefreshRef.current(receivedBuildId);
     };
 
-    ws.on('connect', onConnect);
-    ws.on('disconnect', onDisconnect);
-    ws.on('connect_error', onConnectError);
-    ws.on('buildPerformanceUpdate', onBuildPerformanceUpdate);
-    ws.on('testExecutionUpdate', onTestExecutionUpdate);
-    ws.on('buildTestExecutionUpdate', onBuildTestExecutionUpdate);
+    ws.on(WSPayloadKind.connect, onConnect);
+    ws.on(WSPayloadKind.disconnect, onDisconnect);
+    ws.on(WSPayloadKind.connectError, onConnectError);
+    ws.on(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
+    ws.on(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
+    ws.on(WSPayloadKind.buildTestExecutionUpdate, onBuildTestExecutionUpdate);
 
     return () => {
-      ws.emit('leave:build', targetBuildId);
-      ws.off('connect', onConnect);
-      ws.off('disconnect', onDisconnect);
-      ws.off('connect_error', onConnectError);
-      ws.off('buildPerformanceUpdate', onBuildPerformanceUpdate);
-      ws.off('testExecutionUpdate', onTestExecutionUpdate);
-      ws.off('buildTestExecutionUpdate', onBuildTestExecutionUpdate);
+      ws.emit(WSPayloadKind.leaveBuild, targetBuildId);
+      ws.off(WSPayloadKind.connect, onConnect);
+      ws.off(WSPayloadKind.disconnect, onDisconnect);
+      ws.off(WSPayloadKind.connectError, onConnectError);
+      ws.off(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
+      ws.off(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
+      ws.off(WSPayloadKind.buildTestExecutionUpdate, onBuildTestExecutionUpdate);
       if (wsRef.current === ws) {
         wsRef.current = null;
       }

@@ -1,4 +1,5 @@
 export const WSPayloadKind = {
+    devicePing: 'devicePing',
     heartbeatPing: 'heartbeatPing',
     heartbeat: 'heartbeat',
     alert: 'alert',
@@ -18,4 +19,15 @@ export const WSPayloadKind = {
     uploadComplete: 'uploadComplete',
     relayConfigurationStatus: 'relayConfigurationStatus',
     rtosLog: 'rtosLog',
+    executionReportUpdate: 'executionReportUpdate',
+    buildDeleted: 'buildDeleted',
+    testExecutionUpdate: 'testExecutionUpdate',
+    leaveBuild: 'leave:build',
+    buildFlagged: 'buildFlagged',
+    systemMetricsUpdate: 'system_metrics_update',
+    deviceInterfaceUpdate: 'deviceInterfaceUpdate',
+
+    connect: 'connect',
+    disconnect: 'disconnect',
+    connectError: 'connect_error',
 }

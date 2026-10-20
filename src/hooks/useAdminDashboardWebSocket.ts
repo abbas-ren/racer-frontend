@@ -8,13 +8,8 @@ import {
 } from 'store/slices';
 import { RootState } from 'store/store';
 import type { Socket } from 'socket.io-client';
-
-interface DashboardEventPayload {
-  type?: string;
-  data?: {
-    buildId?: string;
-  };
-}
+import { WSPayloadKind } from 'constants/websocket';
+import { BuildDeletedPayload, BuildPerformanceUpdatePayload } from 'types/websocket';
 
 export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
   const DEBOUNCE_MS = 300;
@@ -74,7 +69,7 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
       setError(new Error('AdminDashboard WebSocket error occurred'));
     };
 
-    const onBuildPerformanceUpdate = (data: DashboardEventPayload['data']) => {
+    const onBuildPerformanceUpdate = (data: BuildPerformanceUpdatePayload) => {
       console.log('Received build performance update:', data);
       const targetBuildId = data?.buildId;
       if (typeof targetBuildId === 'string' && targetBuildId) {
@@ -95,7 +90,7 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
       }
     };
 
-    const onBuildDeleted = (data: { releaseId?: string }) => {
+    const onBuildDeleted = (data: BuildDeletedPayload) => {
       console.log('Received build deleted update:', data);
       if (typeof data?.releaseId === 'string' && data.releaseId) {
         dispatch(removeBuildPerformance(data.releaseId));
@@ -103,20 +98,20 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
       }
     };
 
-    ws.on('connect', onConnect);
-    ws.on('disconnect', onDisconnect);
-    ws.on('connect_error', onConnectError);
-    ws.on('buildPerformanceUpdate', onBuildPerformanceUpdate);
-    ws.on('buildDeleted', onBuildDeleted);
+    ws.on(WSPayloadKind.connect, onConnect);
+    ws.on(WSPayloadKind.disconnect, onDisconnect);
+    ws.on(WSPayloadKind.connectError, onConnectError);
+    ws.on(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
+    ws.on(WSPayloadKind.buildDeleted, onBuildDeleted);
 
     return () => {
       clearDebounceTimers();
       ws.emit('leave:dashboard', dashboard);
-      ws.off('connect', onConnect);
-      ws.off('disconnect', onDisconnect);
-      ws.off('connect_error', onConnectError);
-      ws.off('buildPerformanceUpdate', onBuildPerformanceUpdate);
-      ws.off('buildDeleted', onBuildDeleted);
+      ws.off(WSPayloadKind.connect, onConnect);
+      ws.off(WSPayloadKind.disconnect, onDisconnect);
+      ws.off(WSPayloadKind.connectError, onConnectError);
+      ws.off(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
+      ws.off(WSPayloadKind.buildDeleted, onBuildDeleted);
     };
   }, [dashboard, dispatch]);
 

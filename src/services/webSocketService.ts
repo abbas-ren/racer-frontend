@@ -2,7 +2,7 @@ import { GeneralWebsocketMessage } from 'types/websocket';
 import { createWebSocket } from './wsClient';
 
 type MessageCallback = (data: GeneralWebsocketMessage['payload']) => void;
-type MessageType = GeneralWebsocketMessage['payload']['kind'];
+type MessageType = string;
 
 const listeners: Record<MessageType, Set<MessageCallback>> = {
   heartbeat: new Set(),
@@ -41,7 +41,9 @@ export const startWebSocket = () => {
   if (socket) return;
 
   socket = createWebSocket('frontend', (data: GeneralWebsocketMessage) => {
-    listeners[data['payload'].kind]?.forEach((cb) => cb(data['payload']));
+    const kind = data['payload'].kind;
+
+    kind && listeners[kind]?.forEach((cb) => cb(data['payload']));
   });
 
   socket.onclose = () => {

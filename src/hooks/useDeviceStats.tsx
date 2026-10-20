@@ -9,16 +9,16 @@ const useDeviceStats = (devices: IDevice[]) => {
         if (device.status === 'approved') {
           acc.total++;
           switch (device.state) {
-            case 'free':
+            case DeviceState.AVAILABLE:
               acc[DeviceState.AVAILABLE]++;
               break;
-            case 'busy':
+            case DeviceState.BUSY:
               acc[DeviceState.BUSY]++;
               break;
-            case 'faulty':
+            case DeviceState.FAULTY:
               acc[DeviceState.FAULTY]++;
               break;
-            case 'not_reachable':
+            case DeviceState.NOT_REACHABLE:
               acc[DeviceState.NOT_REACHABLE]++;
               break;
           }

@@ -25,6 +25,7 @@ import { DeviceState } from 'typesCustom/components';
 import { CustomIcon } from 'components/common';
 import { useSocketIoEvent } from 'hooks/useSocketIoEvent';
 import type { RootState } from 'store';
+import { WSPayloadKind } from 'constants/websocket';
 
 type InterfaceCardStatus = 'connected' | 'not_connected' | 'not_available';
 
@@ -104,7 +105,7 @@ const NodeSidebar = ({
   }, []);
 
   useSocketIoEvent<LiveSystemMetrics>(
-    'system_metrics_update',
+    WSPayloadKind.systemMetricsUpdate,
     handleMetricsUpdate,
     { enabled: isFarmControllerNode },
   );

@@ -31,11 +31,12 @@ import {
   devicePowerUpdate as userDevicesPowerUpdate,
   triggerDevicesRefresh,
 } from 'store/slices/userDevices/userDevicesSlice';
-import { TestExecutionUpdate, TestStatus } from 'typesCustom/tests';
 import { isEmpty } from 'utils/common';
 import type { RootState } from 'store/store';
 import type { Socket } from 'socket.io-client';
-import { DevicePowerUpdatePayload, DeviceStateUpdatePayload } from 'types/websocket';
+import { DevicePowerUpdatePayload, DeviceStateUpdatePayload, TestExecutionPayload, TestExecutionType } from 'types/websocket';
+import { WSPayloadKind } from 'constants/websocket';
+import { TestStatus } from 'types/tests';
 
 export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
   const dispatch = useDispatch();
@@ -235,13 +236,13 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
   }, []);
 
   const handleTestExecutionMessage = useCallback(
-    (message: TestExecutionUpdate) => {
+    (message: TestExecutionPayload) => {
       const shouldRefreshExecution =
-        message.type === 'new' ||
-        message.type === 'status' ||
-        message.type === 'log';
+        message.type === TestExecutionType.New ||
+        message.type === TestExecutionType.Status ||
+        message.type === TestExecutionType.Log;
 
-      if (message.type === 'new') {
+      if (message.type === TestExecutionType.New) {
         dispatch(
           fetchTestExecutionsRequest({
             page: '1',
@@ -261,7 +262,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         }
         // Fetch the single execution to update current view
         dispatch(getSingleTestExecutionResultRequest(message.testId));
-      } else if (message.type === 'status') {
+      } else if (message.type === TestExecutionType.Status) {
         dispatch(getSingleTestExecutionResultRequest(message.testId));
       }
 
@@ -278,7 +279,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         }
       }
 
-      if (message.type === 'status') {
+      if (message.type === TestExecutionType.Status) {
         const nextStatus =
           typeof message.data.status === 'string' ? message.data.status : '';
 
@@ -308,16 +309,16 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         scheduleDashboardExecutionRefresh(message.testId);
       }
 
-      if (message.type === 'new') {
+      if (message.type === TestExecutionType.New) {
         scheduleDashboardExecutionRefresh(message.testId);
       }
 
-      if (message.type === 'new' || message.type === 'status') {
+      if (message.type === TestExecutionType.New || message.type === TestExecutionType.Status) {
         scheduleDashboardActivityRefresh(message.testId);
         debouncedDailySummaryRefresh();
       }
 
-      if (message.type === 'cancelRequested') {
+      if (message.type === TestExecutionType.CancelRequested) {
         cancelledTestIdsRef.current.add(message.testId);
         dispatch(
           updateExecutionCancelRequested({
@@ -327,7 +328,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         );
       }
 
-      if (message.type === 'rtosLog' && message.data.rtosLogPath) {
+      if (message.type === TestExecutionType.RtosLog && message.data.rtosLogPath) {
         dispatch(
           patchUserDashboardExecutionRtosLogPath({
             testId: message.testId,
@@ -337,7 +338,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       }
 
       // Clean up tracking ref when execution reaches terminal status
-      if (message.type === 'status') {
+      if (message.type === TestExecutionType.Status) {
         const terminalStatuses = [
           TestStatus.CANCELLED,
           TestStatus.FAILED,
@@ -348,7 +349,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         }
       }
 
-      if (message.type === 'log') {
+      if (message.type === TestExecutionType.Log) {
         scheduleDashboardExecutionRefresh(message.testId);
         // Re-fetch test cases if drawer is open for this execution
         scheduleTestCasesRefresh(message.testId);
@@ -478,7 +479,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       setError(new Error('WebSocket error occurred'));
     };
 
-    const onTestExecution = (data: TestExecutionUpdate) => {
+    const onTestExecution = (data: TestExecutionPayload) => {
       console.log('Received test execution update:', data);
       handleTestExecutionMessageRef.current(data);
     };
@@ -554,29 +555,29 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       }
     };
 
-    ws.on('connect', onConnect);
-    ws.on('disconnect', onDisconnect);
-    ws.on('connect_error', onConnectError);
-    ws.on('testExecution', onTestExecution);
-    ws.on('deviceStateUpdate', onDeviceState);
-    ws.on('devicePowerUpdate', onDevicePower);
-    ws.on('executionReportUpdate', onExecutionReportUpdate);
-    ws.on('buildPerformanceUpdate', onBuildPerformanceUpdate);
-    ws.on('buildDeleted', onBuildDeleted);
+    ws.on(WSPayloadKind.connect, onConnect);
+    ws.on(WSPayloadKind.disconnect, onDisconnect);
+    ws.on(WSPayloadKind.connectError, onConnectError);
+    ws.on(WSPayloadKind.testExecution, onTestExecution);
+    ws.on(WSPayloadKind.deviceStateUpdate, onDeviceState);
+    ws.on(WSPayloadKind.devicePowerUpdate, onDevicePower);
+    ws.on(WSPayloadKind.executionReportUpdate, onExecutionReportUpdate);
+    ws.on(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
+    ws.on(WSPayloadKind.buildDeleted, onBuildDeleted);
 
     return () => {
       if (isUser) {
         ws.emit('leave:dashboard', 'user');
       }
-      ws.off('connect', onConnect);
-      ws.off('disconnect', onDisconnect);
-      ws.off('connect_error', onConnectError);
-      ws.off('testExecution', onTestExecution);
-      ws.off('deviceStateUpdate', onDeviceState);
-      ws.off('devicePowerUpdate', onDevicePower);
-      ws.off('executionReportUpdate', onExecutionReportUpdate);
-      ws.off('buildPerformanceUpdate', onBuildPerformanceUpdate);
-      ws.off('buildDeleted', onBuildDeleted);
+      ws.off(WSPayloadKind.connect, onConnect);
+      ws.off(WSPayloadKind.disconnect, onDisconnect);
+      ws.off(WSPayloadKind.connectError, onConnectError);
+      ws.off(WSPayloadKind.testExecution, onTestExecution);
+      ws.off(WSPayloadKind.deviceStateUpdate, onDeviceState);
+      ws.off(WSPayloadKind.devicePowerUpdate, onDevicePower);
+      ws.off(WSPayloadKind.executionReportUpdate, onExecutionReportUpdate);
+      ws.off(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
+      ws.off(WSPayloadKind.buildDeleted, onBuildDeleted);
       if (wsRef.current === ws) {
         wsRef.current = null;
       }

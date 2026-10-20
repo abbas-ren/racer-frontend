@@ -2,7 +2,7 @@ export enum DeviceState {
   AVAILABLE = 'free',
   BUSY = 'busy',
   FAULTY = 'faulty',
-  NOT_REACHABLE = 'not_reachable',
+  NOT_REACHABLE = 'notReachable',
   UNKNOWN = 'unknown',
 }
 

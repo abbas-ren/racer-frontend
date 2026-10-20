@@ -55,6 +55,8 @@ import {
   TopologyActiveIcon,
   DevicePassiveIcon,
 } from 'assets/index';
+import { WSPayloadKind } from 'constants/websocket';
+import { DeviceControllerChangedPayload, DevicePowerUpdatePayload, DeviceStateUpdatePayload } from 'types/websocket';
 
 const MIN_K = 0.25;
 const MAX_K = 3;
@@ -325,12 +327,10 @@ const CustomGraph = ({ onSwitchToDevices }: CustomGraphProps) => {
     [dispatch],
   );
 
-  useSocketIoEvent<{
-    action: 'added' | 'updated' | 'deleted';
-    controllerId: string;
-  }>(
-    'device_controller_changed',
-    () => {
+  useSocketIoEvent<DeviceControllerChangedPayload>(
+    WSPayloadKind.deviceControllerChanged,
+    (payload: DeviceControllerChangedPayload) => {
+      console.log('DeviceControllerChangedPayload received:', payload);
       refetchTreeTopology();
     },
     {
@@ -339,9 +339,10 @@ const CustomGraph = ({ onSwitchToDevices }: CustomGraphProps) => {
     },
   );
 
-  useSocketIoEvent<{ deviceId: string; changedAt: string; state: string }>(
-    'device_state_update',
-    () => {
+  useSocketIoEvent<DeviceStateUpdatePayload>(
+    WSPayloadKind.deviceStateUpdate,
+    (payload: DeviceStateUpdatePayload) => {
+      console.log('DeviceStateUpdatePayload received:', payload);
       refetchTreeTopology();
     },
     {
@@ -350,13 +351,10 @@ const CustomGraph = ({ onSwitchToDevices }: CustomGraphProps) => {
     },
   );
 
-  useSocketIoEvent<{
-    deviceId: string;
-    power: 'on' | 'off';
-    changedAt: string;
-  }>(
-    'device_power_update',
-    () => {
+  useSocketIoEvent<DevicePowerUpdatePayload>(
+    WSPayloadKind.devicePowerUpdate,
+    (payload: DevicePowerUpdatePayload) => {
+      console.log('DevicePowerUpdatePayload received:', payload);
       refetchTreeTopology();
     },
     {

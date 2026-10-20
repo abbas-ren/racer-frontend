@@ -8,6 +8,15 @@ export type TestPlan = {
 
 export type TestPlanResponse = Pagination<TestPlan>;
 
+export enum TestStatus {
+  NOT_EXECUTED = 'notExecuted',
+  IN_PROGRESS = 'inProgress',
+  COMPLETED = 'completed',
+  QUEUED = 'queued',
+  CANCELLED = 'cancelled',
+  FAILED = 'failed',
+}
+
 export type TestSuite = {
   id: number;
   name: string;
@@ -199,28 +208,6 @@ export interface TestExecutionPayloadNew {
 
 export interface TestCycleResponse {
   testId: string;
-}
-
-export enum TestStatus {
-  NOT_EXECUTED = 'notExecuted',
-  IN_PROGRESS = 'inProgress',
-  COMPLETED = 'completed',
-  QUEUED = 'queued',
-  CANCELLED = 'cancelled',
-  FAILED = 'failed',
-}
-
-export interface TestExecutionUpdate {
-  testId: string;
-  type: 'status' | 'log' | 'new' | 'cancelRequested' | 'rtosLog';
-  data: {
-    status?: TestStatus;
-    message?: string;
-    timestamp: string;
-    cancelRequested?: boolean;
-    phase?: string;
-    rtosLogPath?: string;
-  };
 }
 
 export interface SelectionInput {

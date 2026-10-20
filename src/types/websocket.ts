@@ -1,5 +1,6 @@
 import type { DeviceState } from 'typesCustom/components';
 import type { DevicePower } from 'typesCustom/types';
+import { TestStatus } from './tests';
 
 export interface GeneralWebsocketMessage {
   type: 'frontend';
@@ -15,7 +16,10 @@ export type GeneralWebsocketPayload =
   | DevicePowerUpdatePayload
   | DeviceControllerChangedPayload
   | TestExecutionPayload
-  | TestExecutionUpdatePayload
+  | TestExecutionStatusUpdatePayload
+  | TestExecutionTestcaseUpdatePayload
+  | TestExecutionQueuedUpdatePayload
+  | TestExecutionCancelRequestedUpdatePayload
   | BuildTestExecutionUpdatePayload
   | BuildPerformanceUpdatePayload
   | BuildStatusChangedPayload
@@ -28,14 +32,14 @@ export type GeneralWebsocketPayload =
 
 
 export interface HeartbeatPingPayload {
-  kind: 'heartbeatPing';
+  kind?: 'heartbeatPing' | null;
   deviceId: string;
   timestamp: string;
   [key: string]: any;
 }
 
 export interface HeartbeatDataPayload {
-  kind: 'heartbeat';
+  kind?: 'heartbeat' | null;
   deviceId?: string;
   controllerId?: string;
   deviceControllerId?: string;
@@ -45,7 +49,7 @@ export interface HeartbeatDataPayload {
 }
 
 export interface AlertDataPayload {
-  kind: 'alert';
+  kind?: 'alert' | null;
   level?: 'info' | 'warning' | 'critical';
   subtype?: string;
   message: any;
@@ -53,29 +57,23 @@ export interface AlertDataPayload {
 }
 
 export interface UserDataPayload {
-  kind: 'userData';
+  kind?: 'userData' | null;
   method: string;
   message: any;
   timestamp?: string;
 }
 
 export interface SshOutputPayload {
-  kind: 'sshOutput';
+  kind?: 'sshOutput' | null;
   stream: 'stdout' | 'stderr';
   chunk: string;
-}
-
-export interface GenericWsMessage {
-  type?: string;
-  data?: unknown;
-  [key: string]: unknown;
 }
 
 
 // -------------- Device events ---------------
 
 export interface DeviceStateUpdatePayload {
-  kind: 'deviceStateUpdate';
+  kind?: 'deviceStateUpdate' | null;
   deviceId: string;
   state: DeviceState;
   upgrading: boolean;
@@ -84,28 +82,37 @@ export interface DeviceStateUpdatePayload {
 }
 
 export interface DevicePowerUpdatePayload {
-  kind: 'devicePowerUpdate';
+  kind?: 'devicePowerUpdate' | null;
   deviceId: string;
   power: DevicePower;
   changedAt: string;
 }
 
 export interface DeviceControllerChangedPayload {
-  kind: 'deviceControllerChanged';
-  action: 'updated';
+  kind?: 'deviceControllerChanged' | null;
+  action: ChangeAction;
   controllerId: string;
 }
 
 // ----------------- Test-execution events -------------
 
-export type TestExecutionUpdatePayload =
-  | TestExecutionStatusUpdate
-  | TestExecutionTestcaseUpdate
-  | TestExecutionQueuedUpdate
-  | TestExecutionCancelRequestedUpdate;
+export interface TestExecutionUpdatePayload {
+  buildId?: string,
+  testId: string;
+  status?: TestStatus;
+  progress?: number;
+  message?: string;
+  cancelRequested?: boolean;
+}
 
-export interface TestExecutionStatusUpdate {
-  kind: 'testExecutionStatusUpdate';
+export interface TestExecutionPayload {
+  kind?: 'testExecution' | null;
+  testId: string;
+  type: TestExecutionType;
+  data: TestExecutionData;
+}
+export interface TestExecutionStatusUpdatePayload {
+  kind?: 'testExecutionStatusUpdate' | null;
   data: {
     status: string;
     timestamp?: string;
@@ -114,24 +121,24 @@ export interface TestExecutionStatusUpdate {
   };
 }
 
-export interface TestExecutionTestcaseUpdate {
-  kind: 'testExecutionTestcaseUpdate';
+export interface TestExecutionTestcaseUpdatePayload {
+  kind?: 'testExecutionTestcaseUpdate' | null;
   data: {
     testCaseId: string | number;
     result?: string;
   };
 }
 
-export interface TestExecutionQueuedUpdate {
-  kind: 'testExecutionQueuedUpdate';
+export interface TestExecutionQueuedUpdatePayload {
+  kind?: 'testExecutionQueuedUpdate' | null;
   data: {
     status: 'not_executed';
     timestamp: string;
   };
 }
 
-export interface TestExecutionCancelRequestedUpdate {
-  kind: 'testExecutionCancelRequestedUpdate';
+export interface TestExecutionCancelRequestedUpdatePayload {
+  kind?: 'testExecutionCancelRequestedUpdate' | null;
   data: {
     cancelRequested: true;
     phase: string;
@@ -139,33 +146,24 @@ export interface TestExecutionCancelRequestedUpdate {
   };
 }
 
-export interface TestExecutionPayload {
-  kind: 'testExecution';
-  testId: string;
-  buildId?: string;
-  createdBy?: string;
-  update: TestExecutionUpdatePayload;
-}
-
 // For the build-scoped summary/update form
 export interface BuildTestExecutionUpdatePayload {
-  kind: 'buildTestExecutionUpdate';
+  kind?: 'buildTestExecutionUpdate' | null;
   testId: string;
   buildId: string;
   status?: string;
-  cancelRequested?: boolean;
   testCaseId?: string;
 }
 
 // ----------------- Build-related events ---------------
 
 export interface BuildPerformanceUpdatePayload {
-  kind: 'buildPerformanceUpdate';
+  kind?: 'buildPerformanceUpdate' | null;
   buildId: string;
 }
 
 export interface BuildStatusChangedPayload {
-  kind: 'buildStatusChanged';
+  kind?: 'buildStatusChanged' | null;
   releaseId: string;
   status: string;
   isFaulty: boolean;
@@ -176,7 +174,7 @@ export interface BuildStatusChangedPayload {
 }
 
 export interface BuildUploadedPayload {
-  kind: 'buildUploaded';
+  kind?: 'buildUploaded' | null;
   releaseId: string;
   version: string;
   deviceType: string;
@@ -185,8 +183,17 @@ export interface BuildUploadedPayload {
 }
 
 export interface BuildDeletedPayload {
-  kind: 'buildDeleted';
+  kind?: 'buildDeleted' | null;
   releaseId: string;
+  version: string;
+  deviceType: string;
+  userId: string;
+}
+
+export interface BuildFlaggedPayload {
+  kind?: 'buildFlagged' | null;
+  releaseId: string;
+  isFaulty: boolean;
   version: string;
   deviceType: string;
   userId: string;
@@ -195,19 +202,19 @@ export interface BuildDeletedPayload {
 // ----------------- Upload-related events ---------------
 
 export interface UploadProgressPayload {
-  kind: 'uploadProgress';
+  kind?: 'uploadProgress' | null;
   uploadId: string;
   percent: number;
 }
 
 export interface UploadErrorPayload {
-  kind: 'uploadError';
+  kind?: 'uploadError' | null;
   uploadId: string;
   message: string;
 }
 
 export interface UploadCompletePayload {
-  kind: 'uploadComplete';
+  kind?: 'uploadComplete' | null;
   uploadId: string;
   fileName: string;
   tag?: string;
@@ -215,14 +222,9 @@ export interface UploadCompletePayload {
 
 // ----------------- Relay-related events ---------------
 
-export enum RelayConfigurationStatus {
-  InProgress = 'inProgress',
-  Completed = 'completed',
-  CompletedWithErrors = 'completedWithErrors',
-  Failed = 'failed',
-}
+
 export interface RelayConfigurationStatusPayload {
-  kind: 'relayConfigurationStatus';
+  kind?: 'relayConfigurationStatus' | null;
   relayId?: string | null;
   controllerId?: string | null;
   status: RelayConfigurationStatus;
@@ -234,7 +236,7 @@ export interface RelayConfigurationStatusPayload {
 
 // ----------------- RTOS log events ---------------
 export interface RtosLogPayload {
-  kind: 'rtosLog';
+  kind?: 'rtosLog' | null;
   testId: string;
   buildId?: string;
   path: string;
@@ -242,7 +244,7 @@ export interface RtosLogPayload {
 }
 
 export interface InterfaceUpdatePayload {
-  kind: 'interfaceUpdate';
+  kind?: 'interfaceUpdate' | null;
   deviceId: string;
   changes: Array<{
     type: string;
@@ -254,14 +256,52 @@ export interface InterfaceUpdatePayload {
 }
 
 export interface DevicePingPayload {
-  kind: 'devicePing';
+  kind?: 'devicePing' | null;
   deviceId: string;
   timestamp: string;
 }
 
 export interface DeviceControllerPingPayload {
-  kind: 'deviceControllerPing';
+  kind?: 'deviceControllerPing' | null;
   controllerId: string;
   timestamp: string;
   metrics?: any;
+}
+
+// ----------------- Enums and helper interfaces ---------------
+
+export interface TestExecutionData {
+  status?: TestStatus;
+  message?: string;
+  timestamp: string;
+  cancelRequested?: boolean;
+  phase?: string;
+  rtosLogPath?: string;
+}
+
+export enum RelayConfigurationStatus {
+  InProgress = 'inProgress',
+  Completed = 'completed',
+  CompletedWithErrors = 'completedWithErrors',
+  Failed = 'failed',
+}
+
+export enum TestExecutionType {
+    Status = 'status',
+    Log = 'log',
+    New = 'new',
+    CancelRequested = 'cancelRequested',
+    RtosLog = 'rtosLog',
+    Queued = 'queued',
+}
+export interface GenericWsMessage {
+  type?: string;
+  data?: unknown;
+  [key: string]: unknown;
+}
+
+export enum ChangeAction {
+  Added = 'added',
+  Updated = 'updated',
+  Deleted = 'deleted',
 }
