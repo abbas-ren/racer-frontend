@@ -214,11 +214,18 @@ export interface UploadCompletePayload {
 }
 
 // ----------------- Relay-related events ---------------
+
+export enum RelayConfigurationStatus {
+  InProgress = 'inProgress',
+  Completed = 'completed',
+  CompletedWithErrors = 'completedWithErrors',
+  Failed = 'failed',
+}
 export interface RelayConfigurationStatusPayload {
   kind: 'relayConfigurationStatus';
   relayId?: string | null;
   controllerId?: string | null;
-  status: string;
+  status: RelayConfigurationStatus;
   total: number;
   completed: number;
   errors?: string[];

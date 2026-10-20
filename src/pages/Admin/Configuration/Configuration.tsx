@@ -64,6 +64,8 @@ import type {
 } from 'types/deviceController';
 import type { EdgeGpioHeaderProfile } from 'types/adminControl';
 import styles from './Configuration.module.scss';
+import { WSPayloadKind } from 'constants/websocket';
+import { DeviceControllerChangedPayload, RelayConfigurationStatus, RelayConfigurationStatusPayload } from 'types/websocket';
 
 const Configuration = () => {
   const dispatch = useDispatch();
@@ -245,12 +247,10 @@ const Configuration = () => {
     dispatch(fetchConfigurationControllersRequest());
   }, [debouncedSearchTerm, dispatch, statusFilter]);
 
-  useSocketIoEvent<{
-    action: 'added' | 'updated' | 'deleted';
-    controllerId: string;
-  }>(
-    'device_controller_changed',
-    () => {
+  useSocketIoEvent<DeviceControllerChangedPayload>(
+    WSPayloadKind.deviceControllerChanged,
+    (payload: DeviceControllerChangedPayload) => {
+      console.log('Device controller changed event received:', payload);
       refreshControllersDebounced();
     },
     {
@@ -259,17 +259,10 @@ const Configuration = () => {
     },
   );
 
-  useSocketIoEvent<{
-    controllerId?: string;
-    relayId?: string;
-    status: 'in_progress' | 'completed' | 'completed_with_errors' | 'failed';
-    total?: number;
-    completed?: number;
-    errors?: string[];
-    message?: string;
-  }>(
-    'relay_configuration_status',
+  useSocketIoEvent<RelayConfigurationStatusPayload>(
+    WSPayloadKind.relayConfigurationStatus,
     (payload) => {
+      console.log('Relay configuration status event received:', payload);
       if (!isSyncingHardware) {
         return;
       }
@@ -286,15 +279,17 @@ const Configuration = () => {
         return;
       }
 
-      if (payload.status === 'completed') {
+      if (payload.status === RelayConfigurationStatus.Completed) {
         dispatch(hardwareSyncCompleted());
         toastService.success('Hardware sync completed successfully.');
-      } else if (payload.status === 'completed_with_errors' && payload.errors) {
+      } else if (payload.status === RelayConfigurationStatus.CompletedWithErrors && payload.errors) {
+        console.error('Relay configuration completed with errors:', payload.errors);
         dispatch(hardwareSyncFailed());
         toastService.warning(
           `Hardware sync completed with ${payload.errors.length} error(s). Some channels may need reconfiguration.`,
         );
-      } else if (payload.status === 'failed') {
+      } else if (payload.status === RelayConfigurationStatus.Failed) {
+        console.error('Relay configuration failed:', payload.message, payload.errors);
         dispatch(hardwareSyncFailed());
         toastService.error(
           payload.message ?? 'Hardware sync failed. Please try again.',
