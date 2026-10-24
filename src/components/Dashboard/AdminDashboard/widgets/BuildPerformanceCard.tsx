@@ -26,7 +26,9 @@ const BuildPerformanceCard = ({ onBuildClick }: BuildPerformanceCardProps) => {
   useAlertSocket((alert: AlertDataPayload) => {
     if (
       alert.subtype === 'build-flagged' ||
-      alert.subtype === 'test-result-changed'
+      alert.subtype === 'test-result-changed' ||
+      // Rust producers often emit the generic device-alert subtype for build flags
+      alert.subtype === 'device-alert'
     ) {
       dispatch(fetchBuildsPerformanceRequest());
     }

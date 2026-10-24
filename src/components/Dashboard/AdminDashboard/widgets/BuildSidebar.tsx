@@ -103,7 +103,13 @@ const BuildSidebar = ({
 
     if (normalized === 'completed') return 'available';
     if (normalized === 'cancelled' || normalized === 'failed') return 'busy';
-    if (normalized === 'queued' || normalized === 'in_progress') return 'busy';
+    if (
+      normalized === 'queued' ||
+      normalized === 'in_progress' ||
+      normalized === 'inprogress'
+    ) {
+      return 'busy';
+    }
 
     return 'busy';
   };
@@ -464,7 +470,29 @@ const BuildSidebar = ({
                           {execution.failedCount} failed
                         </span>
                       )}
+                      {typeof execution.progress === 'number' && (
+                        <span className={composeDashboardClasses('dth-id')}>
+                          {execution.progress}%
+                        </span>
+                      )}
                     </div>
+                    {execution.message ? (
+                      <p
+                        className={composeDashboardClasses('test-subtitle')}
+                        style={{
+                          margin: '6px 0 0',
+                          fontSize: 12,
+                          lineHeight: 1.35,
+                          color: 'var(--mui-palette-text-muted)',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                        title={execution.message}
+                      >
+                        {execution.message}
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className={composeDashboardClasses('device-tests-list')}>

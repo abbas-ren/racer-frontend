@@ -267,6 +267,7 @@ export interface TestExecutionByBuild {
   testPlanName: string;
   status: TestStatus;
   progress?: number | null;
+  message?: string | null;
   testCases: TestCaseByBuild[];
 }
 

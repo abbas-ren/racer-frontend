@@ -821,6 +821,26 @@ const testsSlice = createSlice({
     clearSelected: (state) => {
       Object.assign(state, selectedInitialState);
     },
+    /** Append live WS progress lines into tests.logs for dashboard Log views. */
+    appendLiveTestLogs: (
+      state,
+      action: PayloadAction<{ testId: string; messages: string[] }>,
+    ) => {
+      const { testId, messages } = action.payload;
+      if (!testId || !messages?.length) {
+        return;
+      }
+      if (!state.logs[testId]) {
+        state.logs[testId] = [];
+      }
+      const existing = new Set(state.logs[testId]);
+      for (const message of messages) {
+        if (!existing.has(message)) {
+          state.logs[testId].push(message);
+          existing.add(message);
+        }
+      }
+    },
   },
 });
 
@@ -890,6 +910,7 @@ export const {
   fetchTestPlanSummaryRequest,
   fetchTestPlanSummarySuccess,
   clearSelected,
+  appendLiveTestLogs,
 } = testsSlice.actions;
 
 export default testsSlice.reducer;

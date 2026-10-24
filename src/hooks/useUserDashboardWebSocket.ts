@@ -25,6 +25,7 @@ import {
   batchUpsertExecutionLogs,
   updateExecutionCancelRequested,
 } from 'store/slices/testExecution/testExecutionsSlice';
+import { appendLiveTestLogs } from 'store/slices/tests/testsSlice';
 import { deviceStateUpdate as deviceSliceStateUpdate } from 'store/slices/device/deviceSlice';
 import {
   deviceStateUpdate as userDevicesStateUpdate,
@@ -34,7 +35,13 @@ import {
 import { isEmpty } from 'utils/common';
 import type { RootState } from 'store/store';
 import type { Socket } from 'socket.io-client';
-import { DevicePowerUpdatePayload, DeviceStateUpdatePayload, TestExecutionPayload, TestExecutionType } from 'types/websocket';
+import {
+  DevicePowerUpdatePayload,
+  DeviceStateUpdatePayload,
+  TestExecutionPayload,
+  TestExecutionType,
+  TestExecutionUpdatePayload,
+} from 'types/websocket';
 import { WSPayloadKind } from 'constants/websocket';
 import { TestStatus } from 'types/tests';
 
@@ -86,8 +93,12 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
     });
     buffer.clear();
 
-    // Single batched dispatch for tab execution logs
+    // Single batched dispatch for tab + global live log buffers
     dispatch(batchUpsertExecutionLogs(logsBatch));
+    // Keep dashboard / tests.logs in sync for the Logs screen
+    logsBatch.forEach(({ testId, messages }) => {
+      dispatch(appendLiveTestLogs({ testId, messages }));
+    });
     // Trigger debounced case refresh for each testId
     testIdsToRefresh.forEach((testId) => {
       dispatch(wsExecutionLogReceived({ testId, message: '' }));
@@ -138,7 +149,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       const nextTimer = window.setTimeout(() => {
         dispatch(fetchUserDashboardExecutionRequest({ testId }));
         dashboardRefreshTimersRef.current.delete(testId);
-      }, 800);
+      }, 500);
 
       dashboardRefreshTimersRef.current.set(testId, nextTimer);
     },
@@ -156,7 +167,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       const nextTimer = window.setTimeout(() => {
         dispatch(fetchUserDashboardActivityByTestIdRequest({ testId }));
         dashboardActivityRefreshTimersRef.current.delete(testId);
-      }, 800);
+      }, 500);
 
       dashboardActivityRefreshTimersRef.current.set(testId, nextTimer);
     },
@@ -237,10 +248,12 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
 
   const handleTestExecutionMessage = useCallback(
     (message: TestExecutionPayload) => {
-      const shouldRefreshExecution =
+      const isStatusLike =
         message.type === TestExecutionType.New ||
         message.type === TestExecutionType.Status ||
-        message.type === TestExecutionType.Log;
+        message.type === TestExecutionType.Queued;
+      const shouldRefreshExecution =
+        isStatusLike || message.type === TestExecutionType.Log;
 
       if (message.type === TestExecutionType.New) {
         dispatch(
@@ -262,39 +275,65 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         }
         // Fetch the single execution to update current view
         dispatch(getSingleTestExecutionResultRequest(message.testId));
-      } else if (message.type === TestExecutionType.Status) {
+      } else if (
+        message.type === TestExecutionType.Status ||
+        message.type === TestExecutionType.Queued
+      ) {
         dispatch(getSingleTestExecutionResultRequest(message.testId));
       }
 
+      // Buffer progress lines: prefer explicit log events; also accept
+      // status/new payloads that carry a message (IPL progress, etc.).
       const wsMessage =
         typeof message.data.message === 'string' ? message.data.message : '';
       if (wsMessage) {
-        // After cancel is requested, only forward cancel-related log messages
         const isCancelledTest = cancelledTestIdsRef.current.has(message.testId);
-        const isCancelLog = wsMessage.toLowerCase().includes('cancel');
-        if (!isCancelledTest || isCancelLog) {
-          const newLogs = `[${message.data.timestamp}] ${wsMessage}`;
-          // Buffer logs instead of dispatching per-message to avoid max update depth
-          bufferLog(message.testId, newLogs);
+        const lower = wsMessage.toLowerCase();
+        const isCancelLog =
+          lower.includes('cancel') ||
+          lower.includes('abort') ||
+          lower.includes('stopp');
+        // After cancel is requested, still accept cancel-related lines and
+        // any explicit `log` events (backend may continue emitting progress).
+        const shouldBuffer =
+          !isCancelledTest ||
+          isCancelLog ||
+          message.type === TestExecutionType.Log;
+        if (shouldBuffer) {
+          const timestamp =
+            typeof message.data.timestamp === 'string' &&
+            message.data.timestamp
+              ? message.data.timestamp
+              : new Date().toISOString();
+          bufferLog(message.testId, `[${timestamp}] ${wsMessage}`);
         }
       }
 
-      if (message.type === TestExecutionType.Status) {
+      if (
+        message.type === TestExecutionType.Status ||
+        message.type === TestExecutionType.Queued
+      ) {
         const nextStatus =
-          typeof message.data.status === 'string' ? message.data.status : '';
+          typeof message.data.status === 'string'
+            ? message.data.status
+            : message.type === TestExecutionType.Queued
+              ? TestStatus.QUEUED
+              : '';
 
-        dispatch(
-          patchUserDashboardExecutionStatus({
-            testId: message.testId,
-            status: nextStatus as TestStatus,
-          }),
-        );
-        dispatch(
-          wsExecutionStatusUpdate({
-            testId: message.testId,
-            status: nextStatus as TestStatus,
-          }),
-        );
+        if (nextStatus) {
+          dispatch(
+            patchUserDashboardExecutionStatus({
+              testId: message.testId,
+              status: nextStatus as TestStatus,
+            }),
+          );
+          dispatch(
+            wsExecutionStatusUpdate({
+              testId: message.testId,
+              status: nextStatus as TestStatus,
+            }),
+          );
+        }
 
         if (isTerminalExecutionStatus(nextStatus)) {
           dispatch(
@@ -313,7 +352,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         scheduleDashboardExecutionRefresh(message.testId);
       }
 
-      if (message.type === TestExecutionType.New || message.type === TestExecutionType.Status) {
+      if (isStatusLike) {
         scheduleDashboardActivityRefresh(message.testId);
         debouncedDailySummaryRefresh();
       }
@@ -355,12 +394,6 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
         scheduleTestCasesRefresh(message.testId);
       }
 
-      // dispatch(
-      //   wsExecutionStatusUpdate({
-      //     testId: message.testId,
-      //     status: message.data.status,
-      //   }),
-      // );
       if (message.testId && shouldRefreshExecution) {
         dispatch(getTestExecutionResultRequest(message.testId));
       }
@@ -433,6 +466,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
   const scheduleDashboardBuildRefreshRef = useRef(
     scheduleDashboardBuildRefresh,
   );
+  const bufferLogRef = useRef(bufferLog);
 
   useEffect(() => {
     handleTestExecutionMessageRef.current = handleTestExecutionMessage;
@@ -446,6 +480,9 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
   useEffect(() => {
     scheduleDashboardBuildRefreshRef.current = scheduleDashboardBuildRefresh;
   }, [scheduleDashboardBuildRefresh]);
+  useEffect(() => {
+    bufferLogRef.current = bufferLog;
+  }, [bufferLog]);
 
   useEffect(() => {
     if (isEmpty(userId)) {
@@ -480,17 +517,14 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
     };
 
     const onTestExecution = (data: TestExecutionPayload) => {
-      console.log('Received test execution update:', data);
       handleTestExecutionMessageRef.current(data);
     };
 
     const onDeviceState = (data: DeviceStateUpdatePayload) => {
-      console.log('Received device state update:', data);
       handleDeviceStateUpdateRef.current(data);
     };
 
     const onDevicePower = (data: DevicePowerUpdatePayload) => {
-      console.log('Received device power update:', data);
       handleDevicePowerUpdateRef.current(data);
     };
 
@@ -539,7 +573,6 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
     };
 
     const onBuildPerformanceUpdate = (payload: { buildId?: string }) => {
-      console.log('Received build performance update:', payload);
       if (typeof payload?.buildId === 'string' && payload.buildId) {
         if (listedBuildIdsRef.current.has(payload.buildId)) {
           scheduleDashboardBuildRefreshRef.current(payload.buildId);
@@ -548,17 +581,38 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
     };
 
     const onBuildDeleted = (data: { releaseId?: string }) => {
-      console.log('Received build deleted update:', data);
       if (typeof data?.releaseId === 'string' && data.releaseId) {
         dispatch(removeUserDashboardBuildComparison(data.releaseId));
         dispatch(fetchUserDashboardDataRequest());
       }
     };
 
+    // IPL / progress path also emits testExecutionUpdate with a message.
+    // Buffer it so Device Logs stay filled even if the parallel testExecution/log
+    // emit is missed (dedupe in Redux keeps doubles out).
+    const onTestExecutionUpdate = (payload: TestExecutionUpdatePayload) => {
+      const testId = payload?.testId;
+      const message =
+        typeof payload?.message === 'string' ? payload.message.trim() : '';
+      if (!testId || !message) {
+        return;
+      }
+      if (payload.status) {
+        dispatch(
+          wsExecutionStatusUpdate({
+            testId,
+            status: payload.status as TestStatus,
+          }),
+        );
+      }
+      bufferLogRef.current(testId, `[${new Date().toISOString()}] ${message}`);
+    };
+
     ws.on(WSPayloadKind.connect, onConnect);
     ws.on(WSPayloadKind.disconnect, onDisconnect);
     ws.on(WSPayloadKind.connectError, onConnectError);
     ws.on(WSPayloadKind.testExecution, onTestExecution);
+    ws.on(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
     ws.on(WSPayloadKind.deviceStateUpdate, onDeviceState);
     ws.on(WSPayloadKind.devicePowerUpdate, onDevicePower);
     ws.on(WSPayloadKind.executionReportUpdate, onExecutionReportUpdate);
@@ -573,6 +627,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       ws.off(WSPayloadKind.disconnect, onDisconnect);
       ws.off(WSPayloadKind.connectError, onConnectError);
       ws.off(WSPayloadKind.testExecution, onTestExecution);
+      ws.off(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
       ws.off(WSPayloadKind.deviceStateUpdate, onDeviceState);
       ws.off(WSPayloadKind.devicePowerUpdate, onDevicePower);
       ws.off(WSPayloadKind.executionReportUpdate, onExecutionReportUpdate);

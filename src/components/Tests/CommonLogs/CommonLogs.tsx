@@ -6,11 +6,11 @@ interface CommonLogsProps {
   logs: string[];
 }
 
-function parseTimeFromLog(msg: string) {
-  // Allow leading whitespace before the timestamp and capture message with newlines
+/** Parse farm RFC3339 / ISO timestamps (with Z or ±offset) and [HH:MM:SS] prefixes. */
+export function parseTimeFromLog(msg: string) {
   const input = msg.replace(/^\s+/, '');
   const iso = input.match(
-    /^\s*\[?(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z?)\]?\s*([\s\S]*)$/,
+    /^\s*\[?(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?)\]?\s*([\s\S]*)$/,
   );
   if (iso) {
     const full = iso[1];

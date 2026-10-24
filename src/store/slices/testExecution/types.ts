@@ -114,6 +114,12 @@ export interface TabsState {
   activeTabId?: string;
   tabsById: Record<string, SingleTabState>;
   tabOrder: string[];
+  /**
+   * Live WS progress logs keyed by testId.
+   * Accumulates even when no Tests tab is bound yet so Device Logs
+   * and dashboard log views stay complete once the execution opens.
+   */
+  liveLogsByTestId: Record<string, string[]>;
 }
 
 export interface BackendTab {

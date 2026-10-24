@@ -16,7 +16,7 @@ export const fetchDashboardData = async (
   desc: boolean = true,
 ): Promise<DashboardApiData> => {
   const response = await axiosInstance.get<TestExecutionApiResponse>(
-    'device/test/execution/',
+    'device/test/execution',
     {
       params: {
         page,

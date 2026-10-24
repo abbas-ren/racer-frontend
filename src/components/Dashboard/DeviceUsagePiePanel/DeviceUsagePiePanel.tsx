@@ -53,10 +53,17 @@ function DeviceUsagePiePanel() {
   }, [user, deviceList, dispatch]);
 
   useAlertSocket((alert: AlertDataPayload) => {
-    if (alert.subtype === 'device-approval') {
+    if (
+      alert.subtype === 'device-approval' ||
+      alert.subtype === 'device-addition'
+    ) {
       dispatch(setSelectedDeviceFamily('all'));
     }
-    if (alert.subtype === 'device-deletion') {
+    if (
+      alert.subtype === 'device-deletion' ||
+      alert.subtype === 'device-alert' ||
+      alert.subtype === 'device-state-change'
+    ) {
       if (user && (!deviceList || deviceList.length === 0)) {
         dispatch(fetchDeviceUsageAnalyticsDailyRequest({}));
       }

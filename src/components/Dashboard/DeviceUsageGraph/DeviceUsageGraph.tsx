@@ -45,10 +45,13 @@ function DeviceUsageGraph() {
   // chartData derived via useMemo; avoid setState in effects
 
   useAlertSocket((alert: AlertDataPayload) => {
-    if (alert.subtype === 'device-approval') {
-      dispatch(fetchDeviceUsageAnalyticsSummaryRequest());
-    }
-    if (alert.subtype === 'device-deletion') {
+    if (
+      alert.subtype === 'device-approval' ||
+      alert.subtype === 'device-addition' ||
+      alert.subtype === 'device-deletion' ||
+      alert.subtype === 'device-alert' ||
+      alert.subtype === 'device-state-change'
+    ) {
       dispatch(fetchDeviceUsageAnalyticsSummaryRequest());
     }
   });

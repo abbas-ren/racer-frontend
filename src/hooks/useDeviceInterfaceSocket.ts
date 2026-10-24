@@ -10,15 +10,15 @@ import {
 } from 'store/slices';
 import { DeviceControllerPingPayload, InterfaceUpdatePayload, DevicePingPayload } from 'types/websocket';
 
-
-
 /**
  * Joins the socket.io room `device:<deviceId>` when the sidebar opens.
  * Manages a local 1-second interval timer for the opened device only.
  * Listens for:
- *  - `device:ping` — resets the heartbeat timer to 0 for the opened device
- *  - `device:interface-update` — updates Redux heartbeat data with changed interface state
+ *  - `devicePing` — resets the heartbeat timer to 0 for the opened device
+ *  - `deviceInterfaceUpdate` — updates Redux heartbeat data with changed interface state
+ *  - `deviceControllerPing` — resets timer / metrics for an opened controller
  * Leaves the room and stops the timer on unmount or when deviceId changes.
+ * Re-joins the room on socket reconnect.
  */
 export const useDeviceInterfaceSocket = (
   deviceId: string | null,
@@ -44,8 +44,12 @@ export const useDeviceInterfaceSocket = (
       return;
     }
 
+    const joinRoom = () => {
+      socket.emit(`join:${roomEventPrefix}`, deviceId);
+    };
+
     // Join room for this device
-    socket.emit(`join:${roomEventPrefix}`, deviceId);
+    joinRoom();
 
     // Local 1-second interval timer — only for this device
     const timerInterval = setInterval(() => {
@@ -62,8 +66,6 @@ export const useDeviceInterfaceSocket = (
     };
 
     const handleControllerPing = (payload: DeviceControllerPingPayload) => {
-      console.log('[handleControllerPing] Payload:', payload);
-
       if (payload?.controllerId !== deviceId) {
         return;
       }
@@ -115,16 +117,20 @@ export const useDeviceInterfaceSocket = (
     };
 
     if (targetType === 'device_controller') {
-      socket.on(WSPayloadKind.deviceControllerChanged, handleControllerPing);
+      socket.on(WSPayloadKind.deviceControllerPing, handleControllerPing);
     } else {
       socket.on(WSPayloadKind.devicePing, handlePing);
       socket.on(WSPayloadKind.deviceInterfaceUpdate, mhandleInterfaceUpdate);
     }
 
+    // Re-join room after reconnect so pings resume
+    socket.on(WSPayloadKind.connect, joinRoom);
+
     return () => {
       clearInterval(timerInterval);
+      socket.off(WSPayloadKind.connect, joinRoom);
       if (targetType === 'device_controller') {
-        socket.off(WSPayloadKind.deviceControllerChanged, handleControllerPing);
+        socket.off(WSPayloadKind.deviceControllerPing, handleControllerPing);
       } else {
         socket.off(WSPayloadKind.devicePing, handlePing);
         socket.off(WSPayloadKind.deviceInterfaceUpdate, mhandleInterfaceUpdate);

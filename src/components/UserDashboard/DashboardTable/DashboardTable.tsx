@@ -28,6 +28,7 @@ import { TestStatus } from 'typesCustom/tests';
 import toastService from 'services/ToastService';
 import { downloadUserDashboardExecutionLogRequest } from 'store/slices/userDashboard/userDashboardSlice';
 import { fetchUserDashboardTestCasesByExecutionIdRequest } from 'store/slices/userDashboard/userDashboardSlice';
+import { getSelectedTestExecutionRequest } from 'store/slices/tests/testsSlice';
 import {
   selectUserDashboardTestCasesByExecutionId,
   selectUserDashboardTestCasesLoadingByExecutionId,
@@ -202,6 +203,8 @@ function DashboardTable({
         executionId: row.testId,
       }),
     );
+    // Populate tests.selectedTestExecution + tests.logs for TestActivity / Logs
+    dispatch(getSelectedTestExecutionRequest(row.testId));
   };
 
   const handleTestIdClick = (testId: string, e: React.MouseEvent) => {

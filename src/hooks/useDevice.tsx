@@ -83,6 +83,27 @@ const useDevice = ({
           dispatch(updateDeviceState(alert.message));
         }
         break;
+      case 'device-alert': {
+        // Rust often emits device-alert; accept either a direct state patch or
+        // nested alert.data { deviceId, state } from heartbeat / faulty-report.
+        const msg = alert.message;
+        const nested = msg?.data;
+        const patch =
+          msg?.deviceId && msg?.state
+            ? msg
+            : nested?.deviceId && nested?.state
+              ? {
+                  deviceId: nested.deviceId,
+                  state: nested.state,
+                  softwareVersion: msg?.softwareVersion,
+                  lastExecutionStatus: msg?.lastExecutionStatus,
+                }
+              : null;
+        if (patch) {
+          dispatch(updateDeviceState(patch));
+        }
+        break;
+      }
       case 'device-approval':
         if (requestedCount >= ROW_PER_PAGE) {
           fetchPageData(0);

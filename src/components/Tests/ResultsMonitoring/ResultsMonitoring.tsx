@@ -7,8 +7,9 @@ import TestCaseResult from '../TestCaseResult';
 import CommonLogs from '../CommonLogs';
 import type { TabExecution } from 'store/slices/testExecution/types';
 import type { TestStatus, TestCaseEntryForLogs } from 'types/tests';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { downloadLogsRequest } from 'store/slices/testExecution/testExecutionsSlice';
+import type { RootState } from 'store/store';
 
 type TabType = 'Test Case Result' | 'Device Logs';
 
@@ -36,12 +37,31 @@ function ResultsMonitoring({
     new Set(),
   );
 
+  const liveLogs = useSelector((state: RootState) => {
+    const testId = execution?.testId;
+    if (!testId) {
+      return null;
+    }
+    return state.testExecutions.liveLogsByTestId[testId] ?? null;
+  });
+
   const testCases = useMemo(
     () => (execution?.testCases as TestCaseEntryForLogs[]) ?? [],
     [execution],
   );
 
-  const logs = useMemo(() => execution?.logs ?? [], [execution]);
+  const logs = useMemo(() => {
+    const tabLogs = execution?.logs ?? [];
+    if (!liveLogs || liveLogs.length === 0) {
+      return tabLogs;
+    }
+    if (tabLogs.length === 0) {
+      return liveLogs;
+    }
+    const seen = new Set(tabLogs);
+    const extras = liveLogs.filter((line) => !seen.has(line));
+    return extras.length > 0 ? [...tabLogs, ...extras] : tabLogs;
+  }, [execution, liveLogs]);
 
   const { totalCases, completedCases, filteredTestCases } = useMemo(() => {
     const total = testCases.length;

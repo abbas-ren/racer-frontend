@@ -1,4 +1,4 @@
-import { DashboardTable } from 'components';
+import { DashboardTable, TestActivity } from 'components';
 import { Alert, Snackbar, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
@@ -98,6 +98,9 @@ const Dashboard = () => {
           selectedTrendDate={selectedTrendDate}
           executions={executions}
         />
+        <Stack className={styles.activitySection} id="test-activity-logs-section">
+          <TestActivity />
+        </Stack>
       </Stack>
       <Snackbar
         open={isTrendDateAlertOpen && !isDashboardDataLoading}

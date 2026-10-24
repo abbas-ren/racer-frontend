@@ -12,8 +12,15 @@ import {
 } from 'store/index';
 import { isEmpty } from 'utils/common';
 import type { Socket } from 'socket.io-client';
-import { BuildPerformanceUpdatePayload, BuildTestExecutionUpdatePayload, TestExecutionUpdatePayload } from 'types/websocket';
+import {
+  BuildPerformanceUpdatePayload,
+  BuildTestExecutionUpdatePayload,
+  TestExecutionPayload,
+  TestExecutionType,
+  TestExecutionUpdatePayload,
+} from 'types/websocket';
 import { WSPayloadKind } from 'constants/websocket';
+import type { TestStatus } from 'types/tests';
 
 interface UseBuildSidebarWebSocketProps {
   buildId: string | null;
@@ -204,7 +211,6 @@ export const useBuildSidebarWebSocket = ({
     };
 
     const onBuildPerformanceUpdate = (payload: BuildPerformanceUpdatePayload) => {
-      console.log('Received build performance update:', payload);
       const receivedBuildId = payload?.buildId;
       if (receivedBuildId && receivedBuildId === targetBuildId) {
         refetchBuildExecutionsRef.current(receivedBuildId);
@@ -216,12 +222,6 @@ export const useBuildSidebarWebSocket = ({
       const status = payload?.status;
       const receivedBuildId = payload?.buildId;
 
-      console.log(
-        `Received test_execution_update for testId: ${testId} with status: ${status} and receivedBuildId: ${receivedBuildId}`,
-        payload,
-      );
-
-      
       if (!receivedBuildId || receivedBuildId !== targetBuildId) {
         return;
       }
@@ -239,7 +239,14 @@ export const useBuildSidebarWebSocket = ({
       const hasExecution = executionIdsRef.current.has(testId);
 
       if (status) {
-        dispatch(updateBuildExecutionStatus({ testId, status, progress: payload?.progress ?? null, message: payload?.message ?? null }));
+        dispatch(
+          updateBuildExecutionStatus({
+            testId,
+            status,
+            progress: payload?.progress ?? null,
+            message: payload?.message ?? null,
+          }),
+        );
       }
 
       // Keep single execution API only for missing executions.
@@ -265,6 +272,11 @@ export const useBuildSidebarWebSocket = ({
         const testCaseId = payload?.testCaseId;
         if (typeof testCaseId === 'number') {
           scheduleTestCaseUpdateRef.current(testId, testCaseId);
+        } else if (typeof testCaseId === 'string' && testCaseId.trim()) {
+          const parsed = Number(testCaseId);
+          if (Number.isFinite(parsed)) {
+            scheduleTestCaseUpdateRef.current(testId, parsed);
+          }
         }
 
         // Backend can emit the WS event before testcase persistence is visible
@@ -279,12 +291,55 @@ export const useBuildSidebarWebSocket = ({
       scheduleBuildPerformanceRefreshRef.current(receivedBuildId);
     };
 
+    // Owner-style testExecution fan-out (logs/status) for executions already in the sidebar
+    const onTestExecution = (payload: TestExecutionPayload) => {
+      const testId = payload?.testId;
+      if (!testId || !executionIdsRef.current.has(testId)) {
+        return;
+      }
+
+      if (payload.type === TestExecutionType.CancelRequested) {
+        dispatch(
+          updateExecutionCancelRequested({ testId, cancelRequested: true }),
+        );
+      }
+
+      const status =
+        typeof payload.data?.status === 'string'
+          ? (payload.data.status as TestStatus)
+          : undefined;
+      const message =
+        typeof payload.data?.message === 'string'
+          ? payload.data.message
+          : undefined;
+
+      if (status || message) {
+        dispatch(
+          updateBuildExecutionStatus({
+            testId,
+            ...(status ? { status } : {}),
+            ...(message !== undefined ? { message } : {}),
+          }),
+        );
+      }
+
+      if (
+        payload.type === TestExecutionType.Status ||
+        payload.type === TestExecutionType.Log ||
+        payload.type === TestExecutionType.Queued
+      ) {
+        scheduleExecutionFetchRef.current(targetBuildId, testId);
+        scheduleBuildPerformanceRefreshRef.current(targetBuildId);
+      }
+    };
+
     ws.on(WSPayloadKind.connect, onConnect);
     ws.on(WSPayloadKind.disconnect, onDisconnect);
     ws.on(WSPayloadKind.connectError, onConnectError);
     ws.on(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
     ws.on(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
     ws.on(WSPayloadKind.buildTestExecutionUpdate, onBuildTestExecutionUpdate);
+    ws.on(WSPayloadKind.testExecution, onTestExecution);
 
     return () => {
       ws.emit(WSPayloadKind.leaveBuild, targetBuildId);
@@ -294,6 +349,7 @@ export const useBuildSidebarWebSocket = ({
       ws.off(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
       ws.off(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
       ws.off(WSPayloadKind.buildTestExecutionUpdate, onBuildTestExecutionUpdate);
+      ws.off(WSPayloadKind.testExecution, onTestExecution);
       if (wsRef.current === ws) {
         wsRef.current = null;
       }

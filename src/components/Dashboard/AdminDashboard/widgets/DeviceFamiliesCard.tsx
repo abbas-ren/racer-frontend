@@ -22,7 +22,9 @@ const DeviceFamiliesCard = () => {
     if (
       alert.subtype === 'device-approval' ||
       alert.subtype === 'device-state-change' ||
-      alert.subtype === 'device-deletion'
+      alert.subtype === 'device-alert' ||
+      alert.subtype === 'device-deletion' ||
+      alert.subtype === 'device-addition'
     ) {
       dispatch(fetchDeviceByFamiliesRequest());
     }

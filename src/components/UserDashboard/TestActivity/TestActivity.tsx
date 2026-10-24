@@ -9,6 +9,7 @@ import { NoData } from 'assets/index';
 import TabBar from 'components/common/TabBar/TabBar';
 import Logs from './Logs/Logs';
 import { isEmpty } from 'radash';
+import styles from './TestActivity.module.scss';
 
 const tabItems = [
   { label: 'Activity', value: 'activity' },
@@ -94,7 +95,7 @@ function TestActivity() {
   }, [testSuites, failedOnly]);
 
   return (
-    <Stack className="ud-activity-wrap">
+    <Stack className={styles.wrap}>
       <TabBar
         tabs={tabItems}
         onChange={handleTabChange}
@@ -105,69 +106,56 @@ function TestActivity() {
           color: 'secondary',
           size: 'medium',
           disabled: selectTestExecutionLoading || !selectedTestExecution,
-          className: 'ud-activity-checkbox',
+          className: styles.checkbox,
         }}
       />
       {selectedTab === 'activity' ? (
-        <Stack className="ud-activity-inner">
+        <Stack className={styles.inner}>
           {selectTestExecutionLoading ||
           !selectedTestExecution ||
           isEmpty(filteredTestSuites) ? (
-            <Stack
-              justifyContent="center"
-              alignItems="center"
-              className="ud-activity-empty"
-            >
-              <img src={NoData} width={140} height={140} />
+            <Stack className={styles.empty}>
+              <img src={NoData} width={140} height={140} alt="" />
               <Typography variant="h6" color="text.subtitle" noWrap>
                 No Test Cases Found
               </Typography>
             </Stack>
           ) : (
-            <>
-              <Stack overflow="auto" padding="0.7rem">
-                {filteredTestSuites &&
-                  Object.entries(filteredTestSuites).map(([suiteId, group]) => (
-                    <Stack key={suiteId} className="ud-activity-suite">
-                      <Typography
-                        variant="legend"
-                        fontSize="0.875rem"
-                        color="primary.500"
+            <Stack className={styles.list}>
+              {Object.entries(filteredTestSuites).map(([suiteId, group]) => (
+                <Stack key={suiteId} className={styles.suite}>
+                  <Typography
+                    variant="legend"
+                    fontSize="0.875rem"
+                    color="primary.500"
+                  >
+                    {group.name}
+                  </Typography>
+                  <Stack className={styles.caseGrid}>
+                    {group.testCases.map((testCase, index) => (
+                      <Box
+                        className={styles.caseRow}
+                        key={`${suiteId}-${testCase.testCaseId}-${index}`}
                       >
-                        {group.name}
-                      </Typography>
-                      <Stack className="ud-activity-case-grid">
-                        {group.testCases.map((testCase, index) => (
-                          <Box
-                            className="ud-activity-case-row"
-                            key={`${suiteId}-${testCase.testCaseId}-${index}`}
-                          >
-                            <Stack>
-                              <Typography variant="body3" color="text.caption">
-                                {getDisplayDate(testCase.updatedAt ?? '')}
-                              </Typography>
-                            </Stack>
-                            <Stack>
-                              <Typography variant="body3" color="text.caption">
-                                Testcase {String(index + 1).padStart(2, '0')}
-                              </Typography>
-                            </Stack>
-                            <Stack>
-                              <Typography
-                                color={getStatusColor(testCase.result ?? '')}
-                                variant="body3"
-                                fontWeight={700}
-                              >
-                                {getStatusText(testCase.result ?? '')}
-                              </Typography>
-                            </Stack>
-                          </Box>
-                        ))}
-                      </Stack>
-                    </Stack>
-                  ))}
-              </Stack>
-            </>
+                        <Typography variant="body3" color="text.caption">
+                          {getDisplayDate(testCase.updatedAt ?? '')}
+                        </Typography>
+                        <Typography variant="body3" color="text.caption">
+                          Testcase {String(index + 1).padStart(2, '0')}
+                        </Typography>
+                        <Typography
+                          color={getStatusColor(testCase.result ?? '')}
+                          variant="body3"
+                          fontWeight={700}
+                        >
+                          {getStatusText(testCase.result ?? '')}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Stack>
+                </Stack>
+              ))}
+            </Stack>
           )}
         </Stack>
       ) : (

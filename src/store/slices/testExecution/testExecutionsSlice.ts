@@ -56,12 +56,55 @@ const createSingleTabState = (
   },
 });
 
+const MAX_LIVE_LOGS_PER_TEST = 5000;
+
 const initialState: TabsState = {
   isCreatingDefaultTab: false,
   error: undefined,
   activeTabId: undefined,
   tabsById: {},
   tabOrder: [],
+  liveLogsByTestId: {},
+};
+
+const appendUniqueLogs = (
+  existing: string[] | undefined,
+  incoming: string[],
+  max = MAX_LIVE_LOGS_PER_TEST,
+): string[] => {
+  const base = Array.isArray(existing) ? existing : [];
+  if (incoming.length === 0) {
+    return base;
+  }
+  const seen = new Set(base);
+  const extras = incoming.filter((line) => {
+    if (seen.has(line)) {
+      return false;
+    }
+    seen.add(line);
+    return true;
+  });
+  if (extras.length === 0) {
+    return base;
+  }
+  const merged = [...base, ...extras];
+  return merged.length > max ? merged.slice(merged.length - max) : merged;
+};
+
+const mergeExecutionLogs = (
+  httpLogs: string[] | undefined,
+  liveLogs: string[] | undefined,
+): string[] => {
+  const http = Array.isArray(httpLogs) ? httpLogs : [];
+  const live = Array.isArray(liveLogs) ? liveLogs : [];
+  if (live.length === 0) {
+    return http;
+  }
+  if (http.length === 0) {
+    return live;
+  }
+  // Preserve HTTP history, then append any live lines not already present.
+  return appendUniqueLogs(http, live);
 };
 
 // Helper to ensure tab exists
@@ -522,7 +565,17 @@ const tabsSlice = createSlice({
       ensureTab(state, tabId);
       const data = state.tabsById[tabId].values.data;
       data.testExecutionId = execution.testId;
-      data.testExecution = execution;
+      // Merge any WS lines that arrived before this tab was bound to testId.
+      const live = state.liveLogsByTestId[execution.testId];
+      data.testExecution = {
+        ...execution,
+        logs: mergeExecutionLogs(execution.logs, live),
+      };
+      // Keep global buffer aligned with the richest view we have.
+      state.liveLogsByTestId[execution.testId] = appendUniqueLogs(
+        live,
+        data.testExecution.logs,
+      );
     },
     updateExecutionStatus(
       state,
@@ -558,6 +611,10 @@ const tabsSlice = createSlice({
       action: PayloadAction<{ testId: string; message: string }>,
     ) {
       const { testId, message } = action.payload;
+      state.liveLogsByTestId[testId] = appendUniqueLogs(
+        state.liveLogsByTestId[testId],
+        [message],
+      );
       const tabId = state.tabOrder.find((id) => {
         const exec = state.tabsById[id]?.values.data.testExecution;
         return exec && exec.testId === testId;
@@ -565,11 +622,7 @@ const tabsSlice = createSlice({
       if (!tabId) return;
       const exec = state.tabsById[tabId].values.data.testExecution;
       if (!exec) return;
-      const logs = Array.isArray(exec.logs) ? exec.logs : [];
-      // Avoid duplicates
-      if (!logs.includes(message)) {
-        exec.logs = [...logs, message];
-      }
+      exec.logs = appendUniqueLogs(exec.logs, [message]);
     },
     // Batch-upsert multiple log lines keyed by testId in one state update
     batchUpsertExecutionLogs(
@@ -578,6 +631,11 @@ const tabsSlice = createSlice({
     ) {
       for (const entry of action.payload) {
         const { testId, messages } = entry;
+        if (!messages.length) continue;
+        state.liveLogsByTestId[testId] = appendUniqueLogs(
+          state.liveLogsByTestId[testId],
+          messages,
+        );
         const tabId = state.tabOrder.find((id) => {
           const exec = state.tabsById[id]?.values.data.testExecution;
           return exec && exec.testId === testId;
@@ -585,12 +643,7 @@ const tabsSlice = createSlice({
         if (!tabId) continue;
         const exec = state.tabsById[tabId].values.data.testExecution;
         if (!exec) continue;
-        const logs = Array.isArray(exec.logs) ? exec.logs : [];
-        const existing = new Set(logs);
-        const newLogs = messages.filter((m) => !existing.has(m));
-        if (newLogs.length > 0) {
-          exec.logs = [...logs, ...newLogs];
-        }
+        exec.logs = appendUniqueLogs(exec.logs, messages);
       }
     },
     // Replace execution test cases and update status for the matching testId
@@ -619,6 +672,7 @@ const tabsSlice = createSlice({
     // Clear execution logs for the matching testId
     clearExecutionLogs(state, action: PayloadAction<{ testId: string }>) {
       const { testId } = action.payload;
+      delete state.liveLogsByTestId[testId];
       const tabId = state.tabOrder.find((id) => {
         const exec = state.tabsById[id]?.values.data.testExecution;
         return exec && exec.testId === testId;

@@ -24,12 +24,12 @@ export const useSocketIoEvent = <GeneralWebsocketPayload>(
 
     const socket = getSharedSocket(userId);
     const wrappedHandler = (payload: GeneralWebsocketPayload) => {
-      console.log('General websocket event received:', eventName);
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[socket.io]', eventName);
+      }
       handlerRef.current(payload);
-        // Makes future additions visible during development.
-      console.warn('Unhandled general event', payload);
-  };
-    
+    };
+
     socket.on(eventName, wrappedHandler);
 
     return () => {
@@ -37,5 +37,3 @@ export const useSocketIoEvent = <GeneralWebsocketPayload>(
     };
   }, [enabled, eventName, userId]);
 };
-
-

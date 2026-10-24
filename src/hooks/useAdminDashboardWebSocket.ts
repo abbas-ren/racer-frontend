@@ -4,13 +4,25 @@ import { getSharedSocket } from 'services/socketIoClient';
 import {
   fetchBuildPerformanceByIdRequest,
   fetchBuildsPerformanceRequest,
+  fetchDeviceByFamiliesRequest,
+  fetchDeviceStateAnalyticsRequest,
   removeBuildPerformance,
 } from 'store/slices';
 import { RootState } from 'store/store';
 import type { Socket } from 'socket.io-client';
 import { WSPayloadKind } from 'constants/websocket';
-import { BuildDeletedPayload, BuildPerformanceUpdatePayload } from 'types/websocket';
+import {
+  BuildDeletedPayload,
+  BuildPerformanceUpdatePayload,
+  DevicePowerUpdatePayload,
+  DeviceStateUpdatePayload,
+  TestExecutionUpdatePayload,
+} from 'types/websocket';
 
+/**
+ * Admin dashboard Socket.IO listeners for build/device sync.
+ * Alerts are handled separately via useAlertSocket in individual widgets.
+ */
 export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
   const DEBOUNCE_MS = 300;
   const [isConnected, setIsConnected] = useState(false);
@@ -21,6 +33,9 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
   const refreshDebounceRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
     new Map(),
   );
+  const deviceAnalyticsDebounceRef = useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   const dispatch = useDispatch();
   const buildsPerformance = useSelector(
     (state: RootState) => state.dashboard.buildsPerformance,
@@ -37,6 +52,10 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
       clearTimeout(timerId);
     });
     refreshDebounceRef.current.clear();
+    if (deviceAnalyticsDebounceRef.current) {
+      clearTimeout(deviceAnalyticsDebounceRef.current);
+      deviceAnalyticsDebounceRef.current = null;
+    }
   };
 
   useEffect(() => {
@@ -55,6 +74,35 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
     dashboardRef.current = dashboard;
     setIsConnected(ws.connected);
 
+    const scheduleDeviceAnalyticsRefresh = () => {
+      if (deviceAnalyticsDebounceRef.current) {
+        clearTimeout(deviceAnalyticsDebounceRef.current);
+      }
+      deviceAnalyticsDebounceRef.current = setTimeout(() => {
+        dispatch(fetchDeviceStateAnalyticsRequest());
+        dispatch(fetchDeviceByFamiliesRequest());
+        deviceAnalyticsDebounceRef.current = null;
+      }, DEBOUNCE_MS);
+    };
+
+    const scheduleBuildRefresh = (targetBuildId: string) => {
+      const buildExists = buildIdsRef.current.has(targetBuildId);
+      if (!buildExists) {
+        return;
+      }
+      const existingTimer = refreshDebounceRef.current.get(targetBuildId);
+      if (existingTimer) {
+        clearTimeout(existingTimer);
+      }
+
+      const timeoutId = setTimeout(() => {
+        dispatch(fetchBuildPerformanceByIdRequest(targetBuildId));
+        refreshDebounceRef.current.delete(targetBuildId);
+      }, DEBOUNCE_MS);
+
+      refreshDebounceRef.current.set(targetBuildId, timeoutId);
+    };
+
     const onConnect = () => {
       setIsConnected(true);
       setError(null);
@@ -70,32 +118,41 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
     };
 
     const onBuildPerformanceUpdate = (data: BuildPerformanceUpdatePayload) => {
-      console.log('Received build performance update:', data);
       const targetBuildId = data?.buildId;
       if (typeof targetBuildId === 'string' && targetBuildId) {
-        const buildExists = buildIdsRef.current.has(targetBuildId);
-        if (buildExists) {
-          const existingTimer = refreshDebounceRef.current.get(targetBuildId);
-          if (existingTimer) {
-            clearTimeout(existingTimer);
-          }
-
-          const timeoutId = setTimeout(() => {
-            dispatch(fetchBuildPerformanceByIdRequest(targetBuildId));
-            refreshDebounceRef.current.delete(targetBuildId);
-          }, DEBOUNCE_MS);
-
-          refreshDebounceRef.current.set(targetBuildId, timeoutId);
-        }
+        scheduleBuildRefresh(targetBuildId);
       }
     };
 
     const onBuildDeleted = (data: BuildDeletedPayload) => {
-      console.log('Received build deleted update:', data);
       if (typeof data?.releaseId === 'string' && data.releaseId) {
         dispatch(removeBuildPerformance(data.releaseId));
         dispatch(fetchBuildsPerformanceRequest());
       }
+    };
+
+    const onDeviceStateUpdate = (_data: DeviceStateUpdatePayload) => {
+      scheduleDeviceAnalyticsRefresh();
+    };
+
+    const onDevicePowerUpdate = (_data: DevicePowerUpdatePayload) => {
+      scheduleDeviceAnalyticsRefresh();
+    };
+
+    const onTestExecutionUpdate = (data: TestExecutionUpdatePayload) => {
+      const buildId = data?.buildId;
+      if (typeof buildId === 'string' && buildId) {
+        scheduleBuildRefresh(buildId);
+      }
+    };
+
+    // executionReportUpdate: no dedicated admin dashboard card refresh today;
+    // build performance is covered by testExecutionUpdate / buildPerformanceUpdate.
+    const onExecutionReportUpdate = (_data: {
+      testExecutionId?: string;
+      status?: string;
+    }) => {
+      // Intentionally no-op for admin analytics; user dashboard handles report toasts.
     };
 
     ws.on(WSPayloadKind.connect, onConnect);
@@ -103,6 +160,10 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
     ws.on(WSPayloadKind.connectError, onConnectError);
     ws.on(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
     ws.on(WSPayloadKind.buildDeleted, onBuildDeleted);
+    ws.on(WSPayloadKind.deviceStateUpdate, onDeviceStateUpdate);
+    ws.on(WSPayloadKind.devicePowerUpdate, onDevicePowerUpdate);
+    ws.on(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
+    ws.on(WSPayloadKind.executionReportUpdate, onExecutionReportUpdate);
 
     return () => {
       clearDebounceTimers();
@@ -112,6 +173,10 @@ export const useAdminDashboardWebSocket = (dashboard = 'admin') => {
       ws.off(WSPayloadKind.connectError, onConnectError);
       ws.off(WSPayloadKind.buildPerformanceUpdate, onBuildPerformanceUpdate);
       ws.off(WSPayloadKind.buildDeleted, onBuildDeleted);
+      ws.off(WSPayloadKind.deviceStateUpdate, onDeviceStateUpdate);
+      ws.off(WSPayloadKind.devicePowerUpdate, onDevicePowerUpdate);
+      ws.off(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
+      ws.off(WSPayloadKind.executionReportUpdate, onExecutionReportUpdate);
     };
   }, [dashboard, dispatch]);
 

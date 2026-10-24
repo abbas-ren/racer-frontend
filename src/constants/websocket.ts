@@ -9,6 +9,7 @@ export const WSPayloadKind = {
     deviceStateUpdate: 'deviceStateUpdate',
     devicePowerUpdate: 'devicePowerUpdate',
     deviceControllerChanged: 'deviceControllerChanged',
+    deviceControllerPing: 'deviceControllerPing',
     testExecution: 'testExecution',
     buildTestExecutionUpdate: 'buildTestExecutionUpdate',
     buildPerformanceUpdate: 'buildPerformanceUpdate',

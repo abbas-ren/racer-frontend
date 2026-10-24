@@ -126,7 +126,7 @@ export const getTestExecutionForTable = async (
   testId: string,
 ): Promise<TestExecutionResponse> => {
   const response = await axiosInstance.get(
-    `device/test/execution/${testId}/?table=true`,
+    `device/test/execution/${testId}?table=true`,
   );
   return response.data;
 };

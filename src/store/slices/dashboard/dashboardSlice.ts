@@ -81,7 +81,7 @@ interface FetchBuildExecutionByTestIdRequestPayload {
 
 interface UpdateBuildExecutionStatusPayload {
   testId: string;
-  status: TestStatus;
+  status?: TestStatus;
   progress?: number | null;
   message?: string | null;
 }
@@ -416,7 +416,7 @@ const deviceSlice = createSlice({
       state,
       action: PayloadAction<UpdateBuildExecutionStatusPayload>,
     ) => {
-      const { testId, status, progress } = action.payload;
+      const { testId, status, progress, message } = action.payload;
       const executionIndex = state.buildExecutions.findIndex(
         (execution) => execution.testId === testId,
       );
@@ -425,8 +425,15 @@ const deviceSlice = createSlice({
         return;
       }
 
-      state.buildExecutions[executionIndex].status = status;
-      state.buildExecutions[executionIndex].progress = progress;
+      if (status !== undefined) {
+        state.buildExecutions[executionIndex].status = status;
+      }
+      if (progress !== undefined) {
+        state.buildExecutions[executionIndex].progress = progress;
+      }
+      if (message !== undefined) {
+        state.buildExecutions[executionIndex].message = message;
+      }
     },
     clearBuildExecutions: (state) => {
       state.buildExecutions = [];
