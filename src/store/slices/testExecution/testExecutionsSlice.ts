@@ -65,6 +65,8 @@ const initialState: TabsState = {
   tabsById: {},
   tabOrder: [],
   liveLogsByTestId: {},
+  iplProgressByTestId: {},
+  resultProgressByTestId: {},
 };
 
 const appendUniqueLogs = (
@@ -699,6 +701,70 @@ const tabsSlice = createSlice({
       _state,
       _action: PayloadAction<{ testId: string; status: TestStatus }>,
     ) {},
+    wsIplProgressUpdate(
+      state,
+      action: PayloadAction<{ testId: string; progress: number }>,
+    ) {
+      const { testId, progress } = action.payload;
+      const clamped = Math.max(0, Math.min(100, Math.round(progress)));
+      state.iplProgressByTestId[testId] = clamped;
+      Object.values(state.tabsById).forEach((tab) => {
+        const exec = tab.values.data.testExecution;
+        if (exec?.testId === testId) {
+          exec.iplProgress = clamped;
+        }
+      });
+    },
+    wsResultProgressUpdate(
+      state,
+      action: PayloadAction<{ testId: string; progress: number }>,
+    ) {
+      const { testId, progress } = action.payload;
+      const clamped = Math.max(0, Math.min(100, Math.round(progress)));
+      state.resultProgressByTestId[testId] = clamped;
+      // Once case results flow, IPL bar should hide.
+      delete state.iplProgressByTestId[testId];
+      Object.values(state.tabsById).forEach((tab) => {
+        const exec = tab.values.data.testExecution;
+        if (exec?.testId === testId) {
+          exec.resultProgress = clamped;
+          exec.iplProgress = null;
+        }
+      });
+    },
+    clearIplProgress(state, action: PayloadAction<{ testId: string }>) {
+      const { testId } = action.payload;
+      delete state.iplProgressByTestId[testId];
+      Object.values(state.tabsById).forEach((tab) => {
+        const exec = tab.values.data.testExecution;
+        if (exec?.testId === testId) {
+          exec.iplProgress = null;
+        }
+      });
+    },
+    patchExecutionCaseResult(
+      state,
+      action: PayloadAction<{
+        testId: string;
+        testCaseId: string | number;
+        result: string;
+      }>,
+    ) {
+      const { testId, testCaseId, result } = action.payload;
+      const caseIdNum = Number(testCaseId);
+      Object.values(state.tabsById).forEach((tab) => {
+        const exec = tab.values.data.testExecution;
+        if (!exec || exec.testId !== testId || !Array.isArray(exec.testCases)) {
+          return;
+        }
+        const target = exec.testCases.find(
+          (tc) => Number(tc.testCaseId) === caseIdNum,
+        );
+        if (target) {
+          target.result = result;
+        }
+      });
+    },
     // Request to refresh execution cases by testId (handled by saga)
     refreshExecutionCasesRequest(
       _state,
@@ -1295,6 +1361,10 @@ export const {
   refreshExecutionCasesRequest,
   wsExecutionLogReceived,
   wsExecutionStatusUpdate,
+  wsIplProgressUpdate,
+  wsResultProgressUpdate,
+  clearIplProgress,
+  patchExecutionCaseResult,
   downloadLogsFailure,
   downloadLogsRequest,
   downloadLogsSuccess,

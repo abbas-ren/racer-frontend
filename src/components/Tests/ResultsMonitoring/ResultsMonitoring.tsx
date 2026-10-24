@@ -45,6 +45,34 @@ function ResultsMonitoring({
     return state.testExecutions.liveLogsByTestId[testId] ?? null;
   });
 
+  const iplProgress = useSelector((state: RootState) => {
+    const testId = execution?.testId;
+    if (!testId) {
+      return null;
+    }
+    const fromStore = state.testExecutions.iplProgressByTestId[testId];
+    if (typeof fromStore === 'number') {
+      return fromStore;
+    }
+    return typeof execution?.iplProgress === 'number'
+      ? execution.iplProgress
+      : null;
+  });
+
+  const liveResultProgress = useSelector((state: RootState) => {
+    const testId = execution?.testId;
+    if (!testId) {
+      return null;
+    }
+    const fromStore = state.testExecutions.resultProgressByTestId[testId];
+    if (typeof fromStore === 'number') {
+      return fromStore;
+    }
+    return typeof execution?.resultProgress === 'number'
+      ? execution.resultProgress
+      : null;
+  });
+
   const testCases = useMemo(
     () => (execution?.testCases as TestCaseEntryForLogs[]) ?? [],
     [execution],
@@ -104,7 +132,16 @@ function ResultsMonitoring({
 
   const progress = totalCases
     ? Math.round((completedCases / totalCases) * 100)
-    : 0;
+    : typeof liveResultProgress === 'number'
+      ? liveResultProgress
+      : 0;
+
+  const showIplBar =
+    typeof iplProgress === 'number' &&
+    execution?.status !== 'completed' &&
+    execution?.status !== 'failed' &&
+    execution?.status !== 'cancelled' &&
+    completedCases === 0;
 
   // Clear only hides current items in the two tabs – new items still appear
   const handleClear = useCallback(() => {
@@ -130,6 +167,20 @@ function ResultsMonitoring({
       <Typography component="p" className={styles.title} variant="label1">
         Results & Monitoring
       </Typography>
+      {showIplBar && (
+        <ResultProgressBar
+          title="IPL Flashing"
+          progress={iplProgress ?? 0}
+          footerLabel={
+            (iplProgress ?? 0) >= 100
+              ? 'IPL complete — waiting for device'
+              : 'Flashing device firmware'
+          }
+          hideStatusBadge
+          forceActive
+          execution={execution}
+        />
+      )}
       <ResultProgressBar
         progress={progress}
         totalCases={totalCases}

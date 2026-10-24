@@ -5,32 +5,44 @@ import ExecutionStatusBadge from '../ExecutionStatusBadge';
 import type { TestStatus } from 'types/tests';
 
 interface ResultProgressBarProps {
+  title?: string;
   progress?: number;
   totalCases?: number;
   completedCases?: number;
+  /** When set, replaces the "N/M Test Cases" footer label. */
+  footerLabel?: string;
+  hideStatusBadge?: boolean;
+  forceActive?: boolean;
   execution?: { testId: string; status: TestStatus } | null;
 }
 
 function ResultProgressBar({
-  progress = 50,
-  totalCases = 593,
-  completedCases = 296,
+  title = 'Result Progress',
+  progress = 0,
+  totalCases = 0,
+  completedCases = 0,
+  footerLabel,
+  hideStatusBadge = false,
+  forceActive = false,
   execution,
 }: ResultProgressBarProps) {
+  const safeProgress = Math.max(0, Math.min(100, Math.round(progress)));
   const isComplete =
-    progress >= 100 ||
+    safeProgress >= 100 ||
     execution?.status === 'completed' ||
     execution?.status === 'failed' ||
     execution?.status === 'cancelled';
   const isActive =
-    execution?.status === 'inProgress' || execution?.status === 'queued';
+    forceActive ||
+    execution?.status === 'inProgress' ||
+    execution?.status === 'queued';
   return (
     <Box className={clsx(styles.container, { [styles.completed]: isComplete })}>
       {/* Header */}
       <Stack className={styles.header}>
         <Stack direction="row" alignItems="center" gap={1}>
           <Typography className={styles.title} variant="body2">
-            Result Progress
+            {title}
           </Typography>
           {isActive && !isComplete && (
             <CircularProgress size={16} thickness={4} />
@@ -42,7 +54,7 @@ function ResultProgressBar({
           justifyContent="center"
         >
           <Typography className={styles.percentageText} variant="body2">
-            {progress}%
+            {safeProgress}%
           </Typography>
         </Stack>
       </Stack>
@@ -52,13 +64,13 @@ function ResultProgressBar({
         <Box className={styles.progressBarTrack}>
           <Box
             className={styles.progressBarFill}
-            sx={{ width: `${progress}%` }}
+            sx={{ width: `${safeProgress}%` }}
           />
         </Box>
 
         {/* Circular Indicator */}
         {!isComplete && (
-          <Box className={styles.indicator} sx={{ left: `${progress}%` }}>
+          <Box className={styles.indicator} sx={{ left: `${safeProgress}%` }}>
             <Box className={styles.indicatorOuter}>
               <Box className={styles.indicatorInner} />
             </Box>
@@ -70,7 +82,8 @@ function ResultProgressBar({
       <Stack className={styles.footer}>
         <Stack direction="row" alignItems="center">
           <Typography className={styles.casesText} variant="buttonBase">
-            {completedCases}/{totalCases} Test Cases
+            {footerLabel ??
+              `${completedCases}/${totalCases} Test Cases`}
           </Typography>
           {isActive && !isComplete && (
             <Box className={styles.dotLoader}>
@@ -80,11 +93,13 @@ function ResultProgressBar({
             </Box>
           )}
         </Stack>
-        <ExecutionStatusBadge
-          execution={execution ?? undefined}
-          size="small"
-          textCase="sentence"
-        />
+        {!hideStatusBadge && (
+          <ExecutionStatusBadge
+            execution={execution ?? undefined}
+            size="small"
+            textCase="sentence"
+          />
+        )}
       </Stack>
     </Box>
   );

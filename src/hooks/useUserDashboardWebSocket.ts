@@ -22,6 +22,10 @@ import {
 import {
   wsExecutionLogReceived,
   wsExecutionStatusUpdate,
+  wsIplProgressUpdate,
+  wsResultProgressUpdate,
+  clearIplProgress,
+  patchExecutionCaseResult,
   batchUpsertExecutionLogs,
   updateExecutionCancelRequested,
 } from 'store/slices/testExecution/testExecutionsSlice';
@@ -36,6 +40,7 @@ import { isEmpty } from 'utils/common';
 import type { RootState } from 'store/store';
 import type { Socket } from 'socket.io-client';
 import {
+  BuildTestExecutionUpdatePayload,
   DevicePowerUpdatePayload,
   DeviceStateUpdatePayload,
   TestExecutionPayload,
@@ -587,17 +592,47 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       }
     };
 
-    // IPL / progress path also emits testExecutionUpdate with a message.
-    // Buffer it so Device Logs stay filled even if the parallel testExecution/log
-    // emit is missed (dedupe in Redux keeps doubles out).
+    // IPL / result progress + log text on testExecutionUpdate.
     const onTestExecutionUpdate = (payload: TestExecutionUpdatePayload) => {
       const testId = payload?.testId;
-      const message =
-        typeof payload?.message === 'string' ? payload.message.trim() : '';
-      if (!testId || !message) {
+      if (!testId) {
         return;
       }
-      if (payload.status) {
+      const message =
+        typeof payload?.message === 'string' ? payload.message.trim() : '';
+      const lower = message.toLowerCase();
+      const isIplUpdate =
+        lower.includes('ipl') ||
+        lower.includes('flash') ||
+        lower.includes('flashing');
+      const isResultUpdate =
+        lower.includes('result progress') ||
+        lower.includes('selected tests are starting') ||
+        lower.includes('test cases complete');
+
+      if (typeof payload.progress === 'number') {
+        if (isIplUpdate) {
+          dispatch(
+            wsIplProgressUpdate({
+              testId,
+              progress: payload.progress,
+            }),
+          );
+        } else if (isResultUpdate || !isIplUpdate) {
+          dispatch(
+            wsResultProgressUpdate({
+              testId,
+              progress: payload.progress,
+            }),
+          );
+          if (payload.progress === 0 || isResultUpdate) {
+            dispatch(clearIplProgress({ testId }));
+          }
+        }
+      }
+
+      // Never treat IPL 100% as execution completed — backend keeps inProgress.
+      if (payload.status && !(isIplUpdate && payload.status === TestStatus.COMPLETED)) {
         dispatch(
           wsExecutionStatusUpdate({
             testId,
@@ -605,7 +640,33 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
           }),
         );
       }
-      bufferLogRef.current(testId, `[${new Date().toISOString()}] ${message}`);
+      if (message) {
+        bufferLogRef.current(testId, `[${new Date().toISOString()}] ${message}`);
+      }
+      scheduleTestCasesRefresh(testId);
+      debouncedFetchInProgress();
+    };
+
+    const onBuildTestExecutionUpdate = (
+      payload: BuildTestExecutionUpdatePayload,
+    ) => {
+      const testId = payload?.testId;
+      if (!testId) {
+        return;
+      }
+      if (payload.testCaseId && payload.status) {
+        dispatch(
+          patchExecutionCaseResult({
+            testId,
+            testCaseId: payload.testCaseId,
+            result: payload.status,
+          }),
+        );
+      }
+      dispatch(clearIplProgress({ testId }));
+      scheduleTestCasesRefresh(testId);
+      dispatch(getTestExecutionResultRequest(testId));
+      debouncedFetchInProgress();
     };
 
     ws.on(WSPayloadKind.connect, onConnect);
@@ -613,6 +674,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
     ws.on(WSPayloadKind.connectError, onConnectError);
     ws.on(WSPayloadKind.testExecution, onTestExecution);
     ws.on(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
+    ws.on(WSPayloadKind.buildTestExecutionUpdate, onBuildTestExecutionUpdate);
     ws.on(WSPayloadKind.deviceStateUpdate, onDeviceState);
     ws.on(WSPayloadKind.devicePowerUpdate, onDevicePower);
     ws.on(WSPayloadKind.executionReportUpdate, onExecutionReportUpdate);
@@ -628,6 +690,7 @@ export const useUserDashboardWebSocket = (userId: string, isUser: boolean) => {
       ws.off(WSPayloadKind.connectError, onConnectError);
       ws.off(WSPayloadKind.testExecution, onTestExecution);
       ws.off(WSPayloadKind.testExecutionUpdate, onTestExecutionUpdate);
+      ws.off(WSPayloadKind.buildTestExecutionUpdate, onBuildTestExecutionUpdate);
       ws.off(WSPayloadKind.deviceStateUpdate, onDeviceState);
       ws.off(WSPayloadKind.devicePowerUpdate, onDevicePower);
       ws.off(WSPayloadKind.executionReportUpdate, onExecutionReportUpdate);

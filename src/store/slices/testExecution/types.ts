@@ -120,6 +120,16 @@ export interface TabsState {
    * and dashboard log views stay complete once the execution opens.
    */
   liveLogsByTestId: Record<string, string[]>;
+  /**
+   * Live IPL flash percentage (0–100) from `testExecutionUpdate.progress`
+   * while flashing; cleared when selected tests start or the run ends.
+   */
+  iplProgressByTestId: Record<string, number>;
+  /**
+   * Live result progress percentage from case completion events.
+   * ResultProgressBar prefers case counts when available; this is a fallback.
+   */
+  resultProgressByTestId: Record<string, number>;
 }
 
 export interface BackendTab {
@@ -154,4 +164,8 @@ export interface TabExecution {
   startedAt?: string | Date | null;
   endedAt?: string | Date | null;
   cancelRequested?: boolean;
+  /** IPL flash percent from websocket (0–100), when flashing. */
+  iplProgress?: number | null;
+  /** Overall result percent from websocket when case list is empty/stale. */
+  resultProgress?: number | null;
 }
